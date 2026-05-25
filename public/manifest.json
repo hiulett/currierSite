@@ -1,0 +1,16 @@
+{
+    "name": "LogiSaaS Global Logistics",
+    "short_name": "LogiSaaS",
+    "description": "Sistema Integral de Gestión Logística Multi-tenant",
+    "start_url": "/dashboard",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#3b7ddd",
+    "icons": [
+        {
+            "src": "/adminkit/img/icons/icon-48x48.png",
+            "sizes": "48x48",
+            "type": "image/png"
+        }
+    ]
+}

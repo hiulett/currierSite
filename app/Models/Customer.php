@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\BelongsToTenant;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Customer extends Model
+{
+    use HasFactory, BelongsToTenant;
+
+    protected $fillable = [
+        'tenant_id',
+        'user_id',
+        'locker_id',
+        'referrer_id',
+        'box_number',
+        'balance',
+        'points',
+        'phone',
+        'identification_number',
+        'address',
+        'latitude',
+        'longitude',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function locker()
+    {
+        return $this->belongsTo(Locker::class);
+    }
+
+    public function packages()
+    {
+        return $this->hasMany(Package::class);
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+}
