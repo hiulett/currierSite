@@ -39,7 +39,17 @@
             <div>Fecha de Emisión: {{ date('d/m/Y H:i') }}</div>
             <div class="fw-bold" style="font-size: 14px; margin-top: 5px;">{{ $customer->box_number }}</div>
         </div>
-        <div class="company-name">{{ config('app.name') }}</div>
+
+        @php
+            $tenant = $customer->tenant;
+            $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
+        @endphp
+
+        @if($logoUrl)
+            <img src="{{ $logoUrl }}" style="max-height: 60px; max-width: 250px; margin-bottom: 5px;">
+        @else
+            <div class="company-name">{{ $tenant->name ?? config('app.name') }}</div>
+        @endif
         <div class="report-title">ESTADO DE CUENTA DE CLIENTE</div>
     </div>
 

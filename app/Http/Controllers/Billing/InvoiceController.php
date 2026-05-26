@@ -21,7 +21,7 @@ class InvoiceController extends Controller
             abort(403);
         }
 
-        $invoice->load(['customer.user', 'items']);
+        $invoice->load(['customer.user', 'items', 'tenant']);
         $pdf = Pdf::loadView('billing.invoice-pdf', compact('invoice'));
         return $pdf->stream('Factura_' . $invoice->number . '.pdf');
     }
@@ -34,7 +34,7 @@ class InvoiceController extends Controller
             abort(403);
         }
 
-        $customer->load('user');
+        $customer->load(['user', 'tenant']);
 
         $invoices = Invoice::where('customer_id', $customer->id)
             ->latest()

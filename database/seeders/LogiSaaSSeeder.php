@@ -154,11 +154,11 @@ class LogiSaaSSeeder extends Seeder
                 if ($index < 3) {
                     $statuses = ['prealert', 'received', 'in_transit', 'arrived', 'delivered'];
                     for ($i = 0; $i < 3; $i++) {
-                        Package::create([
+                        $track = strtoupper(Str::random(12));
+                        Package::updateOrCreate(['tracking_number' => $track], [
                             'tenant_id' => $tenant->id,
                             'customer_id' => $customer->id,
                             'warehouse_id' => ($i % 2 == 0) ? $miami->id : $local->id,
-                            'tracking_number' => strtoupper(Str::random(12)),
                             'status' => $statuses[array_rand($statuses)],
                             'description' => 'Producto de prueba ' . ($i + 1),
                             'weight' => rand(1, 20),
@@ -169,20 +169,18 @@ class LogiSaaSSeeder extends Seeder
 
                 // 8. Random Invoices per Customer (Scenarios: Paid, Unpaid, Overdue)
                 // Overdue
-                Invoice::create([
+                Invoice::updateOrCreate(['number' => "INV-OLD-{$tenant->id}-{$index}"], [
                     'tenant_id' => $tenant->id,
                     'customer_id' => $customer->id,
-                    'number' => "INV-OLD-{$tenant->id}-{$index}",
                     'total' => rand(20, 100),
                     'status' => 'unpaid',
                     'due_date' => now()->subDays(rand(5, 30)),
                 ]);
 
                 // Paid
-                Invoice::create([
+                Invoice::updateOrCreate(['number' => "INV-PAID-{$tenant->id}-{$index}"], [
                     'tenant_id' => $tenant->id,
                     'customer_id' => $customer->id,
-                    'number' => "INV-PAID-{$tenant->id}-{$index}",
                     'total' => rand(50, 200),
                     'status' => 'paid',
                     'paid_at' => now()->subDays(2),
@@ -190,10 +188,9 @@ class LogiSaaSSeeder extends Seeder
             }
 
             // 9. Subscription Invoices for the SaaS (Revenue for SuperAdmin)
-            SubscriptionInvoice::create([
+            SubscriptionInvoice::updateOrCreate(['number' => "SAAS-{$tenant->id}-" . date('Ym')], [
                 'tenant_id' => $tenant->id,
                 'plan_id' => $tenant->plan_id,
-                'number' => "SAAS-{$tenant->id}-" . date('Ym'),
                 'amount' => $tData['plan']->price,
                 'status' => 'paid',
                 'paid_at' => now(),

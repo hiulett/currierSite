@@ -27,7 +27,17 @@
             <div>Fecha: {{ $invoice->created_at->format('d/m/Y') }}</div>
             <div>Vence: {{ $invoice->due_date ? $invoice->due_date->format('d/m/Y') : 'N/A' }}</div>
         </div>
-        <div class="company-name">{{ config('app.name') }}</div>
+
+        @php
+            $tenant = $invoice->tenant;
+            $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
+        @endphp
+
+        @if($logoUrl)
+            <img src="{{ $logoUrl }}" style="max-height: 80px; max-width: 300px; margin-bottom: 10px;">
+        @else
+            <div class="company-name">{{ $tenant->name ?? config('app.name') }}</div>
+        @endif
     </div>
 
     <div class="customer-details">
