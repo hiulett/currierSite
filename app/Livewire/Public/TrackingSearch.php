@@ -22,7 +22,7 @@ class TrackingSearch extends Component
         $this->package = null;
         $this->external_data = null;
 
-        // 1. Local Search
+        // 1. Local Search (Our DB)
         $this->package = Package::with(['trackingEvents' => function($q) {
                 $q->orderBy('created_at', 'desc');
             }])
@@ -30,9 +30,26 @@ class TrackingSearch extends Component
             ->orWhere('internal_tracking', trim($this->search_tracking))
             ->first();
 
-        // 2. External Search (if not found locally)
+        // 2. External Intelligence Search (If not found locally)
         if (!$this->package) {
-            $this->external_data = $trackingService->trackFuzionCargo($this->search_tracking);
+            $international = $trackingService->trackInstantParcels($this->search_tracking);
+            $localPanama = $trackingService->trackFuzionCargo($this->search_tracking);
+
+            if ($international || $localPanama) {
+                $this->external_data = [
+                    'tracking' => $this->search_tracking,
+                    'carrier' => $international['carrier'] ?? 'Detected Carrier',
+                    'status' => $localPanama['status'] ?? ($international['status'] ?? 'IN TRANSIT'),
+                    'origin' => $international['origin'] ?? 'USA Hub',
+                    'destination' => $international['destination'] ?? 'Panama',
+                    'history' => array_merge($localPanama['history'] ?? [], $international['history'] ?? [])
+                ];
+
+                // Sort merged history by date descending
+                usort($this->external_data['history'], function($a, $b) {
+                    return strtotime($b['date']) - strtotime($a['date']);
+                });
+            }
         }
 
         $this->searched = true;

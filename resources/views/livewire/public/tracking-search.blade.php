@@ -20,6 +20,9 @@
                         <div>
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tracking Number</p>
                             <h3 class="text-2xl font-black text-slate-800">{{ $package ? $package->tracking_number : ($external_data['tracking'] ?? $search_tracking) }}</h3>
+                            @if(!$package && isset($external_data['carrier']))
+                                <span class="text-xs font-bold text-blue-500 uppercase tracking-tighter">Transportista: {{ $external_data['carrier'] }}</span>
+                            @endif
                         </div>
                         <div class="text-right">
                             @if($package)
@@ -83,7 +86,7 @@
                             @foreach($external_data['history'] as $index => $history)
                                 <!-- External Event -->
                                 <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group {{ $index == 0 ? 'is-active' : '' }}">
-                                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white {{ $index == 0 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-500' }} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+                                    <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white {{ $history['source'] == 'Local Panama' ? 'bg-blue-600 text-white' : 'bg-slate-400 text-white' }} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
                                         @if($index == 0)
                                             <svg class="fill-current" viewBox="0 0 12 10" width="12" height="10">
                                                 <path fill-rule="nonzero" d="M1 5.485l3.297 3.297L11 1.942"></path>
@@ -94,8 +97,11 @@
                                     </div>
                                     <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
                                         <div class="flex items-center justify-between space-x-2 mb-1">
-                                            <div class="font-black text-slate-900 uppercase text-[10px] tracking-widest">{{ $history['status'] ?? 'ACTUALIZACIÓN' }}</div>
-                                            <time class="font-bold {{ $index == 0 ? 'text-blue-600' : 'text-slate-400' }} text-[10px]">{{ $history['date'] ?? 'N/A' }}</time>
+                                            <div class="font-black {{ $history['source'] == 'Local Panama' ? 'text-blue-600' : 'text-slate-900' }} uppercase text-[10px] tracking-widest">
+                                                {{ $history['status'] }}
+                                                <span class="ms-1 text-[8px] opacity-70">({{ $history['source'] }})</span>
+                                            </div>
+                                            <time class="font-bold {{ $index == 0 ? 'text-blue-600' : 'text-slate-400' }} text-[10px]">{{ $history['date'] }}</time>
                                         </div>
                                         @if(isset($history['location']))
                                             <div class="text-[10px] font-bold text-slate-400 uppercase mb-2">

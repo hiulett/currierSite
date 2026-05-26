@@ -4,14 +4,61 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class ExternalTrackingService
 {
     /**
-     * Track a package using FuzionCargo's external API.
-     *
-     * @param string $trackingNumber
-     * @return array|null
+     * Track a package using InstantParcels API (USA/International leg)
+     */
+    public function trackInstantParcels($trackingNumber)
+    {
+        $url = "https://api.instantparcels.com/v1/tracking/" . trim($trackingNumber);
+
+        try {
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Origin' => 'https://instantparcels.com',
+                'Referer' => 'https://instantparcels.com/',
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            ])->get($url);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                $history = [];
+                if (isset($data['events'])) {
+                    foreach ($data['events'] as $event) {
+                        $location = isset($event['location_obj']['city']) ? $event['location_obj']['city'] . ', ' . ($event['location_obj']['countryISO'] ?? '') : ($event['location_obj']['countryISO'] ?? 'Unknown');
+
+                        $history[] = [
+                            'status' => strtoupper($event['status'] ?? $event['name']),
+                            'date' => Carbon::parse($event['date'])->format('d M, Y H:i'),
+                            'location' => $location,
+                            'notes' => $event['name'] ?? '',
+                            'source' => 'International'
+                        ];
+                    }
+                }
+
+                return [
+                    'tracking' => $data['code'] ?? $trackingNumber,
+                    'status' => $data['status'] ?? 'IN TRANSIT',
+                    'carrier' => $data['shipmentInfo']['carrier']['name'] ?? 'Detected Carrier',
+                    'origin' => ($data['origin']['city'] ?? '') . ' ' . ($data['origin']['countryISO'] ?? ''),
+                    'destination' => ($data['destination']['city'] ?? '') . ' ' . ($data['destination']['countryISO'] ?? ''),
+                    'history' => $history
+                ];
+            }
+            return null;
+        } catch (\Exception $e) {
+            Log::error("InstantParcels API Error: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Track a package using FuzionCargo's external API (Panama local leg).
      */
     public function trackFuzionCargo($trackingNumber)
     {
@@ -20,53 +67,39 @@ class ExternalTrackingService
         try {
             $response = Http::withHeaders([
                 'Accept' => '*/*',
-                'Accept-Language' => 'es-ES,es;q=0.9,en;q=0.8',
-                'Cache-Control' => 'no-cache',
                 'Origin' => 'https://fuzioncargo.com',
-                'Pragma' => 'no-cache',
                 'Referer' => 'https://fuzioncargo.com/',
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'sec-ch-ua' => '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-                'sec-ch-ua-mobile' => '?0',
-                'sec-ch-ua-platform' => '"Windows"',
             ])->get($url);
 
             if ($response->successful()) {
                 $data = $response->json();
-
-                // Normalize FuzionCargo data to our internal timeline format
                 $history = [];
+
                 if (isset($data['history'])) {
                     foreach ($data['history'] as $statusKey => $details) {
                         if ($details && isset($details['date'])) {
                             $history[] = [
                                 'status' => strtoupper($statusKey),
-                                'date' => \Carbon\Carbon::parse($details['date'])->format('d M, Y H:i'),
-                                'location' => $data['timezone'] ?? 'FuzionCargo System',
-                                'notes' => "Paquete procesado en fase: " . $statusKey
+                                'date' => Carbon::parse($details['date'])->format('d M, Y H:i'),
+                                'location' => 'Panama Delivery Center',
+                                'notes' => "Procesado en fase local: " . $statusKey,
+                                'source' => 'Local Panama'
                             ];
                         }
                     }
                 }
 
-                // Sort history by date descending
-                usort($history, function($a, $b) {
-                    return strtotime($b['date']) - strtotime($a['date']);
-                });
-
                 return [
                     'tracking' => $data['tracking'] ?? $trackingNumber,
-                    'status' => count($history) > 0 ? $history[0]['status'] : 'EN PROCESO',
+                    'status' => count($history) > 0 ? $history[0]['status'] : 'LOCAL PROCESSING',
                     'weight' => $data['weight'] ?? '0.00',
                     'history' => $history
                 ];
             }
-
-            Log::warning("FuzionCargo API search failed for tracking: $trackingNumber. Status: " . $response->status());
             return null;
-
         } catch (\Exception $e) {
-            Log::error("Error connecting to FuzionCargo API: " . $e->getMessage());
+            Log::error("FuzionCargo API Error: " . $e->getMessage());
             return null;
         }
     }
