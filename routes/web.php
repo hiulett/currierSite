@@ -69,6 +69,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/logistica/soporte', SupportTickets::class)->name('logistics.tickets')->middleware('can:tickets.manage');
         Route::get('/logistica/clientes', CustomerList::class)->name('logistics.customers')->middleware('can:customers.view');
         Route::get('/logistica/casilleros', LockerList::class)->name('logistics.lockers')->middleware('can:logistics.inventory');
+        Route::get('/logistica/rastreo-global', \App\Livewire\Logistics\GlobalTracking::class)->name('logistics.tracking')->middleware('can:access-admin');
         Route::get('/logistica/etiqueta/{package}', [LabelController::class, 'print'])->name('logistics.label')->middleware('can:logistics.receive');
 
         // Shipments

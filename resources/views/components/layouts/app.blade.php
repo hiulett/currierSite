@@ -174,6 +174,12 @@
 							<i class="align-middle" data-feather="box"></i> <span class="align-middle">{{ __('Inventory') }}</span>
 						</a>
 					</li>
+
+                    <li class="sidebar-item {{ request()->routeIs('logistics.tracking') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('logistics.tracking') }}'>
+							<i class="align-middle text-info" data-feather="search"></i> <span class="align-middle">Rastreo Global (Live)</span>
+						</a>
+					</li>
 					@endcan
 
 					@can('logistics.repack')

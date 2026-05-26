@@ -212,7 +212,9 @@
                     @forelse($packages as $package)
                         <tr>
                             <td class="ps-4">
-                                <div class="fw-black text-dark">{{ $package->tracking_number }}</div>
+                                <a href="{{ route('logistics.tracking', ['search_tracking' => $package->tracking_number]) }}" class="fw-black text-primary hover:underline" title="Ver Rastreo Live">
+                                    {{ $package->tracking_number }}
+                                </a>
                                 <div class="text-muted small" style="font-size: 0.7rem;">{{ Str::limit($package->description, 35) }}</div>
                             </td>
                             <td>
