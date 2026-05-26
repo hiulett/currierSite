@@ -65,8 +65,10 @@ class InvoiceList extends Component
         $invoices = $this->applySorting($query)
             ->paginate(10);
 
+        $monthFormat = config('database.default') === 'sqlite' ? 'strftime("%m", created_at)' : "DATE_FORMAT(created_at, '%m')";
+
         // Prepare Revenue Chart Data for Billing Screen
-        $monthlyRevenue = Invoice::selectRaw('strftime("%m", created_at) as month, sum(total) as total')
+        $monthlyRevenue = Invoice::selectRaw("$monthFormat as month, sum(total) as total")
             ->where('created_at', '>=', now()->startOfYear())
             ->where('status', '!=', 'cancelled')
             ->groupBy('month')
