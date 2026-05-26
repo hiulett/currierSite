@@ -55,8 +55,10 @@ class Dashboard extends Component
 
             $recent_packages = Package::with(['customer.user'])->latest()->take(6)->get();
 
+            $monthFormat = config('database.default') === 'sqlite' ? 'strftime("%m", created_at)' : "DATE_FORMAT(created_at, '%m')";
+
             // Prepare Chart Data
-            $monthlyMovement = Package::selectRaw('strftime("%m", created_at) as month, count(*) as count')
+            $monthlyMovement = Package::selectRaw("$monthFormat as month, count(*) as count")
                 ->where('created_at', '>=', now()->startOfYear())
                 ->groupBy('month')
                 ->orderBy('month')
@@ -69,7 +71,7 @@ class Dashboard extends Component
             }
 
             // Prepare Revenue Chart Data
-            $monthlyRevenue = Invoice::selectRaw('strftime("%m", created_at) as month, sum(total) as total')
+            $monthlyRevenue = Invoice::selectRaw("$monthFormat as month, sum(total) as total")
                 ->where('created_at', '>=', now()->startOfYear())
                 ->where('status', '!=', 'cancelled')
                 ->groupBy('month')
