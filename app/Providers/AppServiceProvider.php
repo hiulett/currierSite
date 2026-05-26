@@ -31,6 +31,12 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
+        // Implicitly grant "Super Admin" role all permissions
+        // This works even if permissions table is empty
+        Gate::before(function (User $user, $ability) {
+            return $user->role === 'superadmin' ? true : null;
+        });
+
         Gate::define('access-superadmin', function (User $user) {
             return $user->role === 'superadmin';
         });
@@ -46,11 +52,29 @@ class AppServiceProvider extends ServiceProvider
         // Register dynamic permissions from database
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('permissions')) {
-                \App\Models\Permission::all()->each(function ($permission) {
-                    Gate::define($permission->name, function (User $user) use ($permission) {
-                        return $user->hasPermission($permission->name);
+                $permissions = \App\Models\Permission::all();
+
+                // If table exists but is empty, define core gates for Admin fallback
+                if ($permissions->isEmpty()) {
+                    $corePermissions = [
+                        'logistics.receive', 'logistics.inventory', 'logistics.repack',
+                        'logistics.shipments', 'logistics.delivery', 'logistics.counter',
+                        'logistics.reports', 'customers.view', 'tickets.manage',
+                        'billing.view', 'billing.manage', 'settings.general',
+                        'settings.brand', 'settings.users'
+                    ];
+                    foreach ($corePermissions as $perm) {
+                        Gate::define($perm, function (User $user) {
+                            return in_array($user->role, ['admin', 'superadmin']);
+                        });
+                    }
+                } else {
+                    $permissions->each(function ($permission) {
+                        Gate::define($permission->name, function (User $user) use ($permission) {
+                            return $user->hasPermission($permission->name);
+                        });
                     });
-                });
+                }
             }
         } catch (\Exception $e) {
             // Silence errors during migration/seeding
