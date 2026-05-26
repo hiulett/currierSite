@@ -2,7 +2,7 @@
     <!-- Customers Dashboard -->
     <div class="row mb-4">
         <div class="col-12 col-sm-6 col-xxl-3 d-flex">
-            <div wire:click="$set('search', '')" class="card flex-fill border-0 shadow-sm cursor-pointer transform transition hover:scale-102 bg-primary text-white">
+            <div wire:click="$set('filter', '')" class="card flex-fill border-0 shadow-sm cursor-pointer transform transition hover:scale-102 bg-primary text-white">
                 <div class="card-body py-4 text-center">
                     <h3 class="mb-2 fw-black text-white">{{ number_format($stats['total_customers']) }}</h3>
                     <p class="mb-0 text-uppercase font-bold small opacity-75">Total Clientes</p>
@@ -10,18 +10,18 @@
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xxl-3 d-flex">
-            <a href="{{ route('billing.index', ['filter_status' => 'unpaid']) }}" class="card flex-fill border-0 shadow-sm transform transition hover:scale-102 text-decoration-none bg-danger text-white">
+            <div wire:click="$set('filter', 'unverified')" class="card flex-fill border-0 shadow-sm cursor-pointer transform transition hover:scale-102 bg-warning text-dark">
                 <div class="card-body py-4 text-center">
-                    <h3 class="mb-2 fw-black text-white">${{ number_format($stats['total_balance'], 2) }}</h3>
-                    <p class="mb-0 text-uppercase font-bold small opacity-75">Cartera por Cobrar</p>
+                    <h3 class="mb-2 fw-black text-dark">{{ number_format($stats['unverified_emails']) }}</h3>
+                    <p class="mb-0 text-uppercase font-bold small opacity-75">Emails sin Validar</p>
                 </div>
-            </a>
+            </div>
         </div>
         <div class="col-12 col-sm-6 col-xxl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm bg-success text-white">
+            <div wire:click="$set('filter', 'inactive')" class="card flex-fill border-0 shadow-sm cursor-pointer transform transition hover:scale-102 bg-secondary text-white">
                 <div class="card-body py-4 text-center">
-                    <h3 class="mb-2 fw-black text-white">+{{ $stats['new_this_month'] }}</h3>
-                    <p class="mb-0 text-uppercase font-bold small opacity-75">Nuevos (Mes)</p>
+                    <h3 class="mb-2 fw-black text-white">{{ number_format($stats['inactive_users']) }}</h3>
+                    <p class="mb-0 text-uppercase font-bold small opacity-75">Sin Compras (7+ días)</p>
                 </div>
             </div>
         </div>
@@ -43,6 +43,10 @@
                         <h5 class="card-title mb-0 uppercase font-black small">
                             @if($filter === 'new')
                                 <span class="text-success"><i data-feather="star" class="me-1"></i> Nuevos Registros (Últimas 48h)</span>
+                            @elseif($filter === 'unverified')
+                                <span class="text-warning"><i data-feather="mail" class="me-1"></i> Emails Pendientes de Validación</span>
+                            @elseif($filter === 'inactive')
+                                <span class="text-danger"><i data-feather="user-minus" class="me-1"></i> Clientes sin Actividad (7+ días)</span>
                             @else
                                 Gestión de Clientes
                             @endif
@@ -106,7 +110,14 @@
                                     </td>
                                     <td>
                                         <div class="fw-black text-dark">{{ $c->user->name }}</div>
-                                        <div class="text-muted small" style="font-size: 0.65rem;">ID: {{ $c->identification_number ?? 'S/N' }} | Registrado: {{ $c->created_at->format('d/m/Y') }}</div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="text-muted small" style="font-size: 0.65rem;">ID: {{ $c->identification_number ?? 'S/N' }} | Registrado: {{ $c->created_at->format('d/m/Y') }}</div>
+                                            @if($c->user->email_verified_at)
+                                                <span class="badge bg-success-light text-success font-black uppercase" style="font-size: 0.5rem;"><i data-feather="check-circle" style="width: 8px; height: 8px;"></i> VALIDADO</span>
+                                            @else
+                                                <span class="badge bg-warning-light text-warning font-black uppercase" style="font-size: 0.5rem;"><i data-feather="alert-triangle" style="width: 8px; height: 8px;"></i> PENDIENTE</span>
+                                            @endif
+                                        </div>
                                         @if($c->address)
                                             <div class="text-primary xsmall fw-bold mt-1 uppercase" style="font-size: 0.6rem;"><i data-feather="map-pin" class="me-1" style="width: 10px;"></i> {{ Str::limit($c->address, 40) }}</div>
                                         @endif

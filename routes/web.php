@@ -52,7 +52,7 @@ Route::get('/', PublicHome::class)->name('home');
 Route::get('/calculadora', DutyCalculator::class)->name('public.calculator');
 Route::get('/tracking', TrackingSearch::class)->name('public.tracking');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
     // Admin/Logistics Routes

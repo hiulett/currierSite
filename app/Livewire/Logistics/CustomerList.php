@@ -100,6 +100,17 @@ class CustomerList extends Component
 
         if ($this->filter === 'new') {
             $query->where('customers.created_at', '>=', now()->subHours(48));
+        } elseif ($this->filter === 'unverified') {
+            $query->whereHas('user', function($q) {
+                $q->whereNull('email_verified_at');
+            });
+        } elseif ($this->filter === 'verified') {
+            $query->whereHas('user', function($q) {
+                $q->whereNotNull('email_verified_at');
+            });
+        } elseif ($this->filter === 'inactive') {
+            $query->whereDoesntHave('packages')
+                  ->where('customers.created_at', '<=', now()->subDays(7));
         }
 
         if (!empty(trim($this->search))) {
@@ -124,8 +135,8 @@ class CustomerList extends Component
 
         $stats = [
             'total_customers' => Customer::count(),
-            'total_balance' => Customer::sum('balance'),
-            'new_this_month' => Customer::whereMonth('created_at', now()->month)->count(),
+            'unverified_emails' => User::where('role', 'customer')->whereNull('email_verified_at')->count(),
+            'inactive_users' => Customer::whereDoesntHave('packages')->where('created_at', '<=', now()->subDays(7))->count(),
             'active_lockers' => Customer::whereNotNull('locker_id')->count(),
         ];
 

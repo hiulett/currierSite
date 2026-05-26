@@ -51,6 +51,7 @@ class LogiSaaSSeeder extends Seeder
             'name' => 'Super Admin Global',
             'password' => Hash::make('admin123'),
             'role' => 'superadmin',
+            'email_verified_at' => now(),
         ]);
 
         // 3. Setup Multiple Tenants
@@ -95,6 +96,7 @@ class LogiSaaSSeeder extends Seeder
                 'name' => "Admin {$tData['name']}",
                 'password' => Hash::make('password'),
                 'role' => 'admin',
+                'email_verified_at' => now(),
             ]);
 
             User::updateOrCreate(['email' => "operador@{$tData['subdomain']}.com"], [
@@ -102,6 +104,7 @@ class LogiSaaSSeeder extends Seeder
                 'name' => "Operador {$tData['name']}",
                 'password' => Hash::make('password'),
                 'role' => 'operator',
+                'email_verified_at' => now(),
             ]);
 
             // 5. Warehouses per Tenant
@@ -128,6 +131,7 @@ class LogiSaaSSeeder extends Seeder
                     'name' => $name,
                     'password' => Hash::make('password'),
                     'role' => 'customer',
+                    'email_verified_at' => ($index % 2 == 0) ? now() : null, // Every second user unverified
                 ]);
 
                 $boxPrefix = strtoupper(substr($tData['subdomain'], 0, 3));
@@ -138,19 +142,21 @@ class LogiSaaSSeeder extends Seeder
                     'phone' => '507-6000-000' . $index,
                 ]);
 
-                // 7. Random Packages per Customer
-                $statuses = ['prealert', 'received', 'in_transit', 'arrived', 'delivered'];
-                for ($i = 0; $i < 3; $i++) {
-                    Package::create([
-                        'tenant_id' => $tenant->id,
-                        'customer_id' => $customer->id,
-                        'warehouse_id' => ($i % 2 == 0) ? $miami->id : $local->id,
-                        'tracking_number' => strtoupper(Str::random(12)),
-                        'status' => $statuses[array_rand($statuses)],
-                        'description' => 'Producto de prueba ' . ($i + 1),
-                        'weight' => rand(1, 20),
-                        'declared_value' => rand(10, 500),
-                    ]);
+                // 7. Random Packages per Customer (Some will have 0 for 'Inactive' scenario)
+                if ($index < 3) {
+                    $statuses = ['prealert', 'received', 'in_transit', 'arrived', 'delivered'];
+                    for ($i = 0; $i < 3; $i++) {
+                        Package::create([
+                            'tenant_id' => $tenant->id,
+                            'customer_id' => $customer->id,
+                            'warehouse_id' => ($i % 2 == 0) ? $miami->id : $local->id,
+                            'tracking_number' => strtoupper(Str::random(12)),
+                            'status' => $statuses[array_rand($statuses)],
+                            'description' => 'Producto de prueba ' . ($i + 1),
+                            'weight' => rand(1, 20),
+                            'declared_value' => rand(10, 500),
+                        ]);
+                    }
                 }
 
                 // 8. Random Invoices per Customer (Scenarios: Paid, Unpaid, Overdue)

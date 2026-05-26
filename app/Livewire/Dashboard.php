@@ -189,6 +189,35 @@ class Dashboard extends Component
                 ];
             }
 
+            // 6. Unverified Emails (Action required for accounts)
+            $unverifiedCount = \App\Models\User::whereNull('email_verified_at')->where('role', 'customer')->count();
+            if ($unverifiedCount > 0) {
+                $actionAlerts[] = [
+                    'type' => 'warning',
+                    'icon' => 'mail',
+                    'title' => 'Emails sin Validar',
+                    'count' => $unverifiedCount,
+                    'text' => $unverifiedCount . ' clientes aún no han confirmado su cuenta.',
+                    'link' => route('logistics.customers', ['filter' => 'unverified'])
+                ];
+            }
+
+            // 7. Inactive Customers (Registered but 0 packages)
+            $inactiveCount = Customer::whereDoesntHave('packages')
+                ->where('created_at', '<=', now()->subDays(7))
+                ->count();
+
+            if ($inactiveCount > 0) {
+                $actionAlerts[] = [
+                    'type' => 'secondary',
+                    'icon' => 'user-minus',
+                    'title' => 'Clientes Inactivos',
+                    'count' => $inactiveCount,
+                    'text' => $inactiveCount . ' clientes creados hace 7+ días no han enviado carga.',
+                    'link' => route('logistics.customers', ['filter' => 'inactive'])
+                ];
+            }
+
             $tenant = \App\Models\Tenant::find(session('tenant_id'));
             $currency = $tenant->settings_json['currency'] ?? 'USD';
 
