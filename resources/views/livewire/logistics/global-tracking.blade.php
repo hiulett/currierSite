@@ -8,16 +8,32 @@
 
                     <div class="input-group input-group-lg shadow-sm border rounded-pill overflow-hidden bg-light">
                         <input type="text" wire:model.defer="search_tracking" wire:keydown.enter="search"
+                               wire:loading.attr="disabled"
                                class="form-control border-0 bg-light ps-4 fw-bold"
                                placeholder="Ingresa Tracking (UPS, FedEx, USPS, Fuzion...)">
-                        <button wire:click="search" class="btn btn-primary px-4 fw-black uppercase tracking-tighter">
-                            <i class="align-middle me-1" data-feather="search"></i> Consultar Live
+                        <button wire:click="search" wire:loading.attr="disabled" class="btn btn-primary px-4 fw-black uppercase tracking-tighter d-flex align-items-center">
+                            <span wire:loading.remove wire:target="search">
+                                <i class="align-middle me-1" data-feather="search"></i> Consultar Live
+                            </span>
+                            <span wire:loading wire:target="search">
+                                <span class="spinner-border spinner-border-sm me-2" role="status"></span> Consultando Redes...
+                            </span>
                         </button>
                     </div>
                 </div>
             </div>
 
-            @if($searched)
+            <!-- Loading State Results Placeholder -->
+            <div wire:loading wire:target="search" class="w-100 animate-pulse">
+                <div class="card border-0 shadow-sm mb-4 p-5 text-center rounded-4 bg-white">
+                    <div class="spinner-grow text-primary mb-3" role="status"></div>
+                    <h4 class="fw-black uppercase text-muted">Sincronizando con Servidores Globales</h4>
+                    <p class="small text-muted mb-0">Estamos consultando UPS, FedEx, DHL y FuzionCargo. Por favor espere...</p>
+                </div>
+            </div>
+
+            <div wire:loading.remove wire:target="search">
+                @if($searched)
                 <div class="animate-fade-in">
                     <!-- Dashboard Data Summary -->
                     <div class="row g-3 mb-4">
