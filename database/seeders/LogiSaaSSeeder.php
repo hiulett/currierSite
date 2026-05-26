@@ -9,8 +9,6 @@ use App\Models\Warehouse;
 use App\Models\Customer;
 use App\Models\Package;
 use App\Models\Invoice;
-use App\Models\Page;
-use App\Models\Section;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -146,24 +144,6 @@ class LogiSaaSSeeder extends Seeder
             'total' => 45.00,
             'status' => 'unpaid',
             'due_date' => now()->subDays(2), // Overdue
-        ]);
-
-        // 9. Website Builder Initial Data
-        $homePage = Page::updateOrCreate(['tenant_id' => $tenant->id, 'slug' => 'inicio'], [
-            'title' => 'Bienvenidos a LogiExpress',
-            'is_home' => true,
-            'is_published' => true,
-        ]);
-
-        Section::updateOrCreate(['page_id' => $homePage->id, 'type' => 'hero'], [
-            'tenant_id' => $tenant->id,
-            'sort_order' => 0,
-            'content_json' => [
-                'title' => 'Tu Carga en Buenas Manos',
-                'subtitle' => 'Compras en USA y recibes en Panamá de forma rápida y segura.',
-                'cta_text' => 'Abre tu Casillero Gratis',
-                'cta_link' => '/register'
-            ]
         ]);
     }
 }
