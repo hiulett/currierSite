@@ -15,9 +15,6 @@
 
         <div class="mt-4 pt-4 border-top">
             <div class="d-flex justify-content-center gap-4">
-                <a href="{{ route('public.tracking') }}" class="text-decoration-none text-dark small fw-black uppercase">
-                    <i class="align-middle me-1" data-feather="search" style="width: 14px;"></i> Rastrear
-                </a>
                 <a href="{{ route('public.calculator') }}" class="text-decoration-none text-dark small fw-black uppercase">
                     <i class="align-middle me-1" data-feather="plus-square" style="width: 14px;"></i> Calculadora
                 </a>

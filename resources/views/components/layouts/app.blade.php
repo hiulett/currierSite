@@ -146,12 +146,6 @@
 						</a>
 					</li>
 
-                    <li class="sidebar-item {{ request()->routeIs('public.tracking') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('public.tracking') }}' target="_blank">
-							<i class="align-middle" data-feather="search"></i> <span class="align-middle">Rastreo Público</span>
-						</a>
-					</li>
-
 					@can('logistics.receive')
 					<li class="sidebar-item {{ request()->routeIs('logistics.receive') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('logistics.receive') }}'>
