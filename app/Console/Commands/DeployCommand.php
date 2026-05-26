@@ -20,12 +20,7 @@ class DeployCommand extends Command
         Artisan::call('migrate', ['--force' => true]);
         $this->line(Artisan::output());
 
-        // 2. Ejecutar Seeder Inteligente
-        $this->info('--- Ejecutando Seeding Inteligente ---');
-        Artisan::call('db:seed', ['--class' => 'LogiSaaSSeeder', '--force' => true]);
-        $this->line(Artisan::output());
-
-        // 3. Limpiar y cachear configuración
+        // 2. Limpiar y cachear configuración
         $this->info('--- Optimizando Sistema ---');
         Artisan::call('optimize:clear');
         Artisan::call('config:cache');
