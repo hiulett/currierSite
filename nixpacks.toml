@@ -9,8 +9,8 @@ cmds = [
     'npm run build'
 ]
 
-# Las migraciones se ejecutan una sola vez al inicio del contenedor
 [phases.predeploy]
 cmds = [
-    'php artisan migrate --force'
+    'php artisan migrate --force',
+    'php artisan db:seed --class=LogiSaaSSeeder --force'
 ]
