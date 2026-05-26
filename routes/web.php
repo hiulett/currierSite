@@ -48,6 +48,7 @@ use App\Http\Controllers\Logistics\LabelController;
 use App\Http\Controllers\Logistics\ReportController;
 
 // Public Routes
+Route::get('/test-route', function() { return 'Routing engine is alive!'; });
 Route::get('/', PublicHome::class)->name('home');
 Route::get('/calculadora', DutyCalculator::class)->name('public.calculator');
 Route::get('/tracking', TrackingSearch::class)->name('public.tracking');
