@@ -9,8 +9,8 @@ cmds = [
     'npm run build'
 ]
 
+# Solo migraciones, sin seeder, para que el servidor arranque rápido
 [phases.predeploy]
 cmds = [
-    'php artisan migrate --force',
-    'php artisan db:seed --class=LogiSaaSSeeder --force'
+    'php artisan migrate --force'
 ]
