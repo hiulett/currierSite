@@ -9,8 +9,3 @@ cmds = [
     'npm run build',
     'php artisan optimize:clear'
 ]
-
-[phases.predeploy]
-cmds = [
-    'php artisan migrate --force'
-]
