@@ -80,13 +80,21 @@ class LogiSaaSSeeder extends Seeder
         ];
 
         foreach ($tenantsData as $tData) {
+            $logoUrl = null;
+            if ($tData['subdomain'] === 'logiexpress') {
+                $logoUrl = 'https://fuzioncargo.com/wp-content/uploads/2023/10/logo-logy-express.jpg';
+            }
+
             $tenant = Tenant::updateOrCreate(['subdomain' => $tData['subdomain']], [
                 'uuid' => Str::uuid(),
                 'name' => $tData['name'],
                 'domain' => $tData['domain'],
                 'status' => 'active',
                 'plan_id' => $tData['plan']->id,
-                'theme_config_json' => ['primary' => $tData['color']],
+                'theme_config_json' => [
+                    'primary' => $tData['color'],
+                    'logo_url' => $logoUrl
+                ],
                 'settings_json' => ['currency' => 'USD', 'tax_rate' => 7],
             ]);
 

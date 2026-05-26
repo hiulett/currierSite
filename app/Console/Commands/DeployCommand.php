@@ -22,6 +22,12 @@ class DeployCommand extends Command
 
         // 2. Limpiar y cachear configuración
         $this->info('--- Optimizando Sistema ---');
+
+        // Ensure storage link exists for logos
+        if (!file_exists(public_path('storage'))) {
+            Artisan::call('storage:link');
+        }
+
         Artisan::call('optimize:clear');
         Artisan::call('config:cache');
         Artisan::call('route:cache');
