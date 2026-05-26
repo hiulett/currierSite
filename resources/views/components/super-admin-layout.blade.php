@@ -147,6 +147,11 @@
 							<i class="align-middle" data-feather="code"></i> <span class="align-middle">API & Webhooks</span>
 						</a>
 					</li>
+                    <li class="sidebar-item">
+						<a class='sidebar-link' href='{{ route('public.tracking') }}' target="_blank">
+							<i class="align-middle" data-feather="search"></i> <span class="align-middle">Rastreo Público</span>
+						</a>
+					</li>
 				</ul>
 
 				<div class="sidebar-cta">

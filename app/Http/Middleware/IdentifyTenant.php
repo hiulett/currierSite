@@ -44,9 +44,6 @@ class IdentifyTenant
             session(['tenant_id' => $tenant->id]);
             config(['app.name' => $tenant->name]);
 
-            // Fix for Livewire defaulting to 'app' layout in some environments
-            config(['livewire.layout' => 'components.layouts.app']);
-
             // Critical: Set the locale globally
             $locale = $tenant->locale ?? config('app.locale');
             app()->setLocale($locale);

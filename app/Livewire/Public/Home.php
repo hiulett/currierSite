@@ -6,6 +6,13 @@ use Livewire\Component;
 
 class Home extends Component
 {
+    public function mount()
+    {
+        if (auth()->check()) {
+            return redirect()->route('dashboard');
+        }
+    }
+
     public function render()
     {
         // Use a basic layout or none since the view has its own container structure
