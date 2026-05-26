@@ -89,7 +89,7 @@ class ReportCenter extends Component
                     ->get();
                 break;
             case 'volume_weight':
-                $monthFormat = config('database.default') === 'sqlite' ? 'strftime("%Y-%m", created_at)' : "DATE_FORMAT(created_at, '%Y-%m')";
+                $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%Y-%m');
                 $this->report_data = Package::selectRaw("$monthFormat as month, sum(weight) as total_weight, sum(volumetric_weight) as total_vlb")
                     ->groupBy('month')
                     ->orderBy('month', 'desc')

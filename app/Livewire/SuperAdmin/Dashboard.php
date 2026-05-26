@@ -19,7 +19,7 @@ class Dashboard extends Component
         ];
 
         // Package growth (last 6 months)
-        $monthFormat = config('database.default') === 'sqlite' ? "strftime('%m', created_at)" : "DATE_FORMAT(created_at, '%m')";
+        $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%m');
 
         $package_growth = Package::withoutGlobalScope('tenant')
             ->selectRaw("$monthFormat as month, count(*) as count")

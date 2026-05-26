@@ -55,7 +55,7 @@ class Dashboard extends Component
 
             $recent_packages = Package::with(['customer.user'])->latest()->take(6)->get();
 
-            $monthFormat = config('database.default') === 'sqlite' ? 'strftime("%m", created_at)' : "DATE_FORMAT(created_at, '%m')";
+            $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%m');
 
             // Prepare Chart Data
             $monthlyMovement = Package::selectRaw("$monthFormat as month, count(*) as count")
