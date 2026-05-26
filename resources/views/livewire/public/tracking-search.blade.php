@@ -19,7 +19,7 @@
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b border-slate-200">
                         <div>
                             <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tracking Number</p>
-                            <h3 class="text-2xl font-black text-slate-800">{{ $package ? $package->tracking_number : ($external_data['data']['tracking'] ?? $search_tracking) }}</h3>
+                            <h3 class="text-2xl font-black text-slate-800">{{ $package ? $package->tracking_number : ($external_data['tracking'] ?? $search_tracking) }}</h3>
                         </div>
                         <div class="text-right">
                             @if($package)
@@ -36,7 +36,7 @@
                                 </span>
                             @else
                                 <span class="px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest shadow-sm bg-blue-600 text-white">
-                                    {{ $external_data['data']['status'] ?? 'EN SISTEMA EXTERNO' }}
+                                    {{ $external_data['status'] ?? 'EN SISTEMA EXTERNO' }}
                                 </span>
                             @endif
                         </div>
@@ -79,8 +79,8 @@
                                     <p class="text-slate-400 italic">No hay historial detallado disponible.</p>
                                 </div>
                             @endforelse
-                        @elseif($external_data && isset($external_data['data']['history']))
-                            @foreach($external_data['data']['history'] as $index => $history)
+                        @elseif($external_data && isset($external_data['history']))
+                            @foreach($external_data['history'] as $index => $history)
                                 <!-- External Event -->
                                 <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group {{ $index == 0 ? 'is-active' : '' }}">
                                     <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white {{ $index == 0 ? 'bg-blue-600 text-white' : 'bg-slate-300 text-slate-500' }} shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
@@ -103,6 +103,9 @@
                                                 {{ $history['location'] }}
                                             </div>
                                         @endif
+                                        <div class="text-slate-500 text-xs leading-relaxed">
+                                            {{ $history['notes'] }}
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach

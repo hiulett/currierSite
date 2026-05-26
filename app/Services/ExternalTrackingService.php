@@ -32,7 +32,34 @@ class ExternalTrackingService
             ])->get($url);
 
             if ($response->successful()) {
-                return $response->json();
+                $data = $response->json();
+
+                // Normalize FuzionCargo data to our internal timeline format
+                $history = [];
+                if (isset($data['history'])) {
+                    foreach ($data['history'] as $statusKey => $details) {
+                        if ($details && isset($details['date'])) {
+                            $history[] = [
+                                'status' => strtoupper($statusKey),
+                                'date' => \Carbon\Carbon::parse($details['date'])->format('d M, Y H:i'),
+                                'location' => $data['timezone'] ?? 'FuzionCargo System',
+                                'notes' => "Paquete procesado en fase: " . $statusKey
+                            ];
+                        }
+                    }
+                }
+
+                // Sort history by date descending
+                usort($history, function($a, $b) {
+                    return strtotime($b['date']) - strtotime($a['date']);
+                });
+
+                return [
+                    'tracking' => $data['tracking'] ?? $trackingNumber,
+                    'status' => count($history) > 0 ? $history[0]['status'] : 'EN PROCESO',
+                    'weight' => $data['weight'] ?? '0.00',
+                    'history' => $history
+                ];
             }
 
             Log::warning("FuzionCargo API search failed for tracking: $trackingNumber. Status: " . $response->status());
