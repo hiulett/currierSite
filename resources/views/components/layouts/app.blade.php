@@ -97,16 +97,17 @@
 			<div class="sidebar-content js-simplebar">
 				<a class='sidebar-brand d-flex flex-column align-items-center py-4' href='{{ route('dashboard') }}'>
                     @php
-                        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+                        $tenantId = session('tenant_id') ?? (Auth::check() ? Auth::user()->tenant_id : null);
+                        $tenant = $tenantId ? \App\Models\Tenant::find($tenantId) : \App\Models\Tenant::first();
                         $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
                     @endphp
 
                     @if($logoUrl)
-                        <img src="{{ $logoUrl }}" alt="{{ $tenant->name }}" style="max-height: 55px; width: auto;" class="mb-3">
+                        <img src="{{ $logoUrl }}" alt="{{ $tenant->name ?? 'Logo' }}" style="max-height: 55px; width: auto; border-radius: 8px;" class="mb-3 shadow-sm bg-white p-1">
                     @endif
 
                     <span class="sidebar-brand-text align-middle">
-                        {{ $tenant->name ?? 'LogiSaaS' }}
+                        {{ $tenant->name ?? config('app.name') }}
                     </span>
 				</a>
 
