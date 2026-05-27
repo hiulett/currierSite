@@ -7,6 +7,7 @@ use Livewire\WithFileUploads;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class BrandSettings extends Component
 {
@@ -39,17 +40,20 @@ class BrandSettings extends Component
         $config = $tenant->theme_config_json ?? [];
 
         if ($this->logo) {
-            // Priority 1: Cloudflare R2 (S3)
-            // Priority 2: Public Local Disk
-            $disk = !empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
-
             try {
-                // Store file and get path
-                $path = $this->logo->store('logos', $disk);
+                // 1. Generate a clean filename
+                $filename = 'logo_' . $tenant->id . '_' . time() . '.' . $this->logo->getClientOriginalExtension();
+                $path = 'logos/' . $filename;
 
-                // Get the URL based on the disk
-                if ($disk === 's3') {
-                    // Force the Cloudflare public URL if available
+                // 2. Determine destination (S3/R2 is mandatory if configured)
+                $s3Configured = !empty(config('filesystems.disks.s3.key'));
+                $disk = $s3Configured ? 's3' : 'public';
+
+                // 3. Upload using stream to bypass local filesystem limitations
+                Storage::disk($disk)->put($path, fopen($this->logo->getRealPath(), 'r+'), 'public');
+
+                // 4. Construct Absolute Cloudflare URL
+                if ($s3Configured) {
                     $baseUrl = rtrim(config('filesystems.disks.s3.url'), '/');
                     $config['logo_url'] = $baseUrl . '/' . $path;
                 } else {
@@ -57,14 +61,15 @@ class BrandSettings extends Component
                 }
 
                 $this->current_logo_url = $config['logo_url'];
-                Log::info("Logo updated successfully on {$disk}: " . $config['logo_url']);
+                Log::info("Logo transfer successful to {$disk}: " . $config['logo_url']);
             } catch (\Exception $e) {
-                Log::error("Critical Logo Upload Failure: " . $e->getMessage());
-                session()->flash('error', 'Fallo técnico en la subida: ' . $e->getMessage());
+                Log::error("CRITICAL ERROR UPLOADING LOGO: " . $e->getMessage());
+                session()->flash('error', 'Error técnico: ' . $e->getMessage());
                 return;
             }
         }
 
+        // Save other settings
         $config['primary_color'] = $this->primary_color;
         $config['secondary_color'] = $this->secondary_color;
         $config['font_family'] = $this->font_family;
@@ -75,8 +80,8 @@ class BrandSettings extends Component
             'theme_config_json' => $config
         ]);
 
-        session()->flash('message', '¡Configuración e imagen guardadas con éxito!');
-        $this->reset('logo'); // Important to clear the file input
+        session()->flash('message', '¡Configuración guardada exitosamente!');
+        $this->reset('logo');
     }
 
     public function render()
