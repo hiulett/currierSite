@@ -153,6 +153,12 @@
 							<i class="align-middle" data-feather="plus-circle"></i> <span class="align-middle">{{ __('Reception') }}</span>
 						</a>
 					</li>
+
+                    <li class="sidebar-item {{ request()->routeIs('logistics.receive-manifest') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('logistics.receive-manifest') }}'>
+							<i class="align-middle text-warning" data-feather="file-text"></i> <span class="align-middle">Recepción Manifiesto</span>
+						</a>
+					</li>
 					@endcan
 
                     @can('logistics.counter')

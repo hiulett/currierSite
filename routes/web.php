@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Logistics\ReceivePackage;
+use App\Livewire\Logistics\ReceiveManifest;
 use App\Livewire\Logistics\InventoryList;
 use App\Livewire\Logistics\CustomerList;
 use App\Livewire\Logistics\LockerList;
@@ -58,6 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin/Logistics Routes
     Route::middleware(['can:access-admin'])->group(function () {
         Route::get('/logistica/recepcion', ReceivePackage::class)->name('logistics.receive')->middleware('can:logistics.receive');
+        Route::get('/logistica/recepcion-manifiesto', ReceiveManifest::class)->name('logistics.receive-manifest')->middleware('can:logistics.receive');
         Route::get('/logistica/inventario', InventoryList::class)->name('logistics.inventory')->middleware('can:logistics.inventory');
         Route::get('/logistica/inventario/export', [ReportController::class, 'exportInventory'])->name('logistics.inventory.export')->middleware('can:logistics.inventory');
         Route::get('/logistica/reempaque', RepackInterface::class)->name('logistics.repack')->middleware('can:logistics.repack');
