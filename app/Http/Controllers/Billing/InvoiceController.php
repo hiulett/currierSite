@@ -22,7 +22,23 @@ class InvoiceController extends Controller
         }
 
         $invoice->load(['customer.user', 'items', 'tenant']);
-        $pdf = Pdf::loadView('billing.invoice-pdf', compact('invoice'));
+
+        // Base64 logo for PDF rendering reliability
+        $logoBase64 = null;
+        try {
+            $logoUrl = $invoice->tenant->theme_config_json['logo_url'] ?? null;
+            if ($logoUrl) {
+                $logoData = file_get_contents($logoUrl);
+                if ($logoData) {
+                    $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
+                    $logoBase64 = 'data:image/' . ($type ?: 'png') . ';base64,' . base64_encode($logoData);
+                }
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning("Could not convert logo to base64: " . $e->getMessage());
+        }
+
+        $pdf = Pdf::loadView('billing.invoice-pdf', compact('invoice', 'logoBase64'));
         return $pdf->stream('Factura_' . $invoice->number . '.pdf');
     }
 
@@ -36,6 +52,21 @@ class InvoiceController extends Controller
 
         $customer->load(['user', 'tenant']);
 
+        // Base64 logo for PDF rendering reliability
+        $logoBase64 = null;
+        try {
+            $logoUrl = $customer->tenant->theme_config_json['logo_url'] ?? null;
+            if ($logoUrl) {
+                $logoData = file_get_contents($logoUrl);
+                if ($logoData) {
+                    $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
+                    $logoBase64 = 'data:image/' . ($type ?: 'png') . ';base64,' . base64_encode($logoData);
+                }
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning("Could not convert logo to base64: " . $e->getMessage());
+        }
+
         $invoices = Invoice::where('customer_id', $customer->id)
             ->latest()
             ->get();
@@ -46,7 +77,7 @@ class InvoiceController extends Controller
             ->latest()
             ->get();
 
-        $pdf = Pdf::loadView('billing.statement-pdf', compact('customer', 'invoices', 'packages'));
+        $pdf = Pdf::loadView('billing.statement-pdf', compact('customer', 'invoices', 'packages', 'logoBase64'));
 
         return $pdf->stream('Estado_Cuenta_' . $customer->box_number . '.pdf');
     }

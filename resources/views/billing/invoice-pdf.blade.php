@@ -30,11 +30,10 @@
 
         @php
             $tenant = $invoice->tenant;
-            $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
         @endphp
 
-        @if($logoUrl)
-            <img src="{{ $logoUrl }}" style="max-height: 80px; max-width: 300px; margin-bottom: 10px;">
+        @if(isset($logoBase64) && $logoBase64)
+            <img src="{{ $logoBase64 }}" style="max-height: 70px; max-width: 280px; margin-bottom: 10px;">
         @else
             <div class="company-name">{{ $tenant->name ?? config('app.name') }}</div>
         @endif
