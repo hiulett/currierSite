@@ -207,6 +207,21 @@
                 </div>
             </div>
 
+            <div class="card border-0 shadow-sm overflow-hidden mb-4">
+                <div class="card-body p-4 text-center">
+                    <h6 class="fw-black text-muted text-uppercase xsmall tracking-widest mb-3">Rastreo de Paquetes Externos</h6>
+                    <form action="{{ route('customer.tracking') }}" method="GET">
+                        <div class="input-group input-group-sm mb-2 shadow-sm border rounded-pill overflow-hidden">
+                            <input type="text" name="search_tracking" class="form-control border-0 ps-3" placeholder="UPS, FedEx, USPS...">
+                            <button type="submit" class="btn btn-primary px-3 fw-black uppercase tracking-tighter">
+                                <i data-feather="search" style="width: 14px;"></i>
+                            </button>
+                        </div>
+                    </form>
+                    <p class="xsmall text-muted mb-0">Rastrea tus compras de USA en tiempo real.</p>
+                </div>
+            </div>
+
             <div class="card border-0 shadow-sm overflow-hidden">
                 <div class="card-body p-4 text-center">
                     <h6 class="fw-black text-muted text-uppercase xsmall tracking-widest mb-3">Centro de Ayuda</h6>

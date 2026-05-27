@@ -154,6 +154,12 @@
 						</a>
 					</li>
 
+                    <li class="sidebar-item {{ request()->routeIs('customer.tracking') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('customer.tracking') }}'>
+							<i class="align-middle text-info" data-feather="search"></i> <span class="align-middle">Rastrear Paquete (Live)</span>
+						</a>
+					</li>
+
 					<li class="sidebar-item {{ request()->routeIs('customer.pre-alert') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('customer.pre-alert') }}'>
 							<i class="align-middle" data-feather="bell"></i> <span class="align-middle">{{ __('Pre-alertar') }}</span>

@@ -104,7 +104,9 @@
                                         <i data-feather="package" style="width: 16px; height: 16px;"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-black text-dark leading-tight">{{ $package->tracking_number }}</div>
+                                        <a href="{{ route('customer.tracking', ['search_tracking' => $package->tracking_number]) }}" class="fw-black text-primary hover:underline" title="Ver Rastreo Live">
+                                            {{ $package->tracking_number }}
+                                        </a>
                                         <div class="text-muted xsmall uppercase font-bold">{{ Str::limit($package->description ?? 'Sin descripción', 40) }}</div>
                                     </div>
                                 </div>
