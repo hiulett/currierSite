@@ -96,6 +96,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::group(['prefix' => 'portal'], function () {
         Route::get('/', CustomerDashboard::class)->name('customer.dashboard');
         Route::get('/paquetes', CustomerPackageList::class)->name('customer.packages');
+        Route::get('/rastreo', \App\Livewire\Customer\Tracking::class)->name('customer.tracking');
         Route::get('/prealertar', CustomerPreAlert::class)->name('customer.pre-alert');
         Route::get('/facturas', CustomerInvoiceList::class)->name('customer.invoices');
         Route::get('/perfil', CustomerProfileSettings::class)->name('customer.profile');

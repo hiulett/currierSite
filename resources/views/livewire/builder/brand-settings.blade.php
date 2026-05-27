@@ -36,7 +36,17 @@
                     <div class="mb-3">
                         <label class="form-label font-bold small text-uppercase">Logotipo de la Empresa</label>
                         <div class="d-flex align-items-center gap-3">
-                            @if($logo)
+                            @php
+                                $isPreviewable = false;
+                                try {
+                                    if ($logo && method_exists($logo, 'temporaryUrl')) {
+                                        $logo->temporaryUrl();
+                                        $isPreviewable = true;
+                                    }
+                                } catch (\Exception $e) { $isPreviewable = false; }
+                            @endphp
+
+                            @if($logo && $isPreviewable)
                                 <img src="{{ $logo->temporaryUrl() }}" class="rounded border" style="width: 80px; height: 80px; object-fit: contain;">
                             @elseif($current_logo_url)
                                 <img src="{{ $current_logo_url }}" class="rounded border" style="width: 80px; height: 80px; object-fit: contain;">
