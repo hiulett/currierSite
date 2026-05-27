@@ -36,12 +36,14 @@ class BrandSettings extends Component
     public function save()
     {
         $tenant = Tenant::find(session('tenant_id'));
-
         $config = $tenant->theme_config_json ?? [];
 
         if ($this->logo) {
-            $path = $this->logo->store('logos', 'public');
-            $config['logo_url'] = Storage::url($path);
+            // Check if S3 is configured, otherwise use public
+            $disk = config('filesystems.disks.s3.key') ? 's3' : 'public';
+
+            $path = $this->logo->store('logos', $disk);
+            $config['logo_url'] = Storage::disk($disk)->url($path);
             $this->current_logo_url = $config['logo_url'];
         }
 
