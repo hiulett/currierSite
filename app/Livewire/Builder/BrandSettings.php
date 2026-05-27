@@ -42,9 +42,16 @@ class BrandSettings extends Component
             // Check if S3 is configured, otherwise use public
             $disk = config('filesystems.disks.s3.key') ? 's3' : 'public';
 
-            $path = $this->logo->store('logos', $disk);
-            $config['logo_url'] = Storage::disk($disk)->url($path);
-            $this->current_logo_url = $config['logo_url'];
+            try {
+                // Using putFile to avoid internal 'move' issues with some S3 providers
+                $path = Storage::disk($disk)->putFile('logos', $this->logo);
+                $config['logo_url'] = Storage::disk($disk)->url($path);
+                $this->current_logo_url = $config['logo_url'];
+            } catch (\Exception $e) {
+                Log::error("Logo upload failed: " . $e->getMessage());
+                session()->flash('error', 'Error al subir el logo: ' . $e->getMessage());
+                return;
+            }
         }
 
         $config['primary_color'] = $this->primary_color;
