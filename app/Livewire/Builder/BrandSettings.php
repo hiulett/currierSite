@@ -5,7 +5,6 @@ namespace App\Livewire\Builder;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Tenant;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
@@ -17,13 +16,13 @@ class BrandSettings extends Component
     public $secondary_color;
     public $font_family;
     public $company_name;
-    public $theme_mode; // light, dark, slate, oceanic
+    public $theme_mode;
     public $logo;
     public $current_logo_url;
 
     public function mount()
     {
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::find(session('tenant_id')) ?? Tenant::first();
         $this->company_name = $tenant->name;
 
         $config = $tenant->theme_config_json ?? [];
@@ -36,25 +35,32 @@ class BrandSettings extends Component
 
     public function save()
     {
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::find(session('tenant_id')) ?? Tenant::first();
         $config = $tenant->theme_config_json ?? [];
 
         if ($this->logo) {
-            // Always prefer S3 if the key is set in config
+            // Priority 1: Cloudflare R2 (S3)
+            // Priority 2: Public Local Disk
             $disk = !empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
 
             try {
-                // Upload directly to the 'logos' folder on the chosen disk
+                // Store file and get path
                 $path = $this->logo->store('logos', $disk);
 
-                // Generate the full URL. If S3, it will use AWS_URL.
-                $config['logo_url'] = Storage::disk($disk)->url($path);
+                // Get the URL based on the disk
+                if ($disk === 's3') {
+                    // Force the Cloudflare public URL if available
+                    $baseUrl = rtrim(config('filesystems.disks.s3.url'), '/');
+                    $config['logo_url'] = $baseUrl . '/' . $path;
+                } else {
+                    $config['logo_url'] = Storage::disk('public')->url($path);
+                }
 
                 $this->current_logo_url = $config['logo_url'];
-                Log::info("New logo uploaded to {$disk}: " . $config['logo_url']);
+                Log::info("Logo updated successfully on {$disk}: " . $config['logo_url']);
             } catch (\Exception $e) {
-                Log::error("Logo upload failed: " . $e->getMessage());
-                session()->flash('error', 'Error al subir el logo: ' . $e->getMessage());
+                Log::error("Critical Logo Upload Failure: " . $e->getMessage());
+                session()->flash('error', 'Fallo técnico en la subida: ' . $e->getMessage());
                 return;
             }
         }
@@ -69,7 +75,8 @@ class BrandSettings extends Component
             'theme_config_json' => $config
         ]);
 
-        session()->flash('message', 'Configuración de marca actualizada.');
+        session()->flash('message', '¡Configuración e imagen guardadas con éxito!');
+        $this->reset('logo'); // Important to clear the file input
     }
 
     public function render()
