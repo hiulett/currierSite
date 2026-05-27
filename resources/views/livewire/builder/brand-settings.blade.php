@@ -5,12 +5,13 @@
             <p class="text-muted">Define los colores, tipografía y modo visual de tu plataforma.</p>
         </div>
         <div class="col-md-4 text-end">
-            <button wire:click="save" wire:loading.attr="disabled" class="btn btn-primary shadow-sm d-flex align-items-center ms-auto">
+            <button wire:click="save" wire:loading.attr="disabled" class="btn btn-primary shadow-sm ms-auto">
                 <span wire:loading.remove wire:target="save">
                     <i class="align-middle me-1" data-feather="save"></i> Guardar Cambios
                 </span>
-                <span wire:loading wire:target="save" class="d-flex align-items-center">
-                    <span class="spinner-border spinner-border-sm me-2" role="status"></span> Procesando...
+                <span wire:loading wire:target="save">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Procesando...
                 </span>
             </button>
         </div>
