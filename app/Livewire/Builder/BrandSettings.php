@@ -53,50 +53,66 @@ class BrandSettings extends Component
         ]);
 
         $tenant = $this->getTenant();
+
+        // Cargamos la configuración actual para no perder otros datos
         $config = $tenant->theme_config_json ?? [];
 
-        // 1. Handle Logo Upload
+        // 1. Manejo del Logo
         if ($this->logo) {
             try {
                 $filename = 'logo_' . $tenant->id . '_' . time() . '.' . $this->logo->getClientOriginalExtension();
                 $disk = !empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
 
-                $path = $this->logo->storeAs('logos', $filename, $disk);
+                // Guardamos el archivo con visibilidad pública
+                $path = $this->logo->storeAs('logos', $filename, [
+                    'disk' => $disk,
+                    'visibility' => 'public'
+                ]);
 
+                // Generamos la URL
+                $url = Storage::disk($disk)->url($path);
+
+                // Corrección específica para tu Cloudflare R2
                 if ($disk === 's3') {
-                    $config['logo_url'] = rtrim(config('filesystems.disks.s3.url'), '/') . '/' . $path;
-                } else {
-                    $config['logo_url'] = Storage::disk('public')->url($path);
+                    $r2PublicUrl = 'https://pub-4bb2c00e758b4dbaa870bf03ba604b56.r2.dev';
+
+                    // Si el sistema no devuelve una URL absoluta o devuelve el endpoint de la API
+                    if (!str_starts_with($url, 'http') || str_contains($url, 'cloudflarestorage.com')) {
+                        $url = rtrim($r2PublicUrl, '/') . '/' . ltrim($path, '/');
+                    }
                 }
 
-                $this->current_logo_url = $config['logo_url'];
+                $config['logo_url'] = $url;
+                $this->current_logo_url = $url;
+
+                Log::info("Logo guardado y accesible en: " . $url);
             } catch (\Exception $e) {
-                Log::error("Upload failed: " . $e->getMessage());
-                session()->flash('error', 'Error de red en la subida.');
+                Log::error("Error subiendo logo: " . $e->getMessage());
+                session()->flash('error', 'Error al subir el logo: ' . $e->getMessage());
                 return;
             }
         } else {
-            // Keep the previous logo if no new one is uploaded
+            // Si no hay nueva imagen, nos aseguramos de mantener la que ya existía en el estado del componente
             $config['logo_url'] = $this->current_logo_url;
         }
 
-        // 2. Update Configuration Array
+        // 2. Actualizar el resto de la configuración
         $config['primary'] = $this->primary_color;
         $config['primary_color'] = $this->primary_color;
         $config['secondary_color'] = $this->secondary_color;
         $config['font_family'] = $this->font_family;
         $config['theme_mode'] = $this->theme_mode;
 
-        // 3. ATOMIC SAVE: Assign directly to model and save
+        // 3. Persistencia en Base de Datos
         $tenant->name = $this->company_name;
         $tenant->theme_config_json = $config;
 
         if ($tenant->save()) {
-            session()->flash('message', 'Configuración guardada en la base de datos.');
+            session()->flash('message', 'Configuración guardada exitosamente.');
             $this->reset('logo');
-            $this->loadData($tenant); // Refresh state
+            $this->loadData($tenant); // Recargar datos para confirmar sincronización
         } else {
-            session()->flash('error', 'La base de datos rechazó el guardado.');
+            session()->flash('error', 'No se pudo guardar la configuración en la base de datos.');
         }
     }
 
