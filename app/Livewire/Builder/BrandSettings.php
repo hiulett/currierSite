@@ -7,6 +7,7 @@ use Livewire\WithFileUploads;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class BrandSettings extends Component
 {
@@ -26,7 +27,7 @@ class BrandSettings extends Component
         $this->company_name = $tenant->name;
 
         $config = $tenant->theme_config_json ?? [];
-        $this->primary_color = $config['primary_color'] ?? '#0d6efd';
+        $this->primary_color = $config['primary_color'] ?? ($config['primary'] ?? '#0d6efd');
         $this->secondary_color = $config['secondary_color'] ?? '#0b5ed7';
         $this->font_family = $config['font_family'] ?? 'figtree';
         $this->theme_mode = $config['theme_mode'] ?? 'light';
@@ -35,30 +36,34 @@ class BrandSettings extends Component
 
     protected function getTenant()
     {
+        // Get the real tenant ID from session or user account
         $id = session('tenant_id') ?? auth()->user()->tenant_id;
-        return Tenant::find($id) ?? Tenant::first();
+
+        // If still no ID, use the first one available
+        if (!$id) {
+            $first = Tenant::first();
+            $id = $first->id;
+            session(['tenant_id' => $id]);
+        }
+
+        return Tenant::find($id);
     }
 
     public function save()
     {
         $this->validate([
             'company_name' => 'required|string|max:100',
-            'logo' => 'nullable|image|max:2048', // 2MB Max
+            'logo' => 'nullable|image|max:2048',
         ]);
 
         $tenant = $this->getTenant();
-
-        // Load current config to avoid losing other keys
         $config = $tenant->theme_config_json ?? [];
 
         if ($this->logo) {
             try {
                 $filename = 'logo_' . $tenant->id . '_' . time() . '.' . $this->logo->getClientOriginalExtension();
-                $path = 'logos/' . $filename;
-
                 $disk = !empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
 
-                // Use putFile for better S3 compatibility
                 $storedPath = Storage::disk($disk)->putFileAs('logos', $this->logo, $filename);
 
                 if ($disk === 's3') {
@@ -70,31 +75,37 @@ class BrandSettings extends Component
 
                 $this->current_logo_url = $config['logo_url'];
             } catch (\Exception $e) {
-                Log::error("Logo Upload Failure: " . $e->getMessage());
-                session()->flash('error', 'Error al subir imagen: ' . $e->getMessage());
+                Log::error("Logo Upload Fail: " . $e->getMessage());
+                session()->flash('error', 'Error al subir imagen.');
                 return;
             }
         }
 
-        // Update colors and theme
-        $config['primary_color'] = $this->primary_color;
-        $config['secondary_color'] = $this->secondary_color;
-        $config['font_family'] = $this->font_family;
-        $config['theme_mode'] = $this->theme_mode;
+        // Build the new full configuration array
+        $newConfig = [
+            'primary' => $this->primary_color,
+            'primary_color' => $this->primary_color,
+            'secondary_color' => $this->secondary_color,
+            'font_family' => $this->font_family,
+            'theme_mode' => $this->theme_mode,
+            'logo_url' => $config['logo_url'] ?? $this->current_logo_url,
+        ];
 
-        // Force the primary color for the system theme engine
-        $config['primary'] = $this->primary_color;
+        // GUARANTEED PERSISTENCE: Use direct DB update to bypass any model observer or casting issues
+        $updated = DB::table('tenants')
+            ->where('id', $tenant->id)
+            ->update([
+                'name' => $this->company_name,
+                'theme_config_json' => json_encode($newConfig),
+                'updated_at' => now(),
+            ]);
 
-        // CRITICAL: Explicit model assignment for JSON columns
-        $tenant->name = $this->company_name;
-        $tenant->theme_config_json = $config;
-
-        if ($tenant->save()) {
-            Log::info("Tenant ID {$tenant->id} updated. New Logo URL: " . ($config['logo_url'] ?? 'None'));
-            session()->flash('message', '¡Configuración guardada correctamente!');
+        if ($updated) {
+            // Update the model in memory to reflect changes in current session
+            $tenant->refresh();
+            session()->flash('message', '¡Cambios guardados y persistidos!');
         } else {
-            Log::error("Database failed to save tenant settings for ID: " . $tenant->id);
-            session()->flash('error', 'Error al guardar en la base de datos.');
+            session()->flash('error', 'No se detectaron cambios o hubo un error al guardar.');
         }
 
         $this->reset('logo');
