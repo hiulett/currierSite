@@ -7,6 +7,7 @@ use Livewire\WithFileUploads;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class BrandSettings extends Component
 {
