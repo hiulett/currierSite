@@ -45,11 +45,12 @@ RUN npm install && npm run build
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views
 
 # Set permissions
-RUN chown -R www-data:www-data /app
+RUN chown -R www-data:www-data /app \
+    && chmod +x railway-deploy.sh
 
 # Expose port
 EXPOSE 8000
 
-# Start PHP built-in server
-CMD ["php", "artisan", "serve", "--host", "0.0.0.0", "--port", "8000"]
+# Start via deployment script
+CMD ["./railway-deploy.sh"]
 
