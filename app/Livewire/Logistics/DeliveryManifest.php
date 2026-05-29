@@ -18,11 +18,14 @@ class DeliveryManifest extends Component
     public $notes;
     public $latitude;
     public $longitude;
+    public $cod_collected = 0;
+    public $payment_method_collected = 'cash'; // cash, yappy
 
     public function mount($id)
     {
         $this->deliveryId = $id;
         $this->loadDelivery();
+        $this->cod_collected = $this->delivery->cod_amount;
     }
 
     public function loadDelivery()
@@ -42,6 +45,7 @@ class DeliveryManifest extends Component
         $this->validate([
             'photo' => 'nullable|image|max:2048',
             'notes' => 'nullable|string',
+            'cod_collected' => 'required|numeric|min:0',
         ]);
 
         $updateData = [
@@ -50,6 +54,7 @@ class DeliveryManifest extends Component
             'notes' => $this->notes,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
+            'cod_collected' => $this->cod_collected,
         ];
 
         if ($this->photo) {

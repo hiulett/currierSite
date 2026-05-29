@@ -63,5 +63,11 @@ Este documento detalla el estado actual del desarrollo de la plataforma.
 - [ ] **Módulo de Compras (Personal Shopper):** Integración para que el cliente solicite compras directas en tiendas USA.
 - [ ] **Seguros de Carga:** Ocupación de pólizas automáticas por valor declarado.
 
+### 💎 Próxima Gran Mejora: Recepción Inteligente & Rentabilidad (En Diseño)
+- [x] **Diseño Funcional:** Consolidación de flujos y arquitectura de márgenes. ✅
+- [ ] **Smart OCR:** Extracción automática de costos y pesos desde facturas de proveedores (Global Express).
+- [ ] **Monitor de Ganancia Real:** Cálculo automático de ROI por paquete y manifiesto.
+- [ ] **Dashboard de Fugas:** Identificación de inconsistencias financieras en la recepción.
+
 ---
-**Nota:** El sistema ha alcanzado un nivel de madurez operativa alto. El enfoque actual se desplaza hacia la **Eficiencia Logística (Reempaque)** y la **Última Milla (Delivery)**.
+**Nota:** El sistema ha alcanzado un nivel de madurez operativa alto. El enfoque actual se desplaza hacia la **Eficiencia Logística (Reempaque)** y la **Última Milla (Delivery)**, con una nueva capa de **Inteligencia Financiera** mediante OCR.

@@ -57,6 +57,29 @@ class Dashboard extends Component
 
             $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%m');
 
+            // --- FINANCIAL METRICS (Smart Reception) ---
+            $financialMetrics = Package::selectRaw('
+                SUM(CASE WHEN client_total_billed IS NOT NULL AND provider_cost IS NOT NULL THEN (client_total_billed - provider_cost) ELSE 0 END) as total_profit,
+                COUNT(CASE WHEN client_total_billed IS NOT NULL AND provider_cost IS NOT NULL AND provider_cost > client_total_billed THEN 1 END) as leaks_count,
+                AVG(CASE WHEN provider_cost > 0 AND client_total_billed IS NOT NULL THEN ((client_total_billed - provider_cost) / provider_cost * 100) ELSE NULL END) as avg_roi
+            ')->first();
+
+            // Projected Profit from stock (Received but not billed)
+            $tenantSettings = \App\Models\Tenant::find(session('tenant_id'))->settings_json ?? [];
+            $defaultRate = $tenantSettings['default_rate'] ?? 2.50;
+
+            $projectedRevenue = Package::whereNotIn('status', ['delivered', 'cancelled'])
+                ->whereNull('client_total_billed')
+                ->where('weight', '>', 0)
+                ->sum('weight') * $defaultRate;
+
+            $projectedCost = Package::whereNotIn('status', ['delivered', 'cancelled'])
+                ->whereNull('provider_cost')
+                ->where('weight', '>', 0)
+                ->sum('weight') * 1.00; // Estimated $1 per lb cost
+
+            $projectedProfit = $projectedRevenue - $projectedCost;
+
             // Prepare Chart Data
             $monthlyMovement = Package::selectRaw("$monthFormat as month, count(*) as count")
                 ->where('created_at', '>=', now()->startOfYear())
@@ -79,21 +102,29 @@ class Dashboard extends Component
                 ->pluck('total', 'month')
                 ->toArray();
 
-            $revenueData = array_fill(1, 12, 0);
-            $projectionData = array_fill(1, 12, 0);
+            // Real Costs Data (from provider_cost in packages)
+            $monthlyCosts = Package::selectRaw("$monthFormat as month, sum(provider_cost) as total_cost")
+                ->where('created_at', '>=', now()->startOfYear())
+                ->groupBy('month')
+                ->orderBy('month')
+                ->pluck('total_cost', 'month')
+                ->toArray();
 
-            // Advanced Projection Logic: Based on Revenue Trend + New Customers + Package Volume
-            $totalMonthsWithData = 0;
-            $sumRevenue = 0;
             $revenueData = array_fill(1, 12, 0);
+            $costData = array_fill(1, 12, 0);
             $projectionData = array_fill(1, 12, 0);
 
             foreach ($monthlyRevenue as $month => $total) {
-                $monthIdx = (int)$month;
-                $revenueData[$monthIdx] = $total;
-                $sumRevenue += $total;
-                if ($total > 0) $totalMonthsWithData++;
+                $revenueData[(int)$month] = $total;
             }
+
+            foreach ($monthlyCosts as $month => $cost) {
+                $costData[(int)$month] = $cost;
+            }
+
+            // Calculation weights for projection... (keeping existing projection logic)
+            $sumRevenue = array_sum($revenueData);
+            $totalMonthsWithData = count(array_filter($revenueData));
 
             // Calculation weights
             $avgRevenue = $totalMonthsWithData > 0 ? ($sumRevenue / $totalMonthsWithData) : 100;
@@ -134,6 +165,19 @@ class Dashboard extends Component
                     'count' => $overdueCount,
                     'text' => 'Hay ' . $overdueCount . ' facturas que superaron su fecha límite.',
                     'link' => route('billing.index', ['filter_status' => 'overdue'])
+                ];
+            }
+
+            // 1b. Pending Payment Validations
+            $pendingPayments = \App\Models\PaymentProof::where('status', 'pending')->count();
+            if ($pendingPayments > 0) {
+                $actionAlerts[] = [
+                    'type' => 'warning',
+                    'icon' => 'check-square',
+                    'title' => 'Validar Pagos',
+                    'count' => $pendingPayments,
+                    'text' => 'Hay ' . $pendingPayments . ' comprobantes de Yappy/ACH por validar.',
+                    'link' => route('billing.approvals')
                 ];
             }
 
@@ -218,6 +262,18 @@ class Dashboard extends Component
                 ];
             }
 
+            // 8. Money Leaks Alert
+            if (($financialMetrics->leaks_count ?? 0) > 0) {
+                $actionAlerts[] = [
+                    'type' => 'danger',
+                    'icon' => 'trending-down',
+                    'title' => 'Fugas de Dinero',
+                    'count' => $financialMetrics->leaks_count,
+                    'text' => 'Detectamos ' . $financialMetrics->leaks_count . ' paquetes con margen negativo.',
+                    'link' => route('logistics.inventory', ['filter' => 'leaks'])
+                ];
+            }
+
             $tenant = \App\Models\Tenant::find(session('tenant_id'));
             $currency = $tenant->settings_json['currency'] ?? 'USD';
 
@@ -225,10 +281,14 @@ class Dashboard extends Component
                 'total_packages' => $packagesQuery->count(),
                 'total_customers' => Customer::count(),
                 'total_unpaid' => Invoice::where('status', 'unpaid')->sum('total'),
+                'total_profit' => $financialMetrics->total_profit ?? 0,
+                'projected_profit' => $projectedProfit,
+                'avg_roi' => $financialMetrics->avg_roi ?? 0,
                 'recent_packages' => $recent_packages,
                 'warehouses' => Warehouse::all(),
                 'chartData' => array_values($chartData),
                 'revenueData' => array_values($revenueData),
+                'costData' => array_values($costData),
                 'projectionData' => array_values($projectionData),
                 'warehouseLabels' => array_keys($warehouseUsage),
                 'warehouseData' => array_values($warehouseUsage),

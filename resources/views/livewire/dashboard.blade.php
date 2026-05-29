@@ -78,40 +78,10 @@
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
                             <h3 class="mb-2 fw-black text-white">{{ number_format($total_packages) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('Paquetes Registrados') }}</p>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('Paquetes Totales') }}</p>
                         </div>
                         <div class="stat bg-white bg-opacity-25 text-white">
                             <i class="align-middle" data-feather="package"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <a href="{{ route('logistics.customers') }}" class="card flex-fill border-0 shadow-sm overflow-hidden transform transition hover:scale-102 text-decoration-none bg-info text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-2 fw-black text-white">{{ number_format($total_customers) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('Clientes Totales') }}</p>
-                        </div>
-                        <div class="stat bg-white bg-opacity-25 text-white">
-                            <i class="align-middle" data-feather="users"></i>
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <a href="{{ route('billing.index', ['filter_status' => 'unpaid']) }}" class="card flex-fill border-0 shadow-sm overflow-hidden transform transition hover:scale-102 text-decoration-none bg-danger text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-2 text-white fw-black">{{ $currency }} {{ number_format($total_unpaid, 2) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('Cuentas por Cobrar') }}</p>
-                        </div>
-                        <div class="stat bg-white bg-opacity-25 text-white">
-                            <i class="align-middle" data-feather="dollar-sign"></i>
                         </div>
                     </div>
                 </div>
@@ -122,11 +92,41 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
-                            <h3 class="mb-2 text-white fw-black">98.2%</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('Tiempo de Entrega') }}</p>
+                            <h3 class="mb-2 text-white fw-black">{{ $currency }} {{ number_format($total_profit, 2) }}</h3>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('Ganancia Real Acumulada') }}</p>
                         </div>
                         <div class="stat bg-white bg-opacity-25 text-white">
-                            <i class="align-middle" data-feather="zap"></i>
+                            <i class="align-middle" data-feather="trending-up"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3 d-flex">
+            <div class="card flex-fill border-0 shadow-sm overflow-hidden bg-info text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-2 text-white fw-black">{{ $currency }} {{ number_format($projected_profit, 2) }}</h3>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('Ganancia Proyectada (Bodega)') }}</p>
+                        </div>
+                        <div class="stat bg-white bg-opacity-25 text-white">
+                            <i class="align-middle" data-feather="eye"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3 d-flex">
+            <div class="card flex-fill border-0 shadow-sm overflow-hidden bg-dark text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-2 text-white fw-black">{{ number_format($avg_roi, 1) }}%</h3>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('ROI Promedio (Retorno)') }}</p>
+                        </div>
+                        <div class="stat bg-white bg-opacity-25 text-white">
+                            <i class="align-middle" data-feather="percent"></i>
                         </div>
                     </div>
                 </div>
@@ -135,13 +135,13 @@
     </div>
 
     <div class="row sortable-cards" id="dashboard-charts">
-        <!-- Monthly Revenue Chart -->
-        <div class="col-12 grid-item mb-4">
-            <div class="card shadow-sm border-0" id="card-revenue">
+        <!-- Monthly Revenue vs Cost Chart -->
+        <div class="col-12 col-lg-8 grid-item mb-4">
+            <div class="card shadow-sm border-0 h-100" id="card-revenue">
                 <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0 uppercase font-black small text-success">
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary">
                         <i class="align-middle me-2 cursor-grab" data-feather="grid"></i>
-                        {{ __('Ingresos Mensuales (Facturación)') }}
+                        {{ __('Rendimiento Financiero: Ingresos vs Costos') }}
                     </h5>
                     <div class="card-actions">
                         <button class="btn btn-sm btn-light border" onclick="toggleFullscreen('card-revenue')">
@@ -158,12 +158,12 @@
         </div>
 
         <!-- Monthly Movement Chart -->
-        <div class="col-12 grid-item mb-4">
-            <div class="card shadow-sm border-0" id="card-movement">
+        <div class="col-12 col-lg-4 grid-item mb-4">
+            <div class="card shadow-sm border-0 h-100" id="card-movement">
                 <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0 uppercase font-black small text-primary">
                         <i class="align-middle me-2 cursor-grab" data-feather="grid"></i>
-                        {{ __('Movimiento de Paquetes (Año Actual)') }}
+                        {{ __('Volumen de Carga') }}
                     </h5>
                     <div class="card-actions">
                         <button class="btn btn-sm btn-light border" onclick="toggleFullscreen('card-movement')">
@@ -303,14 +303,17 @@
         function initDashboardCharts() {
             if (!document.getElementById("chartjs-movement")) return;
 
-            if (window.movementChart) window.movementChart.destroy();
-            if (window.revenueChart) window.revenueChart.destroy();
-            if (window.warehouseChart) window.warehouseChart.destroy();
+            // Simple cleanup
+            if (window.movementChart instanceof Chart) window.movementChart.destroy();
+            if (window.revenueChart instanceof Chart) window.revenueChart.destroy();
+            if (window.warehouseChart instanceof Chart) window.warehouseChart.destroy();
 
-            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#3b7ddd';
+            const primaryColor = '#3b7ddd';
             const successColor = '#28a745';
+            const dangerColor = '#dc3545';
             const projectionColor = '#adb5bd';
 
+            // 1. Movement Chart (Line)
             window.movementChart = new Chart(document.getElementById("chartjs-movement"), {
                 type: "line",
                 data: {
@@ -328,50 +331,61 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, grid: { borderDash: [2, 2] } },
+                        y: { beginAtZero: true, grid: { display: true, borderDash: [2, 2] } },
                         x: { grid: { display: false } }
                     }
                 }
             });
 
+            // 2. Financial Chart (Bar + Line Meta)
             window.revenueChart = new Chart(document.getElementById("chartjs-revenue"), {
                 type: "bar",
                 data: {
                     labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
                     datasets: [
                         {
-                            label: "{{ __('Ingresos Reales') }}",
-                            type: 'bar',
+                            label: "{{ __('Ingresos') }}",
                             backgroundColor: successColor,
-                            borderColor: successColor,
                             data: @json($revenueData),
                             barPercentage: .5,
                             categoryPercentage: .5
                         },
                         {
-                            label: "{{ __('Proyección / Meta') }}",
+                            label: "{{ __('Costos') }}",
+                            backgroundColor: dangerColor,
+                            data: @json($costData),
+                            barPercentage: .5,
+                            categoryPercentage: .5
+                        },
+                        {
+                            label: "{{ __('Meta Proyectada') }}",
                             type: 'line',
-                            backgroundColor: 'transparent',
                             borderColor: projectionColor,
                             borderDash: [5, 5],
-                            pointRadius: 0,
                             data: @json($projectionData),
-                            tension: 0.1,
-                            fill: false
+                            fill: false,
+                            pointRadius: 0
                         }
                     ]
                 },
                 options: {
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: true, position: 'top', labels: { boxWidth: 12, font: { size: 10 } } }
+                        legend: { display: true, position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': {{ $currency }} ' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             grid: { borderDash: [2, 2] },
                             ticks: {
-                                callback: function(value) { return '{{ $currency }} ' + value; }
+                                callback: function(value) { return '{{ $currency }} ' + (value >= 1000 ? (value/1000).toFixed(1) + 'k' : value); }
                             }
                         },
                         x: { grid: { display: false } }
@@ -379,6 +393,7 @@
                 }
             });
 
+            // 3. Warehouse Distribution (Doughnut)
             window.warehouseChart = new Chart(document.getElementById("chartjs-warehouse-pie"), {
                 type: "doughnut",
                 data: {
@@ -392,7 +407,7 @@
                 },
                 options: {
                     maintainAspectRatio: false,
-                    cutout: '70%',
+                    cutout: '75%',
                     plugins: { legend: { display: false } }
                 }
             });

@@ -73,45 +73,91 @@
         </div>
 
         <!-- Customer Grid -->
-        <div class="card">
-            <div class="card-header bg-light border-bottom d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-                <h5 class="mb-0 uppercase font-black small">Directorio de Estados de Cuenta</h5>
-                <div class="input-group input-group-sm w-100 w-md-auto" style="min-width: 300px;">
-                    <input type="text" wire:model.live.debounce.300ms="search" class="form-control" placeholder="Buscar por nombre o PTY-...">
-                    <span class="input-group-text bg-white"><i class="align-middle text-muted" data-feather="search"></i></span>
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 py-3">
+                <div class="d-flex align-items-center">
+                    <h5 class="mb-0 uppercase font-black small me-3 text-dark">Estados de Cuenta</h5>
+
+                    <!-- Grouping Control (Dropdown Style) -->
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-light border dropdown-toggle fw-black xsmall uppercase px-3 shadow-none rounded-pill" type="button" data-bs-toggle="dropdown">
+                            <i class="align-middle me-1 text-primary" data-feather="layers" style="width: 12px;"></i>
+                            @if($group_by === 'customer') Agrupado: Nombre
+                            @elseif($group_by === 'locker') Agrupado: Locker
+                            @elseif($group_by === 'debt') Agrupado: Saldo
+                            @else Sin Agrupar @endif
+                        </button>
+                        <ul class="dropdown-menu shadow-lg border-0 rounded-3 xsmall fw-bold uppercase">
+                            <li><a class="dropdown-item py-2 {{ $group_by === 'customer' ? 'active' : '' }}" href="#" wire:click.prevent="setGroupBy('customer')">Agrupar por Nombre</a></li>
+                            <li><a class="dropdown-item py-2 {{ $group_by === 'locker' ? 'active' : '' }}" href="#" wire:click.prevent="setGroupBy('locker')">Agrupar por Locker</a></li>
+                            <li><a class="dropdown-item py-2 {{ $group_by === 'debt' ? 'active' : '' }}" href="#" wire:click.prevent="setGroupBy('debt')">Agrupar por Saldo</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="input-group input-group-sm w-100 w-md-auto" style="min-width: 320px;">
+                    <span class="input-group-text bg-light border-0 ps-3 rounded-start-pill"><i class="align-middle text-muted" data-feather="search" style="width: 14px;"></i></span>
+                    <input type="text" wire:model.live.debounce.300ms="search" class="form-control border-0 bg-light rounded-end-pill ps-0" placeholder="Buscar cliente o casillero...">
                 </div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped mb-0">
-                        <thead>
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light bg-opacity-50">
                             <tr>
-                                <th class="ps-4">Casillero</th>
-                                <th>Cliente</th>
-                                <th>Saldo Pendiente</th>
-                                <th class="text-center">Puntos</th>
-                                <th class="pe-4 text-end">Acciones</th>
+                                <th class="ps-4 py-3 xsmall font-black uppercase text-muted tracking-widest" style="width: 120px;">ID / Casillero</th>
+                                <th class="xsmall font-black uppercase text-muted tracking-widest">Información del Cliente</th>
+                                <th class="xsmall font-black uppercase text-muted tracking-widest">Saldo Pendiente</th>
+                                <th class="text-center xsmall font-black uppercase text-muted tracking-widest">Puntos</th>
+                                <th class="pe-4 text-end xsmall font-black uppercase text-muted tracking-widest" style="width: 150px;">Detalle</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @php $currentGroup = null; @endphp
                             @foreach($customers as $c)
+                                @php
+                                    $groupLabel = null;
+                                    if($group_by === 'locker') $groupLabel = $c->locker_code_joined ?? 'Sin Locker Asignado';
+                                    elseif($group_by === 'customer') $groupLabel = strtoupper(substr($c->user->name, 0, 1));
+                                    elseif($group_by === 'debt') $groupLabel = $c->balance > 0 ? 'Cuentas Pendientes' : 'Cuentas al Día';
+                                @endphp
+
+                                @if($groupLabel !== $currentGroup)
+                                    <tr class="bg-light bg-opacity-30 border-top">
+                                        <td colspan="5" class="ps-4 py-2">
+                                            <span class="fw-black text-primary text-uppercase xsmall tracking-widest">{{ $groupLabel }}</span>
+                                        </td>
+                                    </tr>
+                                    @php $currentGroup = $groupLabel; @endphp
+                                @endif
+
                                 <tr>
-                                    <td class="ps-4"><span class="badge bg-primary text-uppercase">{{ $c->box_number }}</span></td>
-                                    <td>
-                                        <div class="fw-black text-dark">{{ $c->user->name }}</div>
-                                        <div class="small text-muted">{{ $c->user->email }}</div>
+                                    <td class="ps-4">
+                                        <div class="d-flex flex-column align-items-start">
+                                            <span class="badge bg-primary text-white px-2 py-1 xsmall fw-black text-uppercase shadow-sm" style="font-size: 0.6rem; letter-spacing: 0.02rem;">{{ $c->box_number }}</span>
+                                            @if($c->locker)
+                                                <div class="text-muted xsmall font-bold mt-1" style="font-size: 0.6rem;"><i data-feather="grid" class="me-1" style="width: 8px;"></i>{{ $c->locker->code }}</div>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td>
-                                        <span class="fw-black {{ $c->balance > 0 ? 'text-danger' : 'text-success' }}">
+                                        <div class="fw-bold text-dark">{{ $c->user->name }}</div>
+                                        <div class="text-muted" style="font-size: 0.7rem;">{{ $c->user->email }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-black {{ $c->balance > 0 ? 'text-danger' : 'text-success' }}" style="font-size: 0.9rem;">
                                             {{ $currency }} {{ number_format($c->balance, 2) }}
-                                        </span>
+                                        </div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge bg-light text-dark border"><i class="align-middle text-warning me-1" data-feather="star" style="width: 12px;"></i> {{ $c->points }}</span>
+                                        <div class="d-inline-flex align-items-center bg-warning bg-opacity-10 text-warning px-2 py-1 rounded-pill">
+                                            <i class="align-middle me-1" data-feather="star" style="width: 10px;"></i>
+                                            <span class="fw-black xsmall">{{ $c->points }}</span>
+                                        </div>
                                     </td>
                                     <td class="pe-4 text-end">
-                                        <button wire:click="selectCustomer({{ $c->id }})" class="btn btn-sm btn-primary shadow-sm fw-black">
-                                            VER ESTADO <i class="align-middle ms-1" data-feather="arrow-right"></i>
+                                        <button wire:click="selectCustomer({{ $c->id }})" class="btn btn-sm btn-dark rounded-pill px-3 xsmall fw-black text-uppercase shadow-sm">
+                                            Ver Estado <i class="align-middle ms-1" data-feather="arrow-right" style="width: 12px;"></i>
                                         </button>
                                     </td>
                                 </tr>
@@ -120,7 +166,7 @@
                     </table>
                 </div>
             </div>
-            <div class="card-footer bg-light">
+            <div class="card-footer bg-white border-top py-3">
                 {{ $customers->links() }}
             </div>
         </div>

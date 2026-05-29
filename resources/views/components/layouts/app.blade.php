@@ -138,7 +138,7 @@
 
 				<ul class="sidebar-nav">
 					<li class="sidebar-header">
-						{{ __('Logística') }}
+						{{ __('Principal') }}
 					</li>
 
 					<li class="sidebar-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
@@ -147,38 +147,39 @@
 						</a>
 					</li>
 
-					@can('logistics.receive')
-					<li class="sidebar-item {{ request()->routeIs('logistics.receive') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('logistics.receive') }}'>
-							<i class="align-middle" data-feather="plus-circle"></i> <span class="align-middle">{{ __('Reception') }}</span>
-						</a>
+                    <!-- PROCESO 1: ENTRADA -->
+					<li class="sidebar-header">
+						Entrada de Carga
 					</li>
 
+					@can('logistics.receive')
+                    <li class="sidebar-item {{ request()->routeIs('logistics.smart-reception') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('logistics.smart-reception') }}'>
+							<i class="align-middle text-primary" data-feather="zap"></i> <span class="align-middle">Recepción de Paquetes</span>
+						</a>
+					</li>
                     <li class="sidebar-item {{ request()->routeIs('logistics.receive-manifest') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('logistics.receive-manifest') }}'>
-							<i class="align-middle text-warning" data-feather="file-text"></i> <span class="align-middle">Recepción Manifiesto</span>
+							<i class="align-middle text-warning" data-feather="file-text"></i> <span class="align-middle">Control Manifiestos</span>
 						</a>
 					</li>
 					@endcan
 
-                    @can('logistics.counter')
-                    <li class="sidebar-item {{ request()->routeIs('logistics.counter') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('logistics.counter') }}'>
-							<i class="align-middle" data-feather="box"></i> <span class="align-middle">{{ __('Despacho (Counter)') }}</span>
-						</a>
+                    <!-- PROCESO 2: ALMACENAMIENTO -->
+                    <li class="sidebar-header">
+						Gestión de Bodega
 					</li>
-					@endcan
 
 					@can('logistics.inventory')
 					<li class="sidebar-item {{ request()->routeIs('logistics.inventory') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('logistics.inventory') }}'>
-							<i class="align-middle" data-feather="box"></i> <span class="align-middle">{{ __('Inventory') }}</span>
+							<i class="align-middle" data-feather="box"></i> <span class="align-middle">Inventario Activo</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('logistics.tracking') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('logistics.tracking') }}'>
-							<i class="align-middle text-info" data-feather="search"></i> <span class="align-middle">Rastreo Global (Live)</span>
+							<i class="align-middle text-info" data-feather="search"></i> <span class="align-middle">Rastreo Global</span>
 						</a>
 					</li>
 					@endcan
@@ -186,15 +187,20 @@
 					@can('logistics.repack')
 					<li class="sidebar-item {{ request()->routeIs('logistics.repack') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('logistics.repack') }}'>
-							<i class="align-middle" data-feather="package"></i> <span class="align-middle">{{ __('Repack') }}</span>
+							<i class="align-middle" data-feather="package"></i> <span class="align-middle">Reempaque / Consolidación</span>
 						</a>
 					</li>
 					@endcan
 
+                    <!-- PROCESO 3: SALIDAS Y ENTREGAS -->
+                    <li class="sidebar-header">
+						Salidas y Entrega
+					</li>
+
 					@can('logistics.shipments')
 					<li class="sidebar-item {{ request()->routeIs('logistics.shipments.*') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('logistics.shipments.index') }}'>
-							<i class="align-middle" data-feather="truck"></i> <span class="align-middle">{{ __('Shipments') }}</span>
+							<i class="align-middle" data-feather="truck"></i> <span class="align-middle">Embarques (Outbound)</span>
 						</a>
 					</li>
 					@endcan
@@ -202,27 +208,28 @@
 					@can('logistics.delivery')
 					<li class="sidebar-item {{ request()->routeIs('logistics.delivery') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('logistics.delivery') }}'>
-							<i class="align-middle" data-feather="map-pin"></i> <span class="align-middle">{{ __('Last Mile') }}</span>
+							<i class="align-middle" data-feather="map-pin"></i> <span class="align-middle">Última Milla (Delivery)</span>
 						</a>
 					</li>
 					@endcan
 
-                    @can('logistics.reports')
-                    <li class="sidebar-item {{ request()->routeIs('logistics.reports') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('logistics.reports') }}'>
-							<i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">{{ __('Reportes') }}</span>
+                    @can('logistics.counter')
+                    <li class="sidebar-item {{ request()->routeIs('logistics.counter') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('logistics.counter') }}'>
+							<i class="align-middle" data-feather="box"></i> <span class="align-middle">Entrega en Counter</span>
 						</a>
 					</li>
 					@endcan
 
+                    <!-- ADMINISTRACIÓN -->
                     <li class="sidebar-header">
-						Administración
+						Relaciones y Soporte
 					</li>
 
                     @can('customers.view')
                     <li class="sidebar-item {{ request()->routeIs('logistics.customers') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('logistics.customers') }}'>
-							<i class="align-middle" data-feather="users"></i> <span class="align-middle">{{ __('Customers') }}</span>
+							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Base de Clientes</span>
 						</a>
 					</li>
 					@endcan
@@ -238,25 +245,39 @@
                     @can('logistics.inventory')
                     <li class="sidebar-item {{ request()->routeIs('logistics.lockers') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('logistics.lockers') }}'>
-							<i class="align-middle" data-feather="grid"></i> <span class="align-middle">{{ __('Lockers') }}</span>
+							<i class="align-middle" data-feather="grid"></i> <span class="align-middle">Casilleros Físicos</span>
 						</a>
 					</li>
 					@endcan
 
+                    <!-- FINANZAS -->
+                    <li class="sidebar-header">
+						Administración Financiera
+					</li>
+
 					@can('billing.view')
 					<li class="sidebar-item {{ request()->routeIs('billing.index') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('billing.index') }}'>
-							<i class="align-middle" data-feather="credit-card"></i> <span class="align-middle">{{ __('Billing') }}</span>
+							<i class="align-middle" data-feather="credit-card"></i> <span class="align-middle">Facturación</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('billing.statement') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('billing.statement') }}'>
-							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">{{ __('Statement of Account') }}</span>
+							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">Estados de Cuenta</span>
 						</a>
 					</li>
 					@endcan
 
+                    @can('logistics.reports')
+                    <li class="sidebar-item {{ request()->routeIs('logistics.reports') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('logistics.reports') }}'>
+							<i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Reportes de Negocio</span>
+						</a>
+					</li>
+					@endcan
+
+                    <!-- CONFIGURACIÓN -->
                     <li class="sidebar-header">
 						Configuración
 					</li>
@@ -270,9 +291,9 @@
 					@endcan
 
                     @can('settings.general')
-                    <li class="sidebar-item {{ request()->routeIs('builder.mail') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('builder.mail') }}'>
-							<i class="align-middle" data-feather="mail"></i> <span class="align-middle">Config. Correo</span>
+                    <li class="sidebar-item {{ request()->routeIs('builder.warehouses') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('builder.warehouses') }}'>
+							<i class="align-middle" data-feather="home"></i> <span class="align-middle">Gestión de Bodegas</span>
 						</a>
 					</li>
 
@@ -282,34 +303,24 @@
 						</a>
 					</li>
 
-                    <li class="sidebar-item {{ request()->routeIs('builder.integrations') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('builder.integrations') }}'>
-							<i class="align-middle" data-feather="zap"></i> <span class="align-middle">Widgets & SDK</span>
+                    <li class="sidebar-item {{ request()->routeIs('builder.loyalty') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('builder.loyalty') }}'>
+							<i class="align-middle" data-feather="award"></i> <span class="align-middle">Niveles de Cliente</span>
 						</a>
 					</li>
 
-                    <li class="sidebar-item {{ request()->routeIs('builder.warehouses') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('builder.warehouses') }}'>
-							<i class="align-middle" data-feather="home"></i> <span class="align-middle">Gestión de Bodegas</span>
+                    <li class="sidebar-item {{ request()->routeIs('builder.promotions') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('builder.promotions') }}'>
+							<i class="align-middle" data-feather="tag"></i> <span class="align-middle">Promociones</span>
 						</a>
 					</li>
-					@endcan
 
-                    @can('settings.users')
                     <li class="sidebar-item {{ request()->routeIs('builder.users') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('builder.users') }}'>
-							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Usuarios</span>
+							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Usuarios y Roles</span>
 						</a>
 					</li>
 
-                    <li class="sidebar-item {{ request()->routeIs('builder.roles') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('builder.roles') }}'>
-							<i class="align-middle" data-feather="shield"></i> <span class="align-middle">Roles y Permisos</span>
-						</a>
-					</li>
-					@endcan
-
-                    @can('settings.general')
                     <li class="sidebar-item {{ request()->routeIs('builder.general') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('builder.general') }}'>
 							<i class="align-middle" data-feather="settings"></i> <span class="align-middle">Ajustes Generales</span>

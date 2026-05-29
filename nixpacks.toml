@@ -1,9 +1,9 @@
 [phases.setup]
-nixPkgs = ['php82', 'nodejs', 'npm', 'composer', 'libpng', 'libjpeg', 'freetype', 'zlib', 'libzip']
+nixPkgs = ['php82', 'nodejs', 'npm', 'composer', 'libpng', 'libjpeg', 'freetype', 'zlib', 'libzip', 'tesseract', 'ghostscript']
 
 [phases.build]
 cmds = [
-    'install-php-extensions gd zip bcmath intl pdo_mysql redis',
+    'install-php-extensions gd zip bcmath intl pdo_mysql redis imagick',
     'composer install --optimize-autoloader --no-scripts --no-interaction',
     'npm install',
     'npm run build',

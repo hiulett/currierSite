@@ -20,6 +20,7 @@ class Package extends Model
         'tracking_number',
         'internal_tracking',
         'description',
+        'shelf_location',
         'weight',
         'length',
         'width',
@@ -33,13 +34,45 @@ class Package extends Model
         'is_repacked',
         'images_json',
         'invoice_url',
+        'provider_cost',
+        'provider_weight',
+        'provider_length',
+        'provider_width',
+        'provider_height',
+        'provider_tracking',
+        'client_total_billed',
     ];
 
     protected $casts = [
         'images_json' => 'array',
         'is_repacked' => 'boolean',
         'delivered_at' => 'datetime',
+        'provider_cost' => 'decimal:2',
+        'provider_weight' => 'decimal:2',
+        'client_total_billed' => 'decimal:2',
     ];
+
+    /**
+     * Get the gross profit (Margin Amount).
+     */
+    public function getMarginAmountAttribute()
+    {
+        if (!$this->client_total_billed || !$this->provider_cost) {
+            return 0;
+        }
+        return $this->client_total_billed - $this->provider_cost;
+    }
+
+    /**
+     * Get the Return on Investment (ROI) percentage.
+     */
+    public function getRoiPercentageAttribute()
+    {
+        if (!$this->provider_cost || $this->provider_cost == 0) {
+            return 0;
+        }
+        return ($this->margin_amount / $this->provider_cost) * 100;
+    }
 
     public function parent()
     {
@@ -136,6 +169,11 @@ class Package extends Model
                 $notifiableStatuses = ['in_transit', 'arrived', 'ready_for_pickup', 'out_for_delivery', 'delivered'];
                 if (in_array($package->status, $notifiableStatuses) && $package->customer && $package->customer->user) {
                     $package->customer->user->notify(new \App\Notifications\PackageStatusNotification($package, $package->status));
+                }
+
+                // 3. Award Loyalty Points if delivered
+                if ($package->status === 'delivered') {
+                    app(\App\Services\Loyalty\LoyaltyService::class)->awardPointsForPackage($package);
                 }
             }
         });

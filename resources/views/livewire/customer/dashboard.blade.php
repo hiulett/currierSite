@@ -20,6 +20,67 @@
         </div>
     </div>
 
+    <!-- Loyalty Progress Card -->
+    @if($currentLevel || $nextLevel)
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm overflow-hidden" style="background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-auto text-center mb-3 mb-md-0">
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm mb-2"
+                                 style="width: 64px; height: 64px; background-color: {{ $currentLevel->color ?? '#6c757d' }}; color: white;">
+                                <i data-feather="{{ $currentLevel->icon ?? 'star' }}" style="width: 32px; height: 32px;"></i>
+                            </div>
+                            <h5 class="fw-black mb-0 uppercase small text-dark">{{ $currentLevel->name ?? 'Miembro' }}</h5>
+                        </div>
+                        <div class="col-md flex-grow-1 px-md-4">
+                            <div class="d-flex justify-content-between align-items-end mb-2">
+                                <div>
+                                    <h4 class="mb-0 fw-black text-dark">{{ number_format($customer->points) }} <span class="xsmall text-muted fw-bold">PUNTOS</span></h4>
+                                    @if($nextLevel)
+                                        <p class="mb-0 xsmall text-muted font-bold uppercase">Te faltan {{ number_format($nextLevel->min_points - $customer->points) }} puntos para ser <span style="color: {{ $nextLevel->color }}">{{ $nextLevel->name }}</span></p>
+                                    @else
+                                        <p class="mb-0 xsmall text-success font-bold uppercase">¡Has alcanzado el nivel máximo!</p>
+                                    @endif
+                                </div>
+                                <div class="text-end d-none d-sm-block">
+                                    <span class="xsmall font-black text-muted uppercase">Beneficio Actual:</span>
+                                    <div class="fw-bold text-primary">{{ $currentLevel ? ($currentLevel->multiplier > 1 ? (($currentLevel->multiplier - 1) * 100) . '% Extra Puntos' : 'Nivel Base') : 'Ninguno' }}</div>
+                                </div>
+                            </div>
+
+                            @if($nextLevel)
+                                @php
+                                    $min = $currentLevel ? $currentLevel->min_points : 0;
+                                    $max = $nextLevel->min_points;
+                                    $divisor = ($max - $min) ?: 1;
+                                    $progress = (($customer->points - $min) / $divisor) * 100;
+                                    $progress = max(0, min(100, $progress));
+                                @endphp
+                                <div class="progress" style="height: 12px; border-radius: 6px; background-color: #e9ecef;">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                                         style="width: {{ $progress }}%; background-color: {{ $currentLevel->color ?? '#3b7ddd' }};"
+                                         aria-valuenow="{{ $progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            @else
+                                <div class="progress" style="height: 12px; border-radius: 6px;">
+                                    <div class="progress-bar bg-success w-100" role="progressbar"></div>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="col-md-auto mt-3 mt-md-0 text-center">
+                            <a href="#" class="btn btn-outline-dark btn-sm fw-black uppercase px-4 rounded-pill">
+                                VER BENEFICIOS
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Quick Stats Row -->
     <div class="row mb-4">
         <div class="col-12 col-sm-6 col-xl-3 d-flex">

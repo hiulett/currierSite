@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Logistics\ReceivePackage;
+use App\Livewire\Logistics\SmartReceptionHub;
 use App\Livewire\Logistics\ReceiveManifest;
 use App\Livewire\Logistics\InventoryList;
 use App\Livewire\Logistics\CustomerList;
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin/Logistics Routes
     Route::middleware(['can:access-admin'])->group(function () {
         Route::get('/logistica/recepcion', ReceivePackage::class)->name('logistics.receive')->middleware('can:logistics.receive');
+        Route::get('/logistica/recepcion-inteligente', SmartReceptionHub::class)->name('logistics.smart-reception')->middleware('can:logistics.receive');
         Route::get('/logistica/recepcion-manifiesto', ReceiveManifest::class)->name('logistics.receive-manifest')->middleware('can:logistics.receive');
         Route::get('/logistica/inventario', InventoryList::class)->name('logistics.inventory')->middleware('can:logistics.inventory');
         Route::get('/logistica/inventario/export', [ReportController::class, 'exportInventory'])->name('logistics.inventory.export')->middleware('can:logistics.inventory');
@@ -79,6 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/facturacion', InvoiceList::class)->name('billing.index')->middleware('can:billing.view');
         Route::get('/facturacion/nueva', CreateInvoice::class)->name('billing.create')->middleware('can:billing.manage');
+        Route::get('/facturacion/validar-pagos', \App\Livewire\Billing\PaymentApprovals::class)->name('billing.approvals')->middleware('can:billing.manage');
         Route::get('/facturacion/{invoice}/download', [InvoiceController::class, 'download'])->name('billing.download')->middleware('can:billing.view');
         Route::get('/facturacion/estado-cuenta', StatementOfAccount::class)->name('billing.statement')->middleware('can:billing.view');
         Route::get('/facturacion/estado-cuenta/{customer}/download', [InvoiceController::class, 'downloadStatement'])->name('billing.statement.download')->middleware('can:billing.view');
@@ -92,6 +95,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/builder/usuarios', UserManagement::class)->name('builder.users')->middleware('can:settings.users');
         Route::get('/builder/roles', RoleManagement::class)->name('builder.roles')->middleware('can:settings.users');
         Route::get('/builder/estados', App\Livewire\Builder\PackageStatusSettings::class)->name('builder.statuses')->middleware('can:settings.general');
+        Route::get('/builder/fidelizacion', App\Livewire\Builder\LoyaltySettings::class)->name('builder.loyalty')->middleware('can:settings.general');
+        Route::get('/builder/promociones', \App\Livewire\Builder\PromotionSettings::class)->name('builder.promotions')->middleware('can:settings.general');
     });
 
     // Customer Portal Routes
@@ -110,7 +115,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/soporte/{ticket}', CustomerTicketDetail::class)->name('customer.tickets.detail');
         Route::get('/whatsapp', CustomerWhatsappBot::class)->name('customer.whatsapp');
 
-        // Payments
+        // Payments & Checkout
+        Route::get('/facturas/{invoice_id}/checkout', \App\Livewire\Customer\Checkout::class)->name('customer.checkout');
         Route::get('/facturas/{invoice}/pay', [PaymentController::class, 'checkout'])->name('payment.checkout');
         Route::get('/facturas/{invoice}/paypal', [PaymentController::class, 'paypalCheckout'])->name('payment.paypal');
         Route::get('/payment/success/{invoice}', [PaymentController::class, 'success'])->name('payment.success');

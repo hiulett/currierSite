@@ -16,16 +16,24 @@ class StatementOfAccount extends Component
     public $selected_customer_id = null;
     public $selected_package_id = null;
     public $filter_status = '';
+    public $group_by = 'customer'; // customer, locker, none
 
     protected $queryString = [
         'search' => ['except' => ''],
         'selected_customer_id' => ['as' => 'c'],
         'selected_package_id' => ['as' => 'p'],
         'filter_status' => ['except' => ''],
+        'group_by' => ['except' => 'customer'],
     ];
 
     public function updatingSearch()
     {
+        $this->resetPage('customersPage');
+    }
+
+    public function setGroupBy($mode)
+    {
+        $this->group_by = $mode;
         $this->resetPage('customersPage');
     }
 
@@ -84,7 +92,8 @@ class StatementOfAccount extends Component
             }
         }
 
-        $query = Customer::with('user')
+        $query = Customer::with(['user', 'locker'])
+            ->select('customers.*')
             ->where(function($q) {
                 $q->where('box_number', 'like', '%' . $this->search . '%')
                   ->orWhereHas('user', function($u) {
@@ -96,8 +105,19 @@ class StatementOfAccount extends Component
             $query->where('balance', '>', 0);
         }
 
-        $customers = $query->latest()
-            ->paginate(12, ['*'], 'customersPage');
+        if ($this->group_by === 'locker') {
+            $query->leftJoin('lockers', 'customers.locker_id', '=', 'lockers.id')
+                ->addSelect('lockers.code as locker_code_joined')
+                ->orderBy('lockers.code', 'asc');
+        } elseif ($this->group_by === 'customer') {
+            $query->join('users', 'customers.user_id', '=', 'users.id')
+                ->select('customers.*')
+                ->orderBy('users.name', 'asc');
+        } elseif ($this->group_by === 'debt') {
+            $query->orderByRaw('balance > 0 desc')->orderBy('balance', 'desc');
+        }
+
+        $customers = $query->paginate(15, ['*'], 'customersPage');
 
         $stats = [
             'total_debt' => Customer::sum('balance'),

@@ -14,12 +14,18 @@ class Manifest extends Model
         'number',
         'carrier_name',
         'carrier_invoice_number',
+        'file_path',
         'description',
         'status',
         'created_by',
         'received_at',
         'total_items_expected',
         'total_items_received',
+        'total_provider_cost',
+    ];
+
+    protected $casts = [
+        'received_at' => 'datetime',
     ];
 
     public function items()

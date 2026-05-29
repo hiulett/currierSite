@@ -4,27 +4,51 @@ namespace App\Livewire\Logistics;
 
 use Livewire\Component;
 use App\Models\Package;
+use App\Models\Customer;
+use App\Models\Warehouse;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use Livewire\WithPagination;
 use App\Traits\WithSorting;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class InventoryList extends Component
 {
     use WithPagination, WithSorting;
 
     public $search = '';
-
     public $filter_warehouse = '';
     public $filter_status = '';
     public $filter_delivery_type = '';
+    public $view_tab = 'all'; // all, pending, recent
 
     protected $queryString = [
         'search' => ['except' => ''],
         'filter_warehouse' => ['except' => ''],
         'filter_status' => ['except' => ''],
         'filter_delivery_type' => ['except' => ''],
+        'view_tab' => ['except' => 'all'],
     ];
 
-    // Edit Package Properties
+    // Bulk Selection
+    public $selected_packages = [];
+    public $selectAll = false;
+
+    // Assignment Panel State
+    public $is_assigning = false;
+    public $target_customer_id;
+    public $customer_search = '';
+    public $customer_results = [];
+    public $selected_customer = null;
+
+    // Assignment Customizations
+    public $custom_rate;
+    public $extra_charge = 0;
+    public $extra_charge_reason = '';
+    public $shelf_location;
+
+    // Edit Package Properties (Standard Modal)
     public $editing_package_id = null;
     public $edit_tracking_number;
     public $edit_description;
@@ -34,22 +58,60 @@ class InventoryList extends Component
 
     protected $listeners = ['package-saved' => '$refresh'];
 
-    public function updatingSearch()
+    public function mount()
     {
-        $this->resetPage();
+        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $this->custom_rate = $tenant->settings_json['default_rate'] ?? 2.50;
+    }
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            $this->selected_packages = $this->getPackagesQuery()->pluck('id')->map(fn($id) => (string)$id)->toArray();
+        } else {
+            $this->selected_packages = [];
+        }
+    }
+
+    public function updatedCustomerSearch($value)
+    {
+        if (strlen($value) < 2) {
+            $this->customer_results = [];
+            return;
+        }
+
+        $this->customer_results = Customer::with('user')
+            ->where('box_number', 'like', '%' . $value . '%')
+            ->orWhereHas('user', function($q) use ($value) {
+                $q->where('name', 'like', '%' . $value . '%');
+            })->take(5)->get();
+    }
+
+    public function selectCustomer($id)
+    {
+        $this->selected_customer = Customer::with('user')->find($id);
+        $this->target_customer_id = $id;
+        $this->customer_search = $this->selected_customer->user->name . ' (' . $this->selected_customer->box_number . ')';
+        $this->customer_results = [];
     }
 
     public function editPackage($id)
     {
-        $package = Package::findOrFail($id);
-        $this->editing_package_id = $id;
-        $this->edit_tracking_number = $package->tracking_number;
-        $this->edit_description = $package->description;
-        $this->edit_weight = $package->weight;
-        $this->edit_status = $package->status;
-        $this->edit_warehouse_id = $package->warehouse_id;
-
-        $this->dispatch('open-edit-modal');
+        // Si el paquete no tiene cliente, abrimos el panel de asignación para este paquete individual
+        $package = Package::find($id);
+        if (!$package->customer_id) {
+            $this->selected_packages = [(string)$id];
+            $this->openAssignment();
+        } else {
+            // Lógica para edición normal (opcional, si quieres mantener el modal de edición de datos básicos)
+            $this->editing_package_id = $id;
+            $this->edit_tracking_number = $package->tracking_number;
+            $this->edit_description = $package->description;
+            $this->edit_weight = $package->weight;
+            $this->edit_status = $package->status;
+            $this->edit_warehouse_id = $package->warehouse_id;
+            $this->dispatch('open-edit-modal');
+        }
     }
 
     public function updatePackage()
@@ -75,7 +137,99 @@ class InventoryList extends Component
         $this->dispatch('close-edit-modal');
     }
 
-    public function render()
+    public function openAssignment()
+    {
+        if (empty($this->selected_packages)) {
+            session()->flash('error', 'Seleccione al menos un paquete.');
+            return;
+        }
+        $this->is_assigning = true;
+    }
+
+    public function cancelAssignment()
+    {
+        $this->is_assigning = false;
+        $this->reset(['target_customer_id', 'customer_search', 'selected_customer', 'extra_charge', 'extra_charge_reason', 'shelf_location']);
+    }
+
+    public function confirmAssignment()
+    {
+        if (!$this->target_customer_id) {
+            session()->flash('assign_error', 'Debe seleccionar un cliente.');
+            return;
+        }
+
+        $packages = Package::whereIn('id', $this->selected_packages)->get();
+
+        DB::transaction(function() use ($packages) {
+            $total_weight = $packages->sum('weight');
+            $subtotal = ($total_weight * $this->custom_rate) + (float)$this->extra_charge;
+
+            $tenant = \App\Models\Tenant::find(session('tenant_id'));
+            $tax_percent = $tenant->settings_json['default_tax'] ?? 7;
+            $tax = $subtotal * ($tax_percent / 100);
+            $total = $subtotal + $tax;
+
+            // 1. Create Consolidated Invoice
+            $invoice = Invoice::create([
+                'tenant_id' => session('tenant_id'),
+                'customer_id' => $this->target_customer_id,
+                'number' => 'INV-' . date('Ymd') . strtoupper(Str::random(4)),
+                'subtotal' => $subtotal,
+                'tax' => $tax,
+                'total' => $total,
+                'status' => 'unpaid',
+                'due_date' => now()->addDays(7),
+                'notes' => 'Factura generada por asignación masiva de inventario.',
+            ]);
+
+            // 2. Create Invoice Items
+            foreach ($packages as $pkg) {
+                InvoiceItem::create([
+                    'tenant_id' => session('tenant_id'),
+                    'invoice_id' => $invoice->id,
+                    'description' => "Flete: " . $pkg->tracking_number . " (" . $pkg->weight . " lbs)",
+                    'quantity' => $pkg->weight,
+                    'unit_price' => $this->custom_rate,
+                    'total' => $pkg->weight * $this->custom_rate,
+                ]);
+
+                // 3. Update Packages
+                $pkg->update([
+                    'customer_id' => $this->target_customer_id,
+                    'shelf_location' => $this->shelf_location,
+                    'status' => 'arrived', // Mark as arrived in destination
+                ]);
+            }
+
+            if ($this->extra_charge > 0) {
+                InvoiceItem::create([
+                    'tenant_id' => session('tenant_id'),
+                    'invoice_id' => $invoice->id,
+                    'description' => $this->extra_charge_reason ?: 'Cargo adicional administrativo',
+                    'quantity' => 1,
+                    'unit_price' => $this->extra_charge,
+                    'total' => $this->extra_charge,
+                ]);
+            }
+
+            // Update customer balance
+            $this->selected_customer->increment('balance', $total);
+            $this->selected_customer->increment('points', ceil($total_weight));
+
+            // 4. Notify Customer
+            if ($this->selected_customer->user) {
+                $this->selected_customer->user->notify(new \App\Notifications\PackagesArrivedNotification($invoice, $packages));
+            }
+        });
+
+        session()->flash('message', 'Asignación completada y factura generada con éxito. El cliente ha sido notificado vía correo.');
+        $this->selected_packages = [];
+        $this->selectAll = false;
+        $this->cancelAssignment();
+    }
+
+    protected function getPackagesQuery()
     {
         $query = Package::with(['customer.user', 'warehouse'])
             ->where(function($query) {
@@ -85,6 +239,12 @@ class InventoryList extends Component
                       });
             });
 
+        if ($this->view_tab === 'pending') {
+            $query->whereNull('customer_id');
+        } elseif ($this->view_tab === 'recent') {
+            $query->where('created_at', '>=', now()->subDays(2));
+        }
+
         if ($this->filter_warehouse) {
             $query->where('warehouse_id', $this->filter_warehouse);
         }
@@ -93,31 +253,27 @@ class InventoryList extends Component
             $query->where('status', $this->filter_status);
         }
 
-        if ($this->filter_delivery_type) {
-            $query->where('delivery_type', $this->filter_delivery_type);
-        }
+        return $query;
+    }
 
-        $packages = $this->applySorting($query)->paginate(10);
+    public function render()
+    {
+        $packages = $this->applySorting($this->getPackagesQuery())->paginate(15);
 
-        // Dashboard Stats
         $stats = [
             'total_count' => Package::whereNotIn('status', ['delivered', 'cancelled'])->count(),
             'total_weight' => Package::whereNotIn('status', ['delivered', 'cancelled'])->sum('weight'),
+            'pending_assignment' => Package::whereNull('customer_id')->count(),
             'by_status' => Package::whereNotIn('status', ['delivered', 'cancelled'])
                 ->selectRaw('status, count(*) as count')
                 ->groupBy('status')
-                ->get(),
-            'by_warehouse' => Package::whereNotIn('packages.status', ['delivered', 'cancelled'])
-                ->join('warehouses', 'packages.warehouse_id', '=', 'warehouses.id')
-                ->selectRaw('warehouses.name, count(*) as count')
-                ->groupBy('warehouses.name')
                 ->get()
         ];
 
         return view('livewire.logistics.inventory-list', [
             'packages' => $packages,
             'stats' => $stats,
-            'warehouses' => \App\Models\Warehouse::all()
+            'warehouses' => Warehouse::all()
         ])->layout('components.layouts.app');
     }
 }

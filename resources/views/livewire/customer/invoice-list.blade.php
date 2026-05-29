@@ -96,17 +96,25 @@
                                     </td>
                                     <td class="pe-4 text-end">
                                         <div class="btn-group">
+                                            @php
+                                                $whatsappPhone = auth()->user()->tenant->settings_json['whatsapp_phone'] ?? '50766554433';
+                                                $waMsg = App\Helpers\WhatsAppHelper::getPaymentSupportMessage($invoice->number);
+                                                $waUrl = App\Helpers\WhatsAppHelper::getLink($whatsappPhone, $waMsg);
+                                            @endphp
+                                            <a href="{{ $waUrl }}" target="_blank" class="btn btn-sm btn-light border shadow-sm" title="Consultar por WhatsApp">
+                                                <i class="align-middle text-success" data-feather="message-circle" style="width: 14px;"></i>
+                                            </a>
+
                                             <a href="{{ route('customer.invoices.download', $invoice) }}" target="_blank" class="btn btn-sm btn-light border shadow-sm" title="Descargar PDF">
                                                 <i class="align-middle text-dark" data-feather="download" style="width: 14px;"></i> PDF
                                             </a>
 
-                                            @if($invoice->status !== 'paid' && $invoice->status !== 'cancelled')
-                                                <a href="{{ route('payment.checkout', $invoice) }}" class="btn btn-sm btn-primary shadow-sm font-black text-uppercase" style="font-size: 0.65rem;">
-                                                    <i class="align-middle me-1" data-feather="credit-card" style="width: 12px;"></i> Pagar Card
+                                            @if($invoice->status !== 'paid' && $invoice->status !== 'cancelled' && $invoice->status !== 'pending')
+                                                <a href="{{ route('customer.checkout', $invoice->id) }}" class="btn btn-sm btn-primary shadow-sm font-black text-uppercase" style="font-size: 0.65rem;">
+                                                    <i class="align-middle me-1" data-feather="credit-card" style="width: 12px;"></i> PAGAR Y RECIBIR
                                                 </a>
-                                                <a href="{{ route('payment.paypal', $invoice) }}" class="btn btn-sm btn-warning shadow-sm font-black text-uppercase" style="font-size: 0.65rem; background-color: #ffc439; border-color: #ffc439; color: #111;">
-                                                    <i class="align-middle me-1" data-feather="shopping-cart" style="width: 12px;"></i> PayPal
-                                                </a>
+                                            @elseif($invoice->status === 'pending')
+                                                <span class="badge bg-warning text-dark text-uppercase xsmall">Pago en Revisión</span>
                                             @endif
                                         </div>
                                     </td>

@@ -26,6 +26,34 @@
                     </div>
                 </div>
 
+                @if($found_customer && !empty($availablePackages))
+                    <div class="card shadow-none border mb-3 mt-3">
+                        <div class="card-header bg-success-light py-2">
+                            <h6 class="card-title mb-0 small font-black uppercase text-success">Carga Pendiente</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                @foreach($availablePackages as $pkg)
+                                    <label class="list-group-item d-flex justify-content-between align-items-center cursor-pointer">
+                                        <div class="d-flex align-items-center">
+                                            <input type="checkbox" class="form-check-input me-3"
+                                                   wire:click="togglePackage({{ $pkg->id }})"
+                                                   {{ in_array($pkg->id, $selectedPackages) ? 'checked' : '' }}>
+                                            <div>
+                                                <div class="small fw-bold text-dark">{{ $pkg->tracking_number }}</div>
+                                                <div class="xsmall text-muted">{{ $pkg->weight }} lbs - {{ $pkg->getStatusLabel() }}</div>
+                                            </div>
+                                        </div>
+                                        @if($pkg->provider_cost)
+                                            <span class="badge bg-light text-muted border">Costo: ${{ number_format($pkg->provider_cost, 2) }}</span>
+                                        @endif
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="card shadow-none border">
                     <div class="card-header bg-light py-2">
                         <h6 class="card-title mb-0 small font-black uppercase text-muted">Observaciones</h6>
@@ -85,6 +113,34 @@
                 </div>
 
                 <!-- Totals -->
+                @if($found_customer && !empty($availablePackages))
+                    <div class="card shadow-none border mb-3 mt-3">
+                        <div class="card-header bg-success-light py-2">
+                            <h6 class="card-title mb-0 small font-black uppercase text-success">Carga Pendiente</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                @foreach($availablePackages as $pkg)
+                                    <label class="list-group-item d-flex justify-content-between align-items-center cursor-pointer">
+                                        <div class="d-flex align-items-center">
+                                            <input type="checkbox" class="form-check-input me-3"
+                                                   wire:click="togglePackage({{ $pkg->id }})"
+                                                   {{ in_array($pkg->id, $selectedPackages) ? 'checked' : '' }}>
+                                            <div>
+                                                <div class="small fw-bold text-dark">{{ $pkg->tracking_number }}</div>
+                                                <div class="xsmall text-muted">{{ $pkg->weight }} lbs - {{ $pkg->getStatusLabel() }}</div>
+                                            </div>
+                                        </div>
+                                        @if($pkg->provider_cost)
+                                            <span class="badge bg-light text-muted border">Costo: ${{ number_format($pkg->provider_cost, 2) }}</span>
+                                        @endif
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <div class="card shadow-none border">
                     <div class="card-body p-4">
                         <div class="row">
@@ -103,6 +159,26 @@
                                         <td class="text-end h4 fw-black text-primary pt-2">${{ number_format(collect($items)->sum('total') * (1 + $tax_percent / 100), 2) }}</td>
                                     </tr>
                                 </table>
+                            </div>
+                        </div>
+
+                        <!-- Smart Billing: Profit Analysis -->
+                        <div class="mt-4 p-3 bg-light rounded-3 border-dashed border-2">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h6 class="mb-0 small font-black uppercase text-muted">Análisis de Rentabilidad ⚡</h6>
+                                    <div class="h5 mb-0 fw-black {{ $this->estimated_profit >= 0 ? 'text-success' : 'text-danger' }}">
+                                        Utilidad Neta: ${{ number_format($this->estimated_profit, 2) }}
+                                    </div>
+                                </div>
+                                <div class="col-auto text-end">
+                                    @php
+                                        $subtotal = collect($items)->sum('total');
+                                        $roi = $subtotal > 0 ? ($this->estimated_profit / max(1, $subtotal - $this->estimated_profit) * 100) : 0;
+                                    @endphp
+                                    <div class="small font-bold text-uppercase text-muted">ROI Proyectado</div>
+                                    <div class="h5 mb-0 fw-black text-dark">{{ number_format($roi, 1) }}%</div>
+                                </div>
                             </div>
                         </div>
                     </div>

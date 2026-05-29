@@ -15,6 +15,7 @@ class Customer extends Model
         'user_id',
         'locker_id',
         'referrer_id',
+        'loyalty_level_id',
         'box_number',
         'balance',
         'points',
@@ -24,6 +25,11 @@ class Customer extends Model
         'latitude',
         'longitude',
     ];
+
+    public function level()
+    {
+        return $this->belongsTo(LoyaltyLevel::class, 'loyalty_level_id');
+    }
 
     public function user()
     {

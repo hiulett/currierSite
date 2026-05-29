@@ -1,70 +1,45 @@
-<div>
-    <!-- Inventory Dashboard Header -->
+<div class="container-fluid p-0" x-data="{ isAssigning: @entangle('is_assigning') }">
+    <!-- Header & Tabs -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-6">
+            <h1 class="h3 mb-0 uppercase font-black tracking-tight text-dark">Centro de Inventario</h1>
+            <p class="text-muted small">Gestiona, asigna y rastrea toda la carga recibida.</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <div class="btn-group shadow-sm">
+                <button wire:click="$set('view_tab', 'all')" class="btn {{ $view_tab === 'all' ? 'btn-primary' : 'btn-white' }} fw-bold">Todos</button>
+                <button wire:click="$set('view_tab', 'pending')" class="btn {{ $view_tab === 'pending' ? 'btn-primary' : 'btn-white' }} fw-bold">
+                    Sin Asignar <span class="badge bg-danger ms-1">{{ $stats['pending_assignment'] }}</span>
+                </button>
+                <button wire:click="$set('view_tab', 'recent')" class="btn {{ $view_tab === 'recent' ? 'btn-primary' : 'btn-white' }} fw-bold">Recientes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Summary -->
     <div class="row mb-4">
-        <div class="col-12 col-sm-6 col-xxl-3 d-flex">
-            <div wire:click="$set('filter_status', '')" class="card flex-fill cursor-pointer transform transition hover:scale-102 border-0 shadow-sm bg-primary text-white">
-                <div class="card-body py-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-2 text-white">{{ number_format($stats['total_count']) }}</h3>
-                            <p class="mb-2 text-uppercase font-bold small opacity-75">Paquetes en Stock</p>
-                        </div>
-                        <div class="d-inline-block ms-3">
-                            <div class="stat bg-white bg-opacity-25 text-white">
-                                <i class="align-middle" data-feather="box"></i>
-                            </div>
-                        </div>
+        <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-body p-3 d-flex align-items-center">
+                    <div class="stat bg-primary-light text-primary me-3">
+                        <i data-feather="box"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-0 fw-black text-dark">{{ number_format($stats['total_count']) }}</h4>
+                        <p class="text-muted xsmall uppercase font-bold mb-0">Total Stock</p>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-6 col-xxl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm bg-dark text-white">
-                <div class="card-body py-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-2 text-white">{{ number_format($stats['total_weight'], 2) }} lbs</h3>
-                            <p class="mb-2 text-uppercase font-bold small opacity-75">Peso Total Almacenado</p>
-                        </div>
-                        <div class="d-inline-block ms-3">
-                            <div class="stat bg-white bg-opacity-25 text-white">
-                                <i class="align-middle" data-feather="database"></i>
-                            </div>
-                        </div>
+        <div class="col-12 col-md-3">
+            <div class="card border-0 shadow-sm bg-white">
+                <div class="card-body p-3 d-flex align-items-center">
+                    <div class="stat bg-info-light text-info me-3">
+                        <i data-feather="database"></i>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xxl-3 d-flex">
-            <div wire:click="$set('filter_status', 'received')" class="card flex-fill cursor-pointer transform transition hover:scale-102 border-0 shadow-sm bg-info text-white {{ $filter_status === 'received' ? 'ring-active' : '' }}">
-                <div class="card-body py-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-2 text-white">{{ $stats['by_status']->where('status', 'received')->first()->count ?? 0 }}</h3>
-                            <p class="mb-2 text-uppercase font-bold small opacity-75">Recién Ingresados</p>
-                        </div>
-                        <div class="d-inline-block ms-3">
-                            <div class="stat bg-white bg-opacity-25 text-white">
-                                <i class="align-middle" data-feather="plus-square"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xxl-3 d-flex">
-            <div wire:click="$set('filter_status', 'in_transit')" class="card flex-fill cursor-pointer transform transition hover:scale-102 border-0 shadow-sm bg-warning text-white {{ $filter_status === 'in_transit' ? 'ring-active' : '' }}">
-                <div class="card-body py-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-2 text-white">{{ $stats['by_status']->where('status', 'in_transit')->first()->count ?? 0 }}</h3>
-                            <p class="mb-2 text-uppercase font-bold small opacity-75">En Tránsito</p>
-                        </div>
-                        <div class="d-inline-block ms-3">
-                            <div class="stat bg-white bg-opacity-25 text-white">
-                                <i class="align-middle" data-feather="truck"></i>
-                            </div>
-                        </div>
+                    <div>
+                        <h4 class="mb-0 fw-black text-dark">{{ number_format($stats['total_weight'], 1) }} lbs</h4>
+                        <p class="text-muted xsmall uppercase font-bold mb-0">Peso Acumulado</p>
                     </div>
                 </div>
             </div>
@@ -72,218 +47,245 @@
     </div>
 
     @if (session()->has('message'))
-        <div class="alert alert-success alert-dismissible shadow-sm mb-4" role="alert">
+        <div class="alert alert-success alert-dismissible shadow-sm mb-4 border-0" role="alert">
             <div class="alert-message"><strong>¡Éxito!</strong> {{ session('message') }}</div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
-    <div class="row">
-        <!-- Distribution by Warehouse -->
-        <div class="col-12 col-lg-6 d-flex">
-            <div class="card flex-fill w-100">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Distribución por Bodega</h5>
-                </div>
-                <div class="card-body">
-                    @foreach($stats['by_warehouse'] as $whStat)
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="fw-bold small text-uppercase">{{ $whStat->name }}</span>
-                                <span class="badge bg-primary-light text-primary">{{ $whStat->count }} pkgs</span>
-                            </div>
-                            <div class="progress progress-sm">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ ($whStat->count / max($stats['total_count'], 1)) * 100 }}%"></div>
-                            </div>
-                        </div>
-                    @endforeach
-                    @if($stats['by_warehouse']->isEmpty())
-                        <p class="text-center text-muted small py-4">No hay datos de distribución.</p>
-                    @endif
-                </div>
-            </div>
-        </div>
-
-        <!-- Status Breakdown -->
-        <div class="col-12 col-lg-6 d-flex">
-            <div class="card flex-fill w-100">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Estados de Inventario</h5>
-                </div>
-                <div class="card-body d-flex">
-                    <div class="align-self-center w-100 text-center">
-                        <div class="row g-3">
-                            @foreach($stats['by_status'] as $statusStat)
-                                @php
-                                    // Create a dummy package to use the model's helper methods
-                                    $dummy = new \App\Models\Package(['status' => $statusStat->status]);
-                                @endphp
-                                <div class="col-6 col-md-4">
-                                    <div wire:click="$set('filter_status', '{{ $statusStat->status }}')"
-                                         class="p-3 bg-light rounded-3 cursor-pointer transform transition hover:scale-105 {{ $filter_status === $statusStat->status ? 'border-primary ring-1 ring-primary' : '' }}"
-                                         style="{{ $filter_status === $statusStat->status ? 'background-color: rgba(59, 125, 221, 0.1) !important;' : '' }}">
-                                        <h4 class="mb-0 fw-black" style="color: {{ $dummy->getStatusColor() }}">{{ $statusStat->count }}</h4>
-                                        <p class="small text-muted text-uppercase mb-0 font-bold" style="font-size: 0.6rem;">{{ $dummy->getStatusLabel() }}</p>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+    <!-- Search & Filter Bar -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0"><i data-feather="search" style="width: 14px;"></i></span>
+                        <input type="text" wire:model.live="search" class="form-control border-0 bg-light" placeholder="Buscar tracking, descripción o PTY...">
                     </div>
+                </div>
+                <div class="col-md-2">
+                    <select wire:model.live="filter_warehouse" class="form-select border-0 bg-light">
+                        <option value="">Bodegas: Todas</option>
+                        @foreach($warehouses as $wh)
+                            <option value="{{ $wh->id }}">{{ $wh->code }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select wire:model.live="filter_status" class="form-select border-0 bg-light">
+                        <option value="">Estados: Todos</option>
+                        <option value="received">Recibido</option>
+                        <option value="arrived">En País</option>
+                        <option value="ready_for_pickup">Listo Entrega</option>
+                    </select>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button onclick="openReceiveModal()" class="btn btn-primary fw-black text-uppercase px-4 shadow-sm">
+                        <i class="align-middle me-1" data-feather="plus"></i> NUEVO INGRESO
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Inventory Filter & List -->
-    <div class="card">
-        <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-center bg-light border-bottom gap-3">
-            <h5 class="card-title mb-0 uppercase font-black small">Listado Detallado de Carga</h5>
-            <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
-                <button onclick="openReceiveModal()" class="btn btn-primary shadow-lg transform transition hover:scale-105">
-                    <i class="align-middle me-1" data-feather="plus-circle"></i> NUEVO INGRESO
-                </button>
-                <select wire:model.live="filter_warehouse" class="form-select form-select-sm" style="width: 150px;">
-                    <option value="">Todas las Bodegas</option>
-                    @foreach($warehouses as $wh)
-                        <option value="{{ $wh->id }}">{{ $wh->code }}</option>
-                    @endforeach
-                </select>
-                <select wire:model.live="filter_status" class="form-select form-select-sm" style="width: 150px;">
-                    <option value="">Todos los Estados</option>
-                    <option value="received">Recibido</option>
-                    <option value="prealert">Pre-alerta</option>
-                    <option value="in_transit">En Tránsito</option>
-                    <option value="arrived">Llegó al País</option>
-                    <option value="ready_for_pickup">Listo Entrega</option>
-                </select>
-                <select wire:model.live="filter_delivery_type" class="form-select form-select-sm" style="width: 130px;">
-                    <option value="">Tipo Entrega</option>
-                    <option value="pickup">Local</option>
-                    <option value="home_delivery">Domicilio</option>
-                </select>
-                <div class="input-group input-group-sm flex-grow-1" style="min-width: 200px;">
-                    <input type="text" wire:model.live="search" class="form-control" placeholder="Buscar tracking o casillero...">
-                    <span class="input-group-text bg-white"><i class="align-middle" data-feather="search"></i></span>
-                </div>
-                <a href="{{ route('logistics.inventory.export') }}" class="btn btn-sm btn-success">
-                    <i class="align-middle" data-feather="download"></i> Excel
-                </a>
-            </div>
-        </div>
+    <!-- Inventory Table -->
+    <div class="card border-0 shadow-sm position-relative overflow-hidden">
         <div class="table-responsive">
-            <table class="table table-hover table-striped my-0">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
                     <tr>
-                        <th class="ps-4 cursor-pointer" wire:click="sortBy('tracking_number')">
-                            Paquete
-                            @if($sortField === 'tracking_number')
-                                <i class="align-middle ms-1" data-feather="{{ $sortDirection === 'asc' ? 'chevron-up' : 'chevron-down' }}" style="width: 14px; height: 14px;"></i>
-                            @endif
+                        <th style="width: 40px;" class="ps-4">
+                            <input type="checkbox" class="form-check-input" wire:model.live="selectAll">
                         </th>
-                        <th class="cursor-pointer" wire:click="sortBy('customer_id')">
-                            Cliente
-                            @if($sortField === 'customer_id')
-                                <i class="align-middle ms-1" data-feather="{{ $sortDirection === 'asc' ? 'chevron-up' : 'chevron-down' }}" style="width: 14px; height: 14px;"></i>
-                            @endif
-                        </th>
-                        <th>Entrega</th>
-                        <th class="cursor-pointer" wire:click="sortBy('warehouse_id')">
-                            Bodega
-                            @if($sortField === 'warehouse_id')
-                                <i class="align-middle ms-1" data-feather="{{ $sortDirection === 'asc' ? 'chevron-up' : 'chevron-down' }}" style="width: 14px; height: 14px;"></i>
-                            @endif
-                        </th>
-                        <th class="cursor-pointer" wire:click="sortBy('weight')">
-                            Peso
-                            @if($sortField === 'weight')
-                                <i class="align-middle ms-1" data-feather="{{ $sortDirection === 'asc' ? 'chevron-up' : 'chevron-down' }}" style="width: 14px; height: 14px;"></i>
-                            @endif
-                        </th>
-                        <th class="cursor-pointer" wire:click="sortBy('status')">
-                            Estado
-                            @if($sortField === 'status')
-                                <i class="align-middle ms-1" data-feather="{{ $sortDirection === 'asc' ? 'chevron-up' : 'chevron-down' }}" style="width: 14px; height: 14px;"></i>
-                            @endif
-                        </th>
+                        <th class="cursor-pointer" wire:click="sortBy('tracking_number')">Tracking / Info</th>
+                        <th>Cliente</th>
+                        <th>Ubicación</th>
+                        <th class="cursor-pointer" wire:click="sortBy('weight')">Peso</th>
+                        <th>Estado</th>
                         <th class="pe-4 text-end">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($packages as $package)
-                        <tr>
+                        <tr class="{{ in_array($package->id, $selected_packages) ? 'bg-primary bg-opacity-5' : '' }}">
                             <td class="ps-4">
-                                <a href="{{ route('logistics.tracking', ['search_tracking' => $package->tracking_number]) }}" class="fw-black text-primary hover:underline" title="Ver Rastreo Live">
-                                    {{ $package->tracking_number }}
-                                </a>
-                                <div class="text-muted small" style="font-size: 0.7rem;">{{ Str::limit($package->description, 35) }}</div>
+                                <input type="checkbox" class="form-check-input" value="{{ $package->id }}" wire:model.live="selected_packages">
                             </td>
                             <td>
-                                <div class="fw-bold leading-none">{{ $package->customer->user->name }}</div>
-                                <div class="text-primary small font-black uppercase tracking-tighter">{{ $package->customer->box_number }}</div>
+                                <div class="fw-black text-dark">{{ $package->tracking_number }}</div>
+                                <div class="text-muted xsmall">{{ Str::limit($package->description ?: 'Sin descripción', 40) }}</div>
                             </td>
-                            <td class="text-center">
-                                @if($package->delivery_type === 'home_delivery')
-                                    <span class="badge bg-primary-light text-primary" title="Entrega a Domicilio">
-                                        <i data-feather="map-pin" style="width: 12px; height: 12px;"></i>
-                                    </span>
+                            <td>
+                                @if($package->customer)
+                                    <div class="fw-bold leading-none text-dark">{{ $package->customer->user->name }}</div>
+                                    <div class="text-primary small font-black uppercase">{{ $package->customer->box_number }}</div>
                                 @else
-                                    <span class="badge bg-light text-muted border" title="Retiro en Local">
-                                        <i data-feather="home" style="width: 12px; height: 12px;"></i>
-                                    </span>
+                                    <span class="badge bg-warning-light text-warning fw-bold text-uppercase" style="font-size: 0.6rem;">PENDIENTE ASIGNAR</span>
                                 @endif
                             </td>
-                            <td><span class="badge bg-light text-dark border">{{ $package->warehouse->code }}</span></td>
-                            <td><span class="fw-bold">{{ $package->weight }} lbs</span></td>
                             <td>
-                                <span class="badge text-uppercase" style="font-size: 0.65rem; background-color: {{ $package->getStatusColor() }}">
+                                <div class="small fw-bold text-dark">{{ $package->warehouse->code }}</div>
+                                @if($package->shelf_location)
+                                    <div class="badge bg-light text-dark border xsmall"><i data-feather="map-pin" class="me-1" style="width: 10px;"></i> {{ $package->shelf_location }}</div>
+                                @endif
+                            </td>
+                            <td><span class="fw-black">{{ $package->weight }} lbs</span></td>
+                            <td>
+                                <span class="badge text-uppercase" style="font-size: 0.6rem; background-color: {{ $package->getStatusColor() }}">
                                     {{ $package->getStatusLabel() }}
                                 </span>
                             </td>
                             <td class="pe-4 text-end">
-                                <div class="btn-group">
-                                    <a href="{{ route('logistics.label', $package->id) }}" target="_blank" class="btn btn-sm btn-light border shadow-sm" title="Imprimir Etiqueta">
-                                        <i class="align-middle text-primary" data-feather="printer"></i>
-                                        <span class="ms-1 d-none d-md-inline fw-bold text-uppercase" style="font-size: 0.65rem;">Etiqueta</span>
-                                    </a>
-                                    <button wire:click="editPackage({{ $package->id }})" class="btn btn-sm btn-light border shadow-sm" title="Editar Paquete">
-                                        <i class="align-middle text-dark" data-feather="edit-2"></i>
-                                        <span class="ms-1 d-none d-md-inline fw-bold text-uppercase" style="font-size: 0.65rem;">Editar</span>
+                                <div class="btn-group shadow-none">
+                                    @if(!$package->customer_id)
+                                        <button wire:click="editPackage({{ $package->id }})" class="btn btn-sm btn-primary fw-black px-3">
+                                            ASIGNAR
+                                        </button>
+                                    @endif
+                                    <button wire:click="editPackage({{ $package->id }})" class="btn btn-sm btn-light border shadow-none" title="Editar">
+                                        <i class="align-middle" data-feather="edit-2" style="width: 14px;"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted italic">
-                                No se encontraron paquetes con los filtros aplicados.
-                            </td>
+                            <td colspan="7" class="text-center py-5 text-muted italic">No se encontraron paquetes registrados.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="card-footer border-top bg-light">
+        <div class="card-footer bg-white border-top">
             {{ $packages->links() }}
         </div>
     </div>
 
-    <!-- Modal for Receiving Package (Bootstrap 5 Style) -->
-    <div class="modal fade" id="modalReceivePackage" tabindex="-1" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title uppercase font-black tracking-widest">
-                        <i class="align-middle me-2" data-feather="plus"></i> Nuevo Ingreso a Bodega
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Floating Action Bar for Bulk Assignment -->
+    @if(!empty($selected_packages))
+        <div class="position-fixed bottom-0 start-50 translate-middle-x mb-4 z-3" style="width: auto;">
+            <div class="bg-dark text-white rounded-pill px-4 py-3 shadow-lg d-flex align-items-center gap-4 border border-white border-opacity-10">
+                <div class="fw-black uppercase small tracking-widest">
+                    {{ count($selected_packages) }} Paquetes Seleccionados
                 </div>
-                <div class="modal-body bg-light p-0">
-                    <div class="p-3 p-md-4">
-                        @livewire('logistics.receive-package')
+                <div class="vr"></div>
+                <button wire:click="openAssignment" class="btn btn-primary btn-sm rounded-pill fw-black px-4">
+                    ASIGNAR A CLIENTE <i class="align-middle ms-1" data-feather="users"></i>
+                </button>
+                <button wire:click="$set('selected_packages', [])" class="btn btn-link text-white-50 btn-sm p-0 text-decoration-none fw-bold">Cancelar</button>
+            </div>
+        </div>
+    @endif
+
+    <!-- SLIDE-OVER PANEL FOR ASSIGNMENT (Inline Simulation) -->
+    <div x-show="isAssigning"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="translate-x-full"
+         x-transition:enter-end="translate-x-0"
+         x-transition:leave="transition ease-in duration-300"
+         x-transition:leave-start="translate-x-0"
+         x-transition:leave-end="translate-x-full"
+         class="position-fixed top-0 end-0 h-100 bg-white shadow-lg z-3 border-start"
+         style="width: 450px; display: none; z-index: 1060;">
+
+        <div class="h-100 d-flex flex-column">
+            <div class="p-4 bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="modal-title uppercase font-black tracking-widest text-white mb-0">Asignación Inteligente</h5>
+                    <button @click="isAssigning = false" wire:click="cancelAssignment" class="btn-close btn-close-white"></button>
+                </div>
+                <p class="mb-0 small opacity-75">Vincula los paquetes seleccionados a un cliente y genera su factura automáticamente.</p>
+            </div>
+
+            <div class="flex-grow-1 overflow-y-auto p-4">
+                <!-- Customer Search -->
+                <div class="mb-4">
+                    <label class="form-label small font-black text-uppercase text-muted tracking-tighter">1. Seleccionar Cliente</label>
+                    <div class="position-relative">
+                        <input type="text" wire:model.live="customer_search" class="form-control form-control-lg fw-bold border-2" placeholder="Buscar por Nombre o PTY...">
+                        @if(!empty($customer_results))
+                            <div class="position-absolute w-100 bg-white shadow-lg border rounded-3 mt-1 z-3">
+                                @foreach($customer_results as $result)
+                                    <button wire:click="selectCustomer({{ $result->id }})" class="w-100 text-start p-3 border-bottom btn btn-white hover:bg-light rounded-0">
+                                        <div class="fw-black text-dark">{{ $result->user->name }}</div>
+                                        <div class="small text-primary font-bold">{{ $result->box_number }}</div>
+                                    </button>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 </div>
-                <div class="modal-footer bg-white border-top-0">
-                    <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal">FINALIZAR Y CERRAR</button>
+
+                @if($selected_customer)
+                    <div class="p-3 bg-light rounded-3 border mb-4 animate__animated animate__fadeIn">
+                        <div class="d-flex align-items-center">
+                            <div class="stat bg-primary text-white rounded-circle me-3">{{ substr($selected_customer->user->name, 0, 1) }}</div>
+                            <div>
+                                <h6 class="mb-0 fw-black">{{ $selected_customer->user->name }}</h6>
+                                <span class="badge bg-primary-light text-primary xsmall fw-black">{{ $selected_customer->box_number }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Assignment Details -->
+                <div class="mb-4">
+                    <label class="form-label small font-black text-uppercase text-muted tracking-tighter">2. Ubicación en Bodega</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i data-feather="map-pin" style="width: 14px;"></i></span>
+                        <input type="text" wire:model="shelf_location" class="form-control" placeholder="Ejem: Pasillo A, Estante 12">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small font-black text-uppercase text-muted tracking-tighter">3. Configuración de Cobro</label>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="xsmall text-muted mb-1">Tarifa por Libra ($)</label>
+                            <input type="number" step="0.01" wire:model="custom_rate" class="form-control fw-bold">
+                        </div>
+                        <div class="col-6">
+                            <label class="xsmall text-muted mb-1">Cargo Extra ($)</label>
+                            <input type="number" step="0.01" wire:model="extra_charge" class="form-control fw-bold">
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <input type="text" wire:model="extra_charge_reason" class="form-control form-control-sm" placeholder="Motivo del cargo extra (Ejem: Manejo Frágil)">
+                    </div>
+                </div>
+
+                @if(session()->has('assign_error'))
+                    <div class="alert alert-danger small p-2 border-0 shadow-sm">{{ session('assign_error') }}</div>
+                @endif
+            </div>
+
+            <div class="p-4 bg-light border-top">
+                <button wire:click="confirmAssignment" wire:loading.attr="disabled" class="btn btn-primary btn-lg w-100 fw-black uppercase py-3 shadow-lg">
+                    <span wire:loading.remove>CONFIRMAR Y FACTURAR</span>
+                    <span wire:loading><span class="spinner-border spinner-border-sm me-2"></span>PROCESANDO...</span>
+                </button>
+                <button @click="isAssigning = false" wire:click="cancelAssignment" class="btn btn-link w-100 text-muted small mt-2 text-decoration-none">Cancelar Operación</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Overlay for Slide-over -->
+    <div x-show="isAssigning"
+         @click="isAssigning = false"
+         x-transition:opacity
+         class="position-fixed top-0 start-0 w-100 h-100 bg-dark opacity-50 z-2"
+         style="display: none; z-index: 1055;"></div>
+
+    <!-- Modals (Kept from existing functionality) -->
+    <div class="modal fade" id="modalReceivePackage" tabindex="-1" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
+                <div class="modal-header bg-primary text-white p-4">
+                    <h5 class="modal-title uppercase font-black tracking-widest text-white">Nuevo Ingreso Inteligente</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    @livewire('logistics.smart-reception-hub')
                 </div>
             </div>
         </div>
@@ -292,12 +294,12 @@
     <!-- Modal for Editing Package -->
     <div class="modal fade" id="modalEditPackage" tabindex="-1" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title uppercase font-black tracking-widest">
-                        <i class="align-middle me-2" data-feather="edit-3"></i> Editar Información de Paquete
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+                <div class="modal-header bg-dark text-white p-4">
+                    <h5 class="modal-title uppercase font-black small tracking-widest text-white mb-0">
+                        <i class="align-middle me-2" data-feather="edit-3"></i> Editar Paquete
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form wire:submit.prevent="updatePackage">
                     <div class="modal-body p-4">
@@ -340,7 +342,7 @@
                             <textarea wire:model="edit_description" rows="2" class="form-control border-2"></textarea>
                         </div>
                     </div>
-                    <div class="modal-footer bg-light">
+                    <div class="modal-footer bg-light p-3">
                         <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal">CANCELAR</button>
                         <button type="submit" class="btn btn-primary fw-black px-4">GUARDAR CAMBIOS</button>
                     </div>
@@ -355,11 +357,6 @@
             var myModal = bootstrap.Modal.getOrCreateInstance(el);
             myModal.show();
         }
-
-        window.addEventListener('package-saved', event => {
-            // Optional: Close modal after success if you prefer
-            // bootstrap.Modal.getOrCreateInstance(document.getElementById('modalReceivePackage')).hide();
-        });
 
         window.addEventListener('open-edit-modal', event => {
             var el = document.getElementById('modalEditPackage');

@@ -77,6 +77,24 @@
                             @error('photo') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                         </div>
 
+                        @if($delivery->cod_amount > 0)
+                        <div class="mb-4 bg-warning bg-opacity-10 p-3 rounded-3 border border-warning border-opacity-25">
+                            <label class="form-label small font-black text-uppercase text-dark">Efectivo/Cobro Recibido</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" wire:model="cod_collected" class="form-control fw-black" step="0.01">
+                            </div>
+                            <div class="mt-2">
+                                <label class="form-label xsmall font-black text-uppercase text-muted d-block">Método de Cobro:</label>
+                                <div class="btn-group w-100 btn-group-sm">
+                                    <button type="button" wire:click="$set('payment_method_collected', 'cash')" class="btn {{ $payment_method_collected === 'cash' ? 'btn-dark' : 'btn-light' }}">EFECTIVO</button>
+                                    <button type="button" wire:click="$set('payment_method_collected', 'yappy')" class="btn {{ $payment_method_collected === 'yappy' ? 'btn-dark' : 'btn-light' }}">YAPPY</button>
+                                </div>
+                            </div>
+                            @error('cod_collected') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                        </div>
+                        @endif
+
                         <div class="mb-4" x-data="{
                             init() {
                                 if (navigator.geolocation) {

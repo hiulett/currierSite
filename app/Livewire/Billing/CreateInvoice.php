@@ -14,7 +14,9 @@ class CreateInvoice extends Component
     public $found_customer = null;
     public $items = [];
     public $notes;
-    public $tax_percent = 7; // Default tax (e.g. ITBMS Panama)
+    public $tax_percent = 7;
+    public $selectedPackages = [];
+    public $availablePackages = [];
 
     public function mount()
     {
@@ -37,6 +39,56 @@ class CreateInvoice extends Component
     public function updatedBoxNumber($value)
     {
         $this->found_customer = Customer::where('box_number', $value)->first();
+        if ($this->found_customer) {
+            $this->loadAvailablePackages();
+        } else {
+            $this->availablePackages = [];
+        }
+    }
+
+    public function loadAvailablePackages()
+    {
+        $this->availablePackages = \App\Models\Package::where('customer_id', $this->found_customer->id)
+            ->whereNotIn('status', ['delivered', 'cancelled'])
+            ->get();
+    }
+
+    public function togglePackage($packageId)
+    {
+        $package = \App\Models\Package::find($packageId);
+        if (!$package) return;
+
+        if (in_array($packageId, $this->selectedPackages)) {
+            // Remove from selected and items
+            $this->selectedPackages = array_diff($this->selectedPackages, [$packageId]);
+            $this->items = array_filter($this->items, fn($item) => ($item['package_id'] ?? null) !== $packageId);
+            $this->items = array_values($this->items);
+        } else {
+            // Add to selected and items
+            $this->selectedPackages[] = $packageId;
+
+            $tenant = \App\Models\Tenant::find(session('tenant_id'));
+            $rate = $tenant->settings_json['default_rate'] ?? 2.50;
+
+            $this->items[] = [
+                'package_id' => $package->id,
+                'description' => 'Flete Aéreo - ' . $package->tracking_number,
+                'quantity' => $package->weight,
+                'unit_price' => $rate,
+                'total' => $package->weight * $rate,
+                'provider_cost' => $package->provider_cost ?? 0
+            ];
+        }
+    }
+
+    public function getEstimatedProfitProperty()
+    {
+        $subtotal = collect($this->items)->sum('total');
+        $totalCost = collect($this->items)->sum(function($item) {
+            return $item['provider_cost'] ?? 0;
+        });
+
+        return $subtotal - $totalCost;
     }
 
     public function addItem()
@@ -87,12 +139,20 @@ class CreateInvoice extends Component
 
             foreach ($this->items as $item) {
                 InvoiceItem::create([
+                    'tenant_id' => session('tenant_id'),
                     'invoice_id' => $invoice->id,
+                    'package_id' => $item['package_id'] ?? null,
                     'description' => $item['description'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
                     'total' => $item['total'],
                 ]);
+
+                if (isset($item['package_id'])) {
+                    \App\Models\Package::where('id', $item['package_id'])->update([
+                        'client_total_billed' => $item['total']
+                    ]);
+                }
             }
         });
 

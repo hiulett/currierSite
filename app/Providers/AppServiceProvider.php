@@ -101,8 +101,15 @@ class AppServiceProvider extends ServiceProvider
                 $newCustomers = Customer::where('created_at', '>=', now()->subHours(48))->count();
                 if ($newCustomers > 0) $alerts['new_customers'] = $newCustomers;
 
+                // 5. Pending Payments
+                $pendingPayments = \App\Models\PaymentProof::where('status', 'pending')->count();
+                if ($pendingPayments > 0) $alerts['pending_payments'] = $pendingPayments;
+
+                // 6. DB Notifications (Financial Alerts, etc)
+                $dbNotificationsCount = auth()->user()->unreadNotifications->count();
+
                 $view->with('navAlerts', $alerts);
-                $view->with('totalNavAlerts', array_sum($alerts));
+                $view->with('totalNavAlerts', array_sum($alerts) + $dbNotificationsCount);
             }
         });
     }
