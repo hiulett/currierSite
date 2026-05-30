@@ -45,7 +45,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small font-black text-uppercase text-muted tracking-widest">Tarifa por Libra</label>
+                            <label class="form-label small font-black text-uppercase text-muted tracking-widest">Tarifa Base por Libra</label>
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text bg-light border-2 border-end-0">&dollar;</span>
                                 <input type="number" step="0.01" wire:model="default_rate" class="form-control border-2 fw-bold">
@@ -86,7 +86,7 @@
                                 <i data-feather="info" style="width: 18px; height: 18px;"></i>
                             </div>
                             <div>
-                                <h6 class="mb-1 fw-black text-uppercase small">Nota de Seguridad</h6>
+                                <h6 class="mb-1 fw-black text-uppercase small">Ajuste de Servidor</h6>
                                 <p class="mb-0 small text-muted">Estos cambios afectan a toda la organización inmediatamente.</p>
                             </div>
                         </div>
@@ -95,70 +95,15 @@
             </div>
         </div>
 
-        <!-- Locker Physical Address Settings -->
-        <div class="col-12 mt-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0 uppercase font-black small text-white"><i class="align-middle me-2" data-feather="map-pin"></i> Dirección de Recepción (USA Hub)</h5>
-                    <button wire:click="saveLockerAddress" class="btn btn-sm btn-outline-light fw-black uppercase">Guardar Dirección</button>
-                </div>
-                <div class="card-body p-4 p-md-5">
-                    <p class="text-muted small mb-4">Esta es la dirección que se le mostrará a los clientes en su portal para que realicen sus compras.</p>
-
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <label class="form-label small font-black text-uppercase text-muted">Dirección Línea 1</label>
-                            <input type="text" wire:model="locker_address" class="form-control border-2 fw-bold" placeholder="2610 NW 89th CT">
-                            @error('locker_address') <span class="text-danger xsmall">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label small font-black text-uppercase text-muted">Ciudad</label>
-                            <input type="text" wire:model="locker_city" class="form-control border-2 fw-bold" placeholder="Doral">
-                            @error('locker_city') <span class="text-danger xsmall">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label small font-black text-uppercase text-muted">Estado</label>
-                            <input type="text" wire:model="locker_state" class="form-control border-2 fw-bold" placeholder="Florida">
-                            @error('locker_state') <span class="text-danger xsmall">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label small font-black text-uppercase text-muted">Zip Code</label>
-                            <input type="text" wire:model="locker_zip_code" class="form-control border-2 fw-bold" placeholder="33172-1615">
-                            @error('locker_zip_code') <span class="text-danger xsmall">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label small font-black text-uppercase text-muted">Teléfono de Recepción</label>
-                            <input type="text" wire:model="locker_phone" class="form-control border-2 fw-bold" placeholder="+1 (305) 848-1127">
-                            @error('locker_phone') <span class="text-danger xsmall">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="col-12 mt-4">
-                            <div class="p-4 bg-light rounded-4 border-2 border-dashed">
-                                <span class="xsmall text-muted uppercase font-black d-block mb-3 text-center">Vista Previa para el Cliente:</span>
-                                <div class="bg-white p-3 rounded shadow-sm font-monospace small">
-                                    <span class="text-primary fw-black">{{ $box_number_prefix_air }}{{ $box_number_counter + 1 }}</span> <span class="fw-black">NOMBRE DEL CLIENTE</span><br>
-                                    {{ $locker_address ?: '...' }}<br>
-                                    CIUDAD: {{ $locker_city ?: '...' }}<br>
-                                    ESTADO: {{ $locker_state ?: '...' }}<br>
-                                    ZIP CODE: {{ $locker_zip_code ?: '...' }}<br>
-                                    TEL: {{ $locker_phone ?: '...' }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Locker Generation Settings -->
+        <!-- Box Generation Settings -->
         <div class="col-12 mt-4">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0 uppercase font-black small text-white"><i class="align-middle me-2" data-feather="grid"></i> Configuración de Casilleros Automáticos</h5>
+                    <h5 class="card-title mb-0 uppercase font-black small text-white"><i class="align-middle me-2" data-feather="grid"></i> Configuración de Servicios y Casilleros</h5>
                     <div class="d-flex align-items-center gap-2">
-                        <label class="small uppercase font-black mb-0 opacity-50">Siguiente ID:</label>
+                        <label class="small uppercase font-black mb-0 opacity-50">Próximo ID Cliente:</label>
                         <input type="number" wire:model="box_number_counter" class="form-control form-control-sm bg-transparent border-white border-opacity-25 text-white fw-bold" style="width: 100px;">
-                        <button wire:click="saveCounter" class="btn btn-sm btn-outline-light fw-black uppercase">Guardar ID</button>
+                        <button wire:click="saveCounter" class="btn btn-sm btn-outline-light fw-black uppercase">Sincronizar</button>
                     </div>
                 </div>
                 <div class="card-body p-4 p-md-5">
@@ -169,28 +114,60 @@
                                 <h6 class="fw-black text-uppercase text-primary mb-0"><i class="align-middle me-2" data-feather="send"></i> SERVICIO AÉREO</h6>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" wire:model.live="service_air_enabled" id="airToggle">
-                                    <label class="form-check-label xsmall fw-bold text-uppercase" for="airToggle">Activar</label>
+                                    <label class="form-check-label xsmall fw-bold text-uppercase" for="airToggle">Activo</label>
                                 </div>
                             </div>
-                            <div class="mb-3 {{ !$service_air_enabled ? 'opacity-50' : '' }}">
-                                <label class="form-label small font-black text-uppercase text-muted">Prefijo Aéreo</label>
-                                <input type="text" wire:model="box_number_prefix_air" class="form-control border-2 fw-bold" placeholder="Ej: AIR, LGX" {{ !$service_air_enabled ? 'disabled' : '' }}>
+
+                            <div class="row g-3 mb-4 {{ !$service_air_enabled ? 'opacity-50' : '' }}">
+                                <div class="col-md-6">
+                                    <label class="form-label xsmall font-black text-uppercase text-muted">Prefijo</label>
+                                    <input type="text" wire:model="box_number_prefix_air" class="form-control border-2 fw-bold" placeholder="AIR" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label xsmall font-black text-uppercase text-muted">Plantilla ID</label>
+                                    <input type="text" wire:model="box_number_template_air" class="form-control border-2 fw-bold" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                </div>
                             </div>
-                            <div class="mb-4 {{ !$service_air_enabled ? 'opacity-50' : '' }}">
-                                <label class="form-label small font-black text-uppercase text-muted">Plantilla Identificador Aéreo</label>
-                                <input type="text" wire:model="box_number_template_air" class="form-control border-2 fw-bold" {{ !$service_air_enabled ? 'disabled' : '' }}>
-                                <div class="form-text xsmall">Variables: <code>{PREFIX}</code>, <code>{ID}</code>, <code>{NAME}</code></div>
+
+                            <!-- Air Hub Address -->
+                            <div class="bg-light p-4 rounded-4 border-2 border-dashed mb-4 {{ !$service_air_enabled ? 'opacity-50' : '' }}">
+                                <h6 class="xsmall font-black text-uppercase mb-3"><i class="align-middle me-1" data-feather="map-pin"></i> Dirección del Hub Aéreo</h6>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Dirección Línea 1</label>
+                                        <input type="text" wire:model="air_address" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Ciudad</label>
+                                        <input type="text" wire:model="air_city" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Estado</label>
+                                        <input type="text" wire:model="air_state" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Zip Code</label>
+                                        <input type="text" wire:model="air_zip_code" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Teléfono</label>
+                                        <input type="text" wire:model="air_phone" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 p-3 bg-white rounded shadow-sm">
+                                    <span class="xsmall text-muted uppercase font-black d-block mb-2">Vista Previa Cliente (Aéreo):</span>
+                                    <div class="font-monospace small line-height-sm">
+                                        <span class="text-primary fw-black">{{ $box_number_prefix_air }}{{ $box_number_counter + 1 }}</span> <span class="fw-black">JUAN PEREZ</span><br>
+                                        {{ $air_address ?: '...' }}<br>
+                                        CIUDAD: {{ $air_city ?: '...' }}<br>
+                                        ESTADO: {{ $air_state ?: '...' }}<br>
+                                        ZIP CODE: {{ $air_zip_code ?: '...' }}<br>
+                                        TEL: {{ $air_phone ?: '...' }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="p-3 bg-light rounded-3 border {{ !$service_air_enabled ? 'opacity-50' : '' }} mb-4">
-                                <span class="xsmall text-muted uppercase font-bold d-block mb-1">Vista Previa Aérea:</span>
-                                @if($service_air_enabled)
-                                    <span class="h5 fw-black text-primary mb-0">
-                                        {{ str_replace(['{PREFIX}', '{ID}', '{NAME}'], [$box_number_prefix_air, $box_number_counter + 1, 'JUAN PEREZ'], $box_number_template_air) }}
-                                    </span>
-                                @else
-                                    <span class="xsmall text-muted italic">Servicio desactivado</span>
-                                @endif
-                            </div>
+
                             <div class="text-end">
                                 <button wire:click="saveAir" class="btn btn-primary fw-black uppercase shadow-sm" {{ !$service_air_enabled ? 'disabled' : '' }}>
                                     Guardar Configuración Aérea
@@ -204,28 +181,60 @@
                                 <h6 class="fw-black text-uppercase text-info mb-0"><i class="align-middle me-2" data-feather="anchor"></i> SERVICIO MARÍTIMO</h6>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" wire:model.live="service_maritime_enabled" id="maritimeToggle">
-                                    <label class="form-check-label xsmall fw-bold text-uppercase" for="maritimeToggle">Activar</label>
+                                    <label class="form-check-label xsmall fw-bold text-uppercase" for="maritimeToggle">Activo</label>
                                 </div>
                             </div>
-                            <div class="mb-3 {{ !$service_maritime_enabled ? 'opacity-50' : '' }}">
-                                <label class="form-label small font-black text-uppercase text-muted">Prefijo Marítimo</label>
-                                <input type="text" wire:model="box_number_prefix_maritime" class="form-control border-2 fw-bold" placeholder="Ej: SEA, MAR" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+
+                            <div class="row g-3 mb-4 {{ !$service_maritime_enabled ? 'opacity-50' : '' }}">
+                                <div class="col-md-6">
+                                    <label class="form-label xsmall font-black text-uppercase text-muted">Prefijo</label>
+                                    <input type="text" wire:model="box_number_prefix_maritime" class="form-control border-2 fw-bold" placeholder="MAR" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label xsmall font-black text-uppercase text-muted">Plantilla ID</label>
+                                    <input type="text" wire:model="box_number_template_maritime" class="form-control border-2 fw-bold" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                </div>
                             </div>
-                            <div class="mb-4 {{ !$service_maritime_enabled ? 'opacity-50' : '' }}">
-                                <label class="form-label small font-black text-uppercase text-muted">Plantilla Identificador Marítimo</label>
-                                <input type="text" wire:model="box_number_template_maritime" class="form-control border-2 fw-bold" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
-                                <div class="form-text xsmall">Variables: <code>{PREFIX}</code>, <code>{ID}</code>, <code>{NAME}</code></div>
+
+                            <!-- Maritime Hub Address -->
+                            <div class="bg-light p-4 rounded-4 border-2 border-dashed mb-4 {{ !$service_maritime_enabled ? 'opacity-50' : '' }}">
+                                <h6 class="xsmall font-black text-uppercase mb-3"><i class="align-middle me-1" data-feather="map-pin"></i> Dirección del Hub Marítimo</h6>
+                                <div class="row g-3">
+                                    <div class="col-12">
+                                        <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Dirección Línea 1</label>
+                                        <input type="text" wire:model="maritime_address" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Ciudad</label>
+                                        <input type="text" wire:model="maritime_city" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Estado</label>
+                                        <input type="text" wire:model="maritime_state" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Zip Code</label>
+                                        <input type="text" wire:model="maritime_zip_code" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Teléfono</label>
+                                        <input type="text" wire:model="maritime_phone" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 p-3 bg-white rounded shadow-sm">
+                                    <span class="xsmall text-muted uppercase font-black d-block mb-2">Vista Previa Cliente (Marítimo):</span>
+                                    <div class="font-monospace small line-height-sm">
+                                        <span class="text-info fw-black">{{ $box_number_prefix_maritime }}{{ $box_number_counter + 1 }}</span> <span class="fw-black">JUAN PEREZ</span><br>
+                                        {{ $maritime_address ?: '...' }}<br>
+                                        CIUDAD: {{ $maritime_city ?: '...' }}<br>
+                                        ESTADO: {{ $maritime_state ?: '...' }}<br>
+                                        ZIP CODE: {{ $maritime_zip_code ?: '...' }}<br>
+                                        TEL: {{ $maritime_phone ?: '...' }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="p-3 bg-light rounded-3 border {{ !$service_maritime_enabled ? 'opacity-50' : '' }} mb-4">
-                                <span class="xsmall text-muted uppercase font-bold d-block mb-1">Vista Previa Marítima:</span>
-                                @if($service_maritime_enabled)
-                                    <span class="h5 fw-black text-info mb-0">
-                                        {{ str_replace(['{PREFIX}', '{ID}', '{NAME}'], [$box_number_prefix_maritime, $box_number_counter + 1, 'JUAN PEREZ'], $box_number_template_maritime) }}
-                                    </span>
-                                @else
-                                    <span class="xsmall text-muted italic">Servicio desactivado</span>
-                                @endif
-                            </div>
+
                             <div class="text-end">
                                 <button wire:click="saveMaritime" class="btn btn-info fw-black uppercase shadow-sm text-white" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
                                     Guardar Configuración Marítima

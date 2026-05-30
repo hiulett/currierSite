@@ -205,26 +205,19 @@
                         $tenant = \App\Models\Tenant::find(session('tenant_id'));
                         $settings = $tenant->settings_json ?? [];
 
-                        $globalAddress = $settings['locker_address'] ?? null;
-                        $globalCity = $settings['locker_city'] ?? null;
-                        $globalState = $settings['locker_state'] ?? null;
-                        $globalZip = $settings['locker_zip_code'] ?? null;
-                        $globalPhone = $settings['locker_phone'] ?? null;
-
                         $airEnabled = $settings['service_air_enabled'] ?? true;
                         $maritimeEnabled = $settings['service_maritime_enabled'] ?? true;
                     @endphp
 
-                    @if($globalAddress)
-                        <!-- New Global Address Block (Configurable in General Settings) -->
+                    <!-- AIR SERVICE ADDRESS -->
+                    @if($airEnabled && isset($settings['air_address']))
                         <div class="mb-4">
-                            <h6 class="xsmall font-black text-primary uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="globe" style="width: 12px;"></i> Tu Dirección de Casillero</h6>
+                            <h6 class="xsmall font-black text-primary uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="send" style="width: 12px;"></i> Tu Dirección Aérea (USA)</h6>
                             <div class="bg-white bg-opacity-10 p-4 rounded-4 border border-white border-opacity-10 position-relative shadow-sm overflow-hidden">
-                                <!-- Background Glass Decoration -->
                                 <div class="position-absolute top-0 end-0 bg-primary opacity-10 rounded-circle" style="width: 100px; height: 100px; transform: translate(30%, -30%);"></div>
 
                                 <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
-                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number }} {{ $customer->user->name }}\n{{ $globalAddress }}\nCIUDAD: {{ $globalCity }}\nESTADO: {{ $globalState }}\nZIP CODE: {{ $globalZip }}\nTEL: {{ $globalPhone }}'); alert('¡Dirección copiada!');">
+                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['air_address'] }}\nCIUDAD: {{ $settings['air_city'] }}\nESTADO: {{ $settings['air_state'] }}\nZIP CODE: {{ $settings['air_zip_code'] }}\nTEL: {{ $settings['air_phone'] }}'); alert('¡Dirección Aérea copiada!');">
                                     <i data-feather="copy" class="me-1" style="width: 14px;"></i> COPIAR
                                 </button>
 
@@ -235,16 +228,49 @@
                                         </h5>
                                     </div>
                                     <div class="font-monospace small text-white-50 leading-loose">
-                                        <div class="mb-1 text-white fw-bold">{{ $globalAddress }}</div>
-                                        <div class="mb-0">CIUDAD: <span class="text-white">{{ $globalCity }}</span></div>
-                                        <div class="mb-0">ESTADO: <span class="text-white">{{ $globalState }}</span></div>
-                                        <div class="mb-0">ZIP CODE: <span class="text-white">{{ $globalZip }}</span></div>
-                                        <div class="mb-0">TEL: <span class="text-white">{{ $globalPhone }}</span></div>
+                                        <div class="mb-1 text-white fw-bold">{{ $settings['air_address'] }}</div>
+                                        <div class="mb-0">CIUDAD: <span class="text-white">{{ $settings['air_city'] }}</span></div>
+                                        <div class="mb-0">ESTADO: <span class="text-white">{{ $settings['air_state'] }}</span></div>
+                                        <div class="mb-0">ZIP CODE: <span class="text-white">{{ $settings['air_zip_code'] }}</span></div>
+                                        <div class="mb-0">TEL: <span class="text-white">{{ $settings['air_phone'] }}</span></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    @endif
+
+                    @if($airEnabled && $maritimeEnabled)
                         <hr class="my-4 border-white border-opacity-10">
+                    @endif
+
+                    <!-- MARITIME SERVICE ADDRESS -->
+                    @if($maritimeEnabled && isset($settings['maritime_address']))
+                        <div class="mb-4">
+                            <h6 class="xsmall font-black text-info uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="anchor" style="width: 12px;"></i> Tu Dirección Marítima (USA)</h6>
+                            <div class="bg-white bg-opacity-10 p-4 rounded-4 border border-white border-opacity-10 position-relative shadow-sm overflow-hidden">
+                                <div class="position-absolute top-0 end-0 bg-info opacity-10 rounded-circle" style="width: 100px; height: 100px; transform: translate(30%, -30%);"></div>
+
+                                <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
+                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['maritime_address'] }}\nCIUDAD: {{ $settings['maritime_city'] }}\nESTADO: {{ $settings['maritime_state'] }}\nZIP CODE: {{ $settings['maritime_zip_code'] }}\nTEL: {{ $settings['maritime_phone'] }}'); alert('¡Dirección Marítima copiada!');">
+                                    <i data-feather="copy" class="me-1" style="width: 14px;"></i> COPIAR
+                                </button>
+
+                                <div class="position-relative">
+                                    <div class="mb-3">
+                                        <h5 class="fw-black text-white mb-0">
+                                            <span class="text-info">{{ $customer->box_number }}</span> {{ $customer->user->name }}
+                                        </h5>
+                                    </div>
+                                    <div class="font-monospace small text-white-50 leading-loose">
+                                        <div class="mb-1 text-white fw-bold">{{ $settings['maritime_address'] }}</div>
+                                        <div class="mb-0">CIUDAD: <span class="text-white">{{ $settings['maritime_city'] }}</span></div>
+                                        <div class="mb-0">ESTADO: <span class="text-white">{{ $settings['maritime_state'] }}</span></div>
+                                        <div class="mb-0">ZIP CODE: <span class="text-white">{{ $settings['maritime_zip_code'] }}</span></div>
+                                        <div class="mb-0">TEL: <span class="text-white">{{ $settings['maritime_phone'] }}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endif
 
                     <!-- FALLBACK: WAREHOUSES -->

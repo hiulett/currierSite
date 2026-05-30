@@ -16,17 +16,20 @@ class GeneralSettings extends Component
     // Box Number Settings - Air
     public $box_number_prefix_air;
     public $box_number_template_air;
+    public $air_address;
+    public $air_city;
+    public $air_state;
+    public $air_zip_code;
+    public $air_phone;
 
     // Box Number Settings - Maritime
     public $box_number_prefix_maritime;
     public $box_number_template_maritime;
-
-    // Locker Physical Address (USA Hub)
-    public $locker_address;
-    public $locker_city;
-    public $locker_state;
-    public $locker_zip_code;
-    public $locker_phone;
+    public $maritime_address;
+    public $maritime_city;
+    public $maritime_state;
+    public $maritime_zip_code;
+    public $maritime_phone;
 
     public $box_number_counter;
 
@@ -47,15 +50,19 @@ class GeneralSettings extends Component
 
         $this->box_number_prefix_air = $settings['box_number_prefix_air'] ?? 'AIR';
         $this->box_number_template_air = $settings['box_number_template_air'] ?? '{PREFIX}{ID} {NAME}';
+        $this->air_address = $settings['air_address'] ?? '2610 NW 89th CT';
+        $this->air_city = $settings['air_city'] ?? 'Doral';
+        $this->air_state = $settings['air_state'] ?? 'Florida';
+        $this->air_zip_code = $settings['air_zip_code'] ?? '33172-1615';
+        $this->air_phone = $settings['air_phone'] ?? '+1 (305) 848-1127';
 
         $this->box_number_prefix_maritime = $settings['box_number_prefix_maritime'] ?? 'SEA';
         $this->box_number_template_maritime = $settings['box_number_template_maritime'] ?? '{PREFIX}M{ID} {NAME}';
-
-        $this->locker_address = $settings['locker_address'] ?? '2610 NW 89th CT';
-        $this->locker_city = $settings['locker_city'] ?? 'Doral';
-        $this->locker_state = $settings['locker_state'] ?? 'Florida';
-        $this->locker_zip_code = $settings['locker_zip_code'] ?? '33172-1615';
-        $this->locker_phone = $settings['locker_phone'] ?? '+1 (305) 848-1127';
+        $this->maritime_address = $settings['maritime_address'] ?? '2610 NW 89th CT';
+        $this->maritime_city = $settings['maritime_city'] ?? 'Doral';
+        $this->maritime_state = $settings['maritime_state'] ?? 'Florida';
+        $this->maritime_zip_code = $settings['maritime_zip_code'] ?? '33172-1615';
+        $this->maritime_phone = $settings['maritime_phone'] ?? '+1 (305) 848-1127';
 
         $this->box_number_counter = $settings['box_number_counter'] ?? 1000;
 
@@ -94,6 +101,11 @@ class GeneralSettings extends Component
         $this->validate([
             'box_number_prefix_air' => 'required|string|max:10',
             'box_number_template_air' => 'required|string',
+            'air_address' => 'required|string',
+            'air_city' => 'required|string',
+            'air_state' => 'required|string',
+            'air_zip_code' => 'required|string',
+            'air_phone' => 'required|string',
         ]);
 
         $tenant = Tenant::find(session('tenant_id'));
@@ -102,6 +114,11 @@ class GeneralSettings extends Component
         $settings['box_number_prefix_air'] = strtoupper($this->box_number_prefix_air);
         $settings['box_number_template_air'] = $this->box_number_template_air;
         $settings['service_air_enabled'] = (bool) $this->service_air_enabled;
+        $settings['air_address'] = $this->air_address;
+        $settings['air_city'] = $this->air_city;
+        $settings['air_state'] = $this->air_state;
+        $settings['air_zip_code'] = $this->air_zip_code;
+        $settings['air_phone'] = $this->air_phone;
 
         $tenant->update(['settings_json' => $settings]);
         session()->flash('message', 'Configuración de servicio aéreo actualizada.');
@@ -112,6 +129,11 @@ class GeneralSettings extends Component
         $this->validate([
             'box_number_prefix_maritime' => 'required|string|max:10',
             'box_number_template_maritime' => 'required|string',
+            'maritime_address' => 'required|string',
+            'maritime_city' => 'required|string',
+            'maritime_state' => 'required|string',
+            'maritime_zip_code' => 'required|string',
+            'maritime_phone' => 'required|string',
         ]);
 
         $tenant = Tenant::find(session('tenant_id'));
@@ -120,32 +142,14 @@ class GeneralSettings extends Component
         $settings['box_number_prefix_maritime'] = strtoupper($this->box_number_prefix_maritime);
         $settings['box_number_template_maritime'] = $this->box_number_template_maritime;
         $settings['service_maritime_enabled'] = (bool) $this->service_maritime_enabled;
+        $settings['maritime_address'] = $this->maritime_address;
+        $settings['maritime_city'] = $this->maritime_city;
+        $settings['maritime_state'] = $this->maritime_state;
+        $settings['maritime_zip_code'] = $this->maritime_zip_code;
+        $settings['maritime_phone'] = $this->maritime_phone;
 
         $tenant->update(['settings_json' => $settings]);
         session()->flash('message', 'Configuración de servicio marítimo actualizada.');
-    }
-
-    public function saveLockerAddress()
-    {
-        $this->validate([
-            'locker_address' => 'required|string',
-            'locker_city' => 'required|string',
-            'locker_state' => 'required|string',
-            'locker_zip_code' => 'required|string',
-            'locker_phone' => 'required|string',
-        ]);
-
-        $tenant = Tenant::find(session('tenant_id'));
-        $settings = $tenant->settings_json ?? [];
-
-        $settings['locker_address'] = $this->locker_address;
-        $settings['locker_city'] = $this->locker_city;
-        $settings['locker_state'] = $this->locker_state;
-        $settings['locker_zip_code'] = $this->locker_zip_code;
-        $settings['locker_phone'] = $this->locker_phone;
-
-        $tenant->update(['settings_json' => $settings]);
-        session()->flash('message', 'Dirección física de casilleros actualizada.');
     }
 
     public function saveCounter()
