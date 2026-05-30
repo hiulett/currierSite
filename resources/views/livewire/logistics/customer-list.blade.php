@@ -52,6 +52,9 @@
                         </h5>
                     </div>
                     <div class="d-flex gap-2 w-100 w-md-auto">
+                        <button wire:click="sendBulkPasswords" wire:confirm="¿Estás seguro? Se cambiarán las contraseñas de TODOS los clientes y se les enviará un correo con la nueva clave." class="btn btn-warning shadow-sm fw-black rounded-pill px-3">
+                            <i class="align-middle me-1" data-feather="mail"></i> ENVIAR CLAVES MASIVAS
+                        </button>
                         <button wire:click="openCreateModal" class="btn btn-primary shadow-sm fw-black rounded-pill px-3">
                             <i class="align-middle me-1" data-feather="plus-circle"></i> NUEVO CLIENTE
                         </button>
@@ -100,6 +103,11 @@
                                             <div class="text-muted" style="font-size: 0.75rem;">ID: {{ $c->identification_number ?? 'S/N' }}</div>
                                             @if($c->user->email_verified_at)
                                                 <span class="text-success" title="Verificado"><i data-feather="check-circle" style="width: 11px;"></i></span>
+                                            @endif
+                                            @if($c->temporary_password)
+                                                <span class="badge bg-light text-danger border xsmall font-black" style="font-size: 0.65rem;" title="Contraseña visible para Admin">
+                                                    PASS: {{ $c->temporary_password }}
+                                                </span>
                                             @endif
                                         </div>
                                     </td>

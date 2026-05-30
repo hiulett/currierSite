@@ -46,7 +46,7 @@ class CustomerList extends Component
     public function resetPassword()
     {
         $this->validate([
-            'new_password' => 'required|string|min:8',
+            'new_password' => 'required|string|min:6',
         ]);
 
         $customer = Customer::find($this->selected_customer_id);
@@ -55,11 +55,49 @@ class CustomerList extends Component
                 'password' => Hash::make($this->new_password)
             ]);
 
-            session()->flash('message', 'Contraseña actualizada para el cliente: ' . $customer->user->name);
+            // Guardar en texto plano para el admin (bajo responsabilidad del admin)
+            $customer->update([
+                'temporary_password' => $this->new_password
+            ]);
+
+            // Enviar notificación al correo
+            $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($this->new_password, $customer->user->name));
+
+            session()->flash('message', 'Contraseña actualizada y enviada por correo a: ' . $customer->user->name);
         }
 
         $this->dispatch('close-password-modal');
         $this->reset(['selected_customer_id', 'new_password']);
+    }
+
+    public function sendBulkPasswords()
+    {
+        $customers = Customer::where('tenant_id', session('tenant_id'))->get();
+        $count = 0;
+
+        foreach ($customers as $customer) {
+            if (!$customer->user) continue;
+
+            // Generar clave aleatoria de 8 caracteres (alfanumérico)
+            $plainPassword = Str::random(8);
+
+            // Actualizar cuenta de usuario
+            $customer->user->update([
+                'password' => Hash::make($plainPassword)
+            ]);
+
+            // Guardar para vista del administrador
+            $customer->update([
+                'temporary_password' => $plainPassword
+            ]);
+
+            // Enviar notificación
+            $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($plainPassword, $customer->user->name));
+
+            $count++;
+        }
+
+        session()->flash('message', "Operación masiva completada. Se enviaron $count correos con nuevas contraseñas.");
     }
 
     public function resetFields()
