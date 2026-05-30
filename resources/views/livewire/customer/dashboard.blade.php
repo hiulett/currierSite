@@ -217,14 +217,14 @@
                                 <div class="position-absolute top-0 end-0 bg-primary opacity-10 rounded-circle" style="width: 100px; height: 100px; transform: translate(30%, -30%);"></div>
 
                                 <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
-                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number_air ?: $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['air_address'] }}\nCIUDAD: {{ $settings['air_city'] }}\nESTADO: {{ $settings['air_state'] }}\nZIP CODE: {{ $settings['air_zip_code'] }}\nTEL: {{ $settings['air_phone'] }}'); alert('¡Dirección Aérea copiada!');">
+                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['air_address'] }}\nCIUDAD: {{ $settings['air_city'] }}\nESTADO: {{ $settings['air_state'] }}\nZIP CODE: {{ $settings['air_zip_code'] }}\nTEL: {{ $settings['air_phone'] }}'); alert('¡Dirección Aérea copiada!');">
                                     <i data-feather="copy" class="me-1" style="width: 14px;"></i> COPIAR
                                 </button>
 
                                 <div class="position-relative">
                                     <div class="mb-3">
                                         <h5 class="fw-black text-white mb-0">
-                                            <span class="text-primary">{{ $customer->box_number_air ?: $customer->box_number }}</span> {{ $customer->user->name }}
+                                            <span class="text-primary">{{ $customer->box_number }}</span> {{ $customer->user->name }}
                                         </h5>
                                     </div>
                                     <div class="font-monospace small text-white-50 leading-loose">
@@ -251,14 +251,14 @@
                                 <div class="position-absolute top-0 end-0 bg-info opacity-10 rounded-circle" style="width: 100px; height: 100px; transform: translate(30%, -30%);"></div>
 
                                 <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
-                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number_maritime ?: $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['maritime_address'] }}\nCIUDAD: {{ $settings['maritime_city'] }}\nESTADO: {{ $settings['maritime_state'] }}\nZIP CODE: {{ $settings['maritime_zip_code'] }}\nTEL: {{ $settings['maritime_phone'] }}'); alert('¡Dirección Marítima copiada!');">
+                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['maritime_address'] }}\nCIUDAD: {{ $settings['maritime_city'] }}\nESTADO: {{ $settings['maritime_state'] }}\nZIP CODE: {{ $settings['maritime_zip_code'] }}\nTEL: {{ $settings['maritime_phone'] }}'); alert('¡Dirección Marítima copiada!');">
                                     <i data-feather="copy" class="me-1" style="width: 14px;"></i> COPIAR
                                 </button>
 
                                 <div class="position-relative">
                                     <div class="mb-3">
                                         <h5 class="fw-black text-white mb-0">
-                                            <span class="text-info">{{ $customer->box_number_maritime ?: $customer->box_number }}</span> {{ $customer->user->name }}
+                                            <span class="text-info">{{ $customer->box_number }}</span> {{ $customer->user->name }}
                                         </h5>
                                     </div>
                                     <div class="font-monospace small text-white-50 leading-loose">
