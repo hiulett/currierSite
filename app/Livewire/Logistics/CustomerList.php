@@ -36,6 +36,32 @@ class CustomerList extends Component
         $this->resetPage();
     }
 
+    public function openPasswordModal($customerId)
+    {
+        $this->selected_customer_id = $customerId;
+        $this->new_password = '';
+        $this->dispatch('open-password-modal');
+    }
+
+    public function resetPassword()
+    {
+        $this->validate([
+            'new_password' => 'required|string|min:8',
+        ]);
+
+        $customer = Customer::find($this->selected_customer_id);
+        if ($customer && $customer->user) {
+            $customer->user->update([
+                'password' => Hash::make($this->new_password)
+            ]);
+
+            session()->flash('message', 'Contraseña actualizada para el cliente: ' . $customer->user->name);
+        }
+
+        $this->dispatch('close-password-modal');
+        $this->reset(['selected_customer_id', 'new_password']);
+    }
+
     public function resetFields()
     {
         $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'loyalty_level_id', 'identification_number', 'address', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id']);
