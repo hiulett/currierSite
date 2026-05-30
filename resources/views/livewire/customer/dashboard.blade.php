@@ -212,19 +212,19 @@
                     <!-- AIR SERVICE ADDRESS -->
                     @if($airEnabled && isset($settings['air_address']))
                         <div class="mb-4">
-                            <h6 class="xsmall font-black text-primary uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="send" style="width: 12px;"></i> Tu Dirección Aérea (USA)</h6>
+                            <h6 class="xsmall font-black text-primary uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="send" style="width: 12px;"></i> Servicio Aéreo</h6>
                             <div class="bg-white bg-opacity-10 p-4 rounded-4 border border-white border-opacity-10 position-relative shadow-sm overflow-hidden">
                                 <div class="position-absolute top-0 end-0 bg-primary opacity-10 rounded-circle" style="width: 100px; height: 100px; transform: translate(30%, -30%);"></div>
 
                                 <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
-                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['air_address'] }}\nCIUDAD: {{ $settings['air_city'] }}\nESTADO: {{ $settings['air_state'] }}\nZIP CODE: {{ $settings['air_zip_code'] }}\nTEL: {{ $settings['air_phone'] }}'); alert('¡Dirección Aérea copiada!');">
+                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number_air ?: $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['air_address'] }}\nCIUDAD: {{ $settings['air_city'] }}\nESTADO: {{ $settings['air_state'] }}\nZIP CODE: {{ $settings['air_zip_code'] }}\nTEL: {{ $settings['air_phone'] }}'); alert('¡Dirección Aérea copiada!');">
                                     <i data-feather="copy" class="me-1" style="width: 14px;"></i> COPIAR
                                 </button>
 
                                 <div class="position-relative">
                                     <div class="mb-3">
                                         <h5 class="fw-black text-white mb-0">
-                                            <span class="text-primary">{{ $customer->box_number }}</span> {{ $customer->user->name }}
+                                            <span class="text-primary">{{ $customer->box_number_air ?: $customer->box_number }}</span> {{ $customer->user->name }}
                                         </h5>
                                     </div>
                                     <div class="font-monospace small text-white-50 leading-loose">
@@ -246,19 +246,19 @@
                     <!-- MARITIME SERVICE ADDRESS -->
                     @if($maritimeEnabled && isset($settings['maritime_address']))
                         <div class="mb-4">
-                            <h6 class="xsmall font-black text-info uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="anchor" style="width: 12px;"></i> Tu Dirección Marítima (USA)</h6>
+                            <h6 class="xsmall font-black text-info uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="anchor" style="width: 12px;"></i> Servicio Marítimo</h6>
                             <div class="bg-white bg-opacity-10 p-4 rounded-4 border border-white border-opacity-10 position-relative shadow-sm overflow-hidden">
                                 <div class="position-absolute top-0 end-0 bg-info opacity-10 rounded-circle" style="width: 100px; height: 100px; transform: translate(30%, -30%);"></div>
 
                                 <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
-                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['maritime_address'] }}\nCIUDAD: {{ $settings['maritime_city'] }}\nESTADO: {{ $settings['maritime_state'] }}\nZIP CODE: {{ $settings['maritime_zip_code'] }}\nTEL: {{ $settings['maritime_phone'] }}'); alert('¡Dirección Marítima copiada!');">
+                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number_maritime ?: $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['maritime_address'] }}\nCIUDAD: {{ $settings['maritime_city'] }}\nESTADO: {{ $settings['maritime_state'] }}\nZIP CODE: {{ $settings['maritime_zip_code'] }}\nTEL: {{ $settings['maritime_phone'] }}'); alert('¡Dirección Marítima copiada!');">
                                     <i data-feather="copy" class="me-1" style="width: 14px;"></i> COPIAR
                                 </button>
 
                                 <div class="position-relative">
                                     <div class="mb-3">
                                         <h5 class="fw-black text-white mb-0">
-                                            <span class="text-info">{{ $customer->box_number }}</span> {{ $customer->user->name }}
+                                            <span class="text-info">{{ $customer->box_number_maritime ?: $customer->box_number }}</span> {{ $customer->user->name }}
                                         </h5>
                                     </div>
                                     <div class="font-monospace small text-white-50 leading-loose">
@@ -273,62 +273,10 @@
                         </div>
                     @endif
 
-                    <!-- FALLBACK: WAREHOUSES -->
-                    @if($airEnabled)
-                        @php $airWarehouses = $warehouses->whereIn('service_type', ['air', 'both']); @endphp
-                        @if($airWarehouses->count() > 0)
-                            <h6 class="xsmall font-black text-primary uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="send" style="width: 12px;"></i> Servicio Aéreo</h6>
-                            @foreach($airWarehouses as $wh)
-                                <div class="mb-4 last:mb-0">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="badge bg-primary px-2 py-1 font-black" style="font-size: 0.6rem;">{{ $wh->code }} - {{ $wh->name }}</span>
-                                        <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0" onclick="navigator.clipboard.writeText('{{ $customer->box_number_air ?? $customer->box_number }}\n{{ $wh->address }}\n{{ $wh->city }}, {{ $wh->state }} {{ $wh->zip_code }}')">
-                                            <i data-feather="copy" style="width: 12px;"></i> Copiar
-                                        </button>
-                                    </div>
-                                    <div class="bg-white bg-opacity-10 p-3 rounded-3 mb-3">
-                                        <div class="mb-1 xsmall"><span class="text-white-50 text-uppercase font-bold">Identificador:</span> <span class="fw-bold ms-1 text-info">{{ $customer->box_number_air ?? $customer->box_number }}</span></div>
-                                        <div class="mb-1 xsmall"><span class="text-white-50">Address:</span> <span class="fw-bold ms-1">{{ $wh->address }}</span></div>
-                                        <div class="mb-1 xsmall"><span class="text-white-50">City/State:</span> <span class="fw-bold ms-1">{{ $wh->city }}, {{ $wh->state }}</span></div>
-                                        <div class="mb-0 xsmall"><span class="text-white-50">Zip Code:</span> <span class="fw-bold ms-1">{{ $wh->zip_code }}</span></div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        @endif
-                    @endif
-
-                    @if($airEnabled && $maritimeEnabled)
-                        <hr class="my-4 border-white border-opacity-10">
-                    @endif
-
-                    <!-- MARITIME SERVICE -->
-                    @if($maritimeEnabled)
-                        @php $maritimeWarehouses = $warehouses->whereIn('service_type', ['maritime', 'both']); @endphp
-                        @if($maritimeWarehouses->count() > 0)
-                            <h6 class="xsmall font-black text-info uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="anchor" style="width: 12px;"></i> Servicio Marítimo</h6>
-                            @foreach($maritimeWarehouses as $wh)
-                                <div class="mb-4 last:mb-0">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="badge bg-info px-2 py-1 font-black" style="font-size: 0.6rem;">{{ $wh->code }} - {{ $wh->name }}</span>
-                                        <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0" onclick="navigator.clipboard.writeText('{{ $customer->box_number_maritime ?? $customer->box_number }}\n{{ $wh->address }}\n{{ $wh->city }}, {{ $wh->state }} {{ $wh->zip_code }}')">
-                                            <i data-feather="copy" style="width: 12px;"></i> Copiar
-                                        </button>
-                                    </div>
-                                    <div class="bg-white bg-opacity-10 p-3 rounded-3">
-                                        <div class="mb-1 xsmall"><span class="text-white-50 text-uppercase font-bold">Identificador:</span> <span class="fw-bold ms-1 text-info">{{ $customer->box_number_maritime ?? $customer->box_number }}</span></div>
-                                        <div class="mb-1 xsmall"><span class="text-white-50">Address:</span> <span class="fw-bold ms-1">{{ $wh->address }}</span></div>
-                                        <div class="mb-1 xsmall"><span class="text-white-50">City/State:</span> <span class="fw-bold ms-1">{{ $wh->city }}, {{ $wh->state }}</span></div>
-                                        <div class="mb-0 xsmall"><span class="text-white-50">Zip Code:</span> <span class="fw-bold ms-1">{{ $wh->zip_code }}</span></div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        @endif
-                    @endif
-
-                    <div class="mt-4 p-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3">
+                    <div class="mt-4 p-3 bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3 text-center">
                         <p class="xsmall mb-0 text-warning fw-bold leading-sm">
                             <i data-feather="alert-triangle" class="me-1" style="width: 12px;"></i>
-                            Asegúrate de colocar tu identificador exactamente como aparece en azul para evitar confusiones en bodega.
+                            Usa tu identificador azul para asegurar que tu carga llegue a tu cuenta.
                         </p>
                     </div>
                 </div>
