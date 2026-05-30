@@ -114,6 +114,20 @@ class WarehouseSettings extends Component
         $warehouse->update(['is_active' => !$warehouse->is_active]);
     }
 
+    public function deleteWarehouse($id)
+    {
+        $warehouse = Warehouse::findOrFail($id);
+
+        // Check if warehouse has packages
+        if ($warehouse->packages()->count() > 0) {
+            session()->flash('error', 'No se puede eliminar la bodega porque tiene paquetes asociados.');
+            return;
+        }
+
+        $warehouse->delete();
+        session()->flash('message', 'Bodega eliminada correctamente.');
+    }
+
     public function render()
     {
         $warehouses = Warehouse::where('name', 'like', '%' . $this->search . '%')

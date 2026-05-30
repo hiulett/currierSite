@@ -20,6 +20,15 @@
         </div>
     @endif
 
+    @if (session()->has('error'))
+        <div class="alert alert-danger alert-dismissible shadow-sm mb-4" role="alert">
+            <div class="alert-message">
+                <strong>Error:</strong> {{ session('error') }}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-12">
             <div class="card border-0 shadow-sm overflow-hidden">
@@ -69,6 +78,9 @@
                                         <div class="btn-group">
                                             <button wire:click="editWarehouse({{ $wh->id }})" class="btn btn-sm btn-light border shadow-sm" title="Editar">
                                                 <i class="align-middle text-dark" data-feather="edit-2"></i>
+                                            </button>
+                                            <button wire:click="deleteWarehouse({{ $wh->id }})" wire:confirm="¿Estás seguro de que deseas eliminar esta bodega? Esta acción no se puede deshacer." class="btn btn-sm btn-light border shadow-sm text-danger" title="Eliminar">
+                                                <i class="align-middle" data-feather="trash-2"></i>
                                             </button>
                                         </div>
                                     </td>
