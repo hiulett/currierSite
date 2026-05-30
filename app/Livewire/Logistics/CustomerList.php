@@ -16,7 +16,11 @@ class CustomerList extends Component
 
     public $search = '';
     public $filter = '';
-    public $name, $email, $phone, $box_number, $locker_id, $identification_number;
+    public $name, $email, $phone, $box_number, $locker_id, $identification_number, $address;
+    public $box_number_air, $box_number_maritime;
+
+    public $is_editing = false;
+    public $customer_id;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -32,66 +36,121 @@ class CustomerList extends Component
         $this->resetPage();
     }
 
-    public function openPasswordModal($customerId)
+    public function resetFields()
     {
-        $this->selected_customer_id = $customerId;
-        $this->new_password = '';
-        $this->dispatch('open-password-modal');
+        $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'identification_number', 'address', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id']);
     }
 
-    public function resetPassword()
+    public function openCreateModal()
     {
-        $this->validate([
-            'new_password' => 'required|string|min:8',
-        ]);
+        $this->resetFields();
+        $this->dispatch('open-customer-modal');
+    }
 
-        $customer = Customer::find($this->selected_customer_id);
-        if ($customer && $customer->user) {
+    public function openEditModal(Customer $customer)
+    {
+        $this->resetFields();
+        $this->customer_id = $customer->id;
+        $this->name = $customer->user->name;
+        $this->email = $customer->user->email;
+        $this->phone = $customer->phone;
+        $this->box_number = $customer->box_number;
+        $this->box_number_air = $customer->box_number_air;
+        $this->box_number_maritime = $customer->box_number_maritime;
+        $this->locker_id = $customer->locker_id;
+        $this->identification_number = $customer->identification_number;
+        $this->address = $customer->address;
+        $this->is_editing = true;
+
+        $this->dispatch('open-customer-modal');
+    }
+
+    public function saveCustomer()
+    {
+        $targetUserId = $this->is_editing ? Customer::find($this->customer_id)->user_id : 'NULL';
+
+        $rules = [
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required', 'email',
+                'unique:users,email,' . $targetUserId
+            ],
+            'box_number' => 'required|unique:customers,box_number,' . ($this->customer_id ?: 'NULL'),
+            'locker_id' => 'nullable|exists:lockers,id',
+            'phone' => 'nullable|string|max:20',
+            'identification_number' => 'nullable|string|max:50',
+            'address' => 'nullable|string|max:500',
+        ];
+
+        $this->validate($rules);
+
+        if ($this->is_editing) {
+            $customer = Customer::findOrFail($this->customer_id);
             $customer->user->update([
-                'password' => Hash::make($this->new_password)
+                'name' => $this->name,
+                'email' => $this->email,
             ]);
 
-            session()->flash('message', 'Contraseña actualizada para el cliente: ' . $customer->user->name);
+            $customer->update([
+                'box_number' => $this->box_number,
+                'box_number_air' => $this->box_number_air,
+                'box_number_maritime' => $this->box_number_maritime,
+                'phone' => $this->phone,
+                'locker_id' => $this->locker_id,
+                'identification_number' => $this->identification_number,
+                'address' => $this->address,
+            ]);
+
+            session()->flash('message', 'Cliente actualizado exitosamente.');
+        } else {
+            $user = User::create([
+                'tenant_id' => session('tenant_id'),
+                'name' => $this->name,
+                'email' => $this->email,
+                'password' => Hash::make('password123'),
+                'role' => 'customer'
+            ]);
+
+            Customer::create([
+                'tenant_id' => session('tenant_id'),
+                'user_id' => $user->id,
+                'box_number' => $this->box_number,
+                'box_number_air' => $this->box_number_air,
+                'box_number_maritime' => $this->box_number_maritime,
+                'phone' => $this->phone,
+                'locker_id' => $this->locker_id,
+                'identification_number' => $this->identification_number,
+                'address' => $this->address,
+                'balance' => 0,
+                'points' => 0,
+            ]);
+
+            session()->flash('message', 'Cliente registrado exitosamente.');
         }
-
-        $this->dispatch('close-password-modal');
-        $this->reset(['selected_customer_id', 'new_password']);
-    }
-
-    public function createCustomer()
-    {
-        $this->validate([
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users,email',
-            'box_number' => 'required|unique:customers,box_number',
-            'locker_id' => 'nullable|exists:lockers,id',
-            'identification_number' => 'nullable|string',
-        ]);
-
-        $user = User::create([
-            'tenant_id' => session('tenant_id'),
-            'name' => $this->name,
-            'email' => $this->email,
-            'password' => Hash::make('password123'),
-            'role' => 'customer'
-        ]);
-
-        $customer = Customer::create([
-            'tenant_id' => session('tenant_id'),
-            'user_id' => $user->id,
-            'box_number' => $this->box_number,
-            'phone' => $this->phone,
-            'locker_id' => $this->locker_id,
-            'identification_number' => $this->identification_number,
-        ]);
 
         if ($this->locker_id) {
             Locker::where('id', $this->locker_id)->update(['status' => 'occupied']);
         }
 
-        $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'identification_number']);
+        $this->resetFields();
         $this->dispatch('customer-saved');
-        session()->flash('message', 'Cliente registrado y casillero asignado.');
+    }
+
+    public function deleteCustomer($id)
+    {
+        $customer = Customer::findOrFail($id);
+
+        if ($customer->packages()->count() > 0) {
+            session()->flash('error', 'No se puede eliminar el cliente porque tiene paquetes registrados.');
+            return;
+        }
+
+        if ($customer->user) {
+            $customer->user->delete();
+        }
+
+        $customer->delete();
+        session()->flash('message', 'Cliente y su cuenta de usuario eliminados.');
     }
 
     public function render()

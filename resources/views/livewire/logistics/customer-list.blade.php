@@ -57,7 +57,7 @@
                         @if($filter === 'new')
                             <button wire:click="$set('filter', '')" class="btn btn-sm btn-outline-dark fw-bold">VER TODOS</button>
                         @endif
-                        <button onclick="openCustomerModal()" class="btn btn-primary shadow-lg transform transition hover:scale-105 fw-black">
+                        <button wire:click="openCreateModal" class="btn btn-primary shadow-lg transform transition hover:scale-105 fw-black">
                             <i class="align-middle me-1" data-feather="plus-circle"></i> NUEVO CLIENTE
                         </button>
                         <div class="input-group input-group-sm flex-grow-1" style="min-width: 300px;">
@@ -137,8 +137,14 @@
                                                 <i x-show="!expanded" class="align-middle text-dark" data-feather="eye"></i>
                                                 <i x-show="expanded" class="align-middle text-dark" data-feather="chevron-up" style="display:none;"></i>
                                             </button>
+                                            <button wire:click="openEditModal({{ $c->id }})" class="btn btn-sm btn-light border shadow-sm" title="Editar Cliente">
+                                                <i class="align-middle text-dark" data-feather="edit-2"></i>
+                                            </button>
                                             <button wire:click="openPasswordModal({{ $c->id }})" class="btn btn-sm btn-light border shadow-sm" title="Cambiar Contraseña">
                                                 <i class="align-middle text-danger" data-feather="key"></i>
+                                            </button>
+                                            <button wire:click="deleteCustomer({{ $c->id }})" wire:confirm="¿Estás seguro de eliminar este cliente? Se borrará también su cuenta de acceso." class="btn btn-sm btn-light border shadow-sm text-danger" title="Eliminar Cliente">
+                                                <i class="align-middle" data-feather="trash-2"></i>
                                             </button>
                                             <a href="{{ route('billing.index', ['search' => $c->box_number]) }}" class="btn btn-sm btn-light border shadow-sm" title="Ver Facturas">
                                                 <i class="align-middle text-primary" data-feather="file-text"></i>
@@ -185,18 +191,19 @@
         </div>
     </div>
 
-    <!-- Modal para nuevo cliente (Bootstrap 5 Style) -->
-    <div class="modal fade" id="newCustomerModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog modal-dialog-centered">
+    <!-- Modal para nuevo/editar cliente -->
+    <div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
                 <div class="modal-header bg-primary text-white p-4">
-                    <h5 class="modal-title uppercase font-black tracking-widest">
-                        <i class="align-middle me-2" data-feather="user-plus"></i> Nuevo Registro de Cliente
+                    <h5 class="modal-title uppercase font-black tracking-widest text-white">
+                        <i class="align-middle me-2" data-feather="{{ $is_editing ? 'edit' : 'user-plus' }}"></i>
+                        {{ $is_editing ? 'Editar Información del Cliente' : 'Nuevo Registro de Cliente' }}
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form wire:submit.prevent="createCustomer">
-                    <div class="modal-body p-4">
+                <form wire:submit.prevent="saveCustomer">
+                    <div class="modal-body p-4 p-md-5">
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label small font-black text-uppercase text-muted">Nombre Completo</label>
@@ -204,36 +211,67 @@
                                 @error('name') <div class="text-danger small mt-1 fw-bold">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label small font-black text-uppercase text-muted">Cédula / Identificación</label>
-                                <input type="text" wire:model="identification_number" class="form-control form-control-lg fw-bold border-2" placeholder="8-000-000">
-                                @error('identification_number') <div class="text-danger small mt-1 fw-bold">{{ $message }}</div> @enderror
-                            </div>
-                        </div>
-                        <div class="row g-4 mb-4">
-                            <div class="col-md-6">
                                 <label class="form-label small font-black text-uppercase text-muted">Correo Electrónico</label>
-                                <input type="email" wire:model="email" class="form-control border-2" placeholder="juan@ejemplo.com">
+                                <input type="email" wire:model="email" class="form-control form-control-lg border-2" placeholder="juan@ejemplo.com">
                                 @error('email') <div class="text-danger small mt-1 fw-bold">{{ $message }}</div> @enderror
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small font-black text-uppercase text-muted">ID de Casillero</label>
-                                <input type="text" wire:model="box_number" placeholder="LEX-..." class="form-control border-2 fw-bold text-primary">
-                                @error('box_number') <div class="text-danger small mt-1 fw-bold">{{ $message }}</div> @enderror
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label small font-black text-uppercase text-muted">Cédula / Identificación</label>
+                                <input type="text" wire:model="identification_number" class="form-control border-2 fw-bold" placeholder="8-000-000">
+                                @error('identification_number') <div class="text-danger small mt-1 fw-bold">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small font-black text-uppercase text-muted">Teléfono</label>
+                                <input type="text" wire:model="phone" class="form-control border-2 fw-bold" placeholder="+507 ...">
+                                @error('phone') <div class="text-danger small mt-1 fw-bold">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small font-black text-uppercase text-muted">Casillero Físico</label>
+                                <select wire:model="locker_id" class="form-select border-2">
+                                    <option value="">Ninguno</option>
+                                    @foreach($availableLockers as $locker)
+                                        <option value="{{ $locker->id }}">{{ $locker->code }} ({{ $locker->max_weight }} lbs)</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
-                        <div class="mb-0">
-                            <label class="form-label small font-black text-uppercase text-muted">Asignar Casillero Físico (Opcional)</label>
-                            <select wire:model="locker_id" class="form-select border-2">
-                                <option value="">Ninguno</option>
-                                @foreach($availableLockers as $locker)
-                                    <option value="{{ $locker->id }}">{{ $locker->code }} ({{ $locker->max_weight }} lbs)</option>
-                                @endforeach
-                            </select>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label small font-black text-uppercase text-muted">ID Principal (Master)</label>
+                                <input type="text" wire:model="box_number" class="form-control border-2 fw-bold text-primary">
+                                @error('box_number') <div class="text-danger small mt-1 fw-bold">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small font-black text-uppercase text-muted text-info"><i data-feather="send" class="me-1" style="width:12px;"></i> ID Aéreo</label>
+                                <input type="text" wire:model="box_number_air" class="form-control border-2 fw-bold text-info">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small font-black text-uppercase text-muted text-warning"><i data-feather="anchor" class="me-1" style="width:12px;"></i> ID Marítimo</label>
+                                <input type="text" wire:model="box_number_maritime" class="form-control border-2 fw-bold text-warning">
+                            </div>
                         </div>
+
+                        <div class="mb-0">
+                            <label class="form-label small font-black text-uppercase text-muted">Dirección de Entrega Local</label>
+                            <textarea wire:model="address" rows="2" class="form-control border-2" placeholder="Dirección completa para entregas a domicilio..."></textarea>
+                            @error('address') <div class="text-danger small mt-1 fw-bold">{{ $message }}</div> @enderror
+                        </div>
+
+                        @if(!$is_editing)
+                            <div class="alert alert-info mt-4 border-0 shadow-none xsmall py-2">
+                                <i data-feather="info" class="me-2" style="width:12px;"></i> La contraseña inicial será <strong>password123</strong>. El cliente debe cambiarla al entrar.
+                            </div>
+                        @endif
                     </div>
                     <div class="modal-footer bg-light p-4">
                         <button type="button" class="btn btn-light border fw-bold text-uppercase" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary px-4 shadow-lg transform transition hover:scale-105 fw-black text-uppercase">CREAR CLIENTE</button>
+                        <button type="submit" class="btn btn-primary px-4 shadow-lg fw-black text-uppercase">
+                            {{ $is_editing ? 'GUARDAR CAMBIOS' : 'CREAR CLIENTE' }}
+                        </button>
                     </div>
                 </form>
             </div>
@@ -266,26 +304,20 @@
     </div>
 
     <script>
-        function openCustomerModal() {
-            var el = document.getElementById('newCustomerModal');
-            var myModal = bootstrap.Modal.getOrCreateInstance(el);
-            myModal.show();
-        }
+        window.addEventListener('open-customer-modal', event => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('customerModal')).show();
+        });
 
         window.addEventListener('customer-saved', event => {
-            bootstrap.Modal.getOrCreateInstance(document.getElementById('newCustomerModal')).hide();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('customerModal')).hide();
         });
 
         window.addEventListener('open-password-modal', event => {
-            var el = document.getElementById('passwordResetModal');
-            var myModal = bootstrap.Modal.getOrCreateInstance(el);
-            myModal.show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('passwordResetModal')).show();
         });
 
         window.addEventListener('close-password-modal', event => {
-            var el = document.getElementById('passwordResetModal');
-            var myModal = bootstrap.Modal.getOrCreateInstance(el);
-            myModal.hide();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('passwordResetModal')).hide();
         });
     </script>
 </div>
