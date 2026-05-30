@@ -203,11 +203,51 @@
 
                     @php
                         $tenant = \App\Models\Tenant::find(session('tenant_id'));
-                        $airEnabled = $tenant->settings_json['service_air_enabled'] ?? true;
-                        $maritimeEnabled = $tenant->settings_json['service_maritime_enabled'] ?? true;
+                        $settings = $tenant->settings_json ?? [];
+
+                        $globalAddress = $settings['locker_address'] ?? null;
+                        $globalCity = $settings['locker_city'] ?? null;
+                        $globalState = $settings['locker_state'] ?? null;
+                        $globalZip = $settings['locker_zip_code'] ?? null;
+                        $globalPhone = $settings['locker_phone'] ?? null;
+
+                        $airEnabled = $settings['service_air_enabled'] ?? true;
+                        $maritimeEnabled = $settings['service_maritime_enabled'] ?? true;
                     @endphp
 
-                    <!-- AIR SERVICE -->
+                    @if($globalAddress)
+                        <!-- New Global Address Block (Configurable in General Settings) -->
+                        <div class="mb-4">
+                            <h6 class="xsmall font-black text-primary uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="globe" style="width: 12px;"></i> Tu Dirección de Casillero</h6>
+                            <div class="bg-white bg-opacity-10 p-4 rounded-4 border border-white border-opacity-10 position-relative shadow-sm overflow-hidden">
+                                <!-- Background Glass Decoration -->
+                                <div class="position-absolute top-0 end-0 bg-primary opacity-10 rounded-circle" style="width: 100px; height: 100px; transform: translate(30%, -30%);"></div>
+
+                                <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
+                                    onclick="navigator.clipboard.writeText('{{ $customer->box_number }} {{ $customer->user->name }}\n{{ $globalAddress }}\nCIUDAD: {{ $globalCity }}\nESTADO: {{ $globalState }}\nZIP CODE: {{ $globalZip }}\nTEL: {{ $globalPhone }}'); alert('¡Dirección copiada!');">
+                                    <i data-feather="copy" class="me-1" style="width: 14px;"></i> COPIAR
+                                </button>
+
+                                <div class="position-relative">
+                                    <div class="mb-3">
+                                        <h5 class="fw-black text-white mb-0">
+                                            <span class="text-primary">{{ $customer->box_number }}</span> {{ $customer->user->name }}
+                                        </h5>
+                                    </div>
+                                    <div class="font-monospace small text-white-50 leading-loose">
+                                        <div class="mb-1 text-white fw-bold">{{ $globalAddress }}</div>
+                                        <div class="mb-0">CIUDAD: <span class="text-white">{{ $globalCity }}</span></div>
+                                        <div class="mb-0">ESTADO: <span class="text-white">{{ $globalState }}</span></div>
+                                        <div class="mb-0">ZIP CODE: <span class="text-white">{{ $globalZip }}</span></div>
+                                        <div class="mb-0">TEL: <span class="text-white">{{ $globalPhone }}</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-4 border-white border-opacity-10">
+                    @endif
+
+                    <!-- FALLBACK: WAREHOUSES -->
                     @if($airEnabled)
                         @php $airWarehouses = $warehouses->whereIn('service_type', ['air', 'both']); @endphp
                         @if($airWarehouses->count() > 0)

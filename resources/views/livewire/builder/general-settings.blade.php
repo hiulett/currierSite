@@ -95,6 +95,61 @@
             </div>
         </div>
 
+        <!-- Locker Physical Address Settings -->
+        <div class="col-12 mt-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 uppercase font-black small text-white"><i class="align-middle me-2" data-feather="map-pin"></i> Dirección de Recepción (USA Hub)</h5>
+                    <button wire:click="saveLockerAddress" class="btn btn-sm btn-outline-light fw-black uppercase">Guardar Dirección</button>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <p class="text-muted small mb-4">Esta es la dirección que se le mostrará a los clientes en su portal para que realicen sus compras.</p>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label small font-black text-uppercase text-muted">Dirección Línea 1</label>
+                            <input type="text" wire:model="locker_address" class="form-control border-2 fw-bold" placeholder="2610 NW 89th CT">
+                            @error('locker_address') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small font-black text-uppercase text-muted">Ciudad</label>
+                            <input type="text" wire:model="locker_city" class="form-control border-2 fw-bold" placeholder="Doral">
+                            @error('locker_city') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small font-black text-uppercase text-muted">Estado</label>
+                            <input type="text" wire:model="locker_state" class="form-control border-2 fw-bold" placeholder="Florida">
+                            @error('locker_state') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small font-black text-uppercase text-muted">Zip Code</label>
+                            <input type="text" wire:model="locker_zip_code" class="form-control border-2 fw-bold" placeholder="33172-1615">
+                            @error('locker_zip_code') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small font-black text-uppercase text-muted">Teléfono de Recepción</label>
+                            <input type="text" wire:model="locker_phone" class="form-control border-2 fw-bold" placeholder="+1 (305) 848-1127">
+                            @error('locker_phone') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <div class="p-4 bg-light rounded-4 border-2 border-dashed">
+                                <span class="xsmall text-muted uppercase font-black d-block mb-3 text-center">Vista Previa para el Cliente:</span>
+                                <div class="bg-white p-3 rounded shadow-sm font-monospace small">
+                                    <span class="text-primary fw-black">{{ $box_number_prefix_air }}{{ $box_number_counter + 1 }}</span> <span class="fw-black">NOMBRE DEL CLIENTE</span><br>
+                                    {{ $locker_address ?: '...' }}<br>
+                                    CIUDAD: {{ $locker_city ?: '...' }}<br>
+                                    ESTADO: {{ $locker_state ?: '...' }}<br>
+                                    ZIP CODE: {{ $locker_zip_code ?: '...' }}<br>
+                                    TEL: {{ $locker_phone ?: '...' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Locker Generation Settings -->
         <div class="col-12 mt-4">
             <div class="card shadow-sm border-0">

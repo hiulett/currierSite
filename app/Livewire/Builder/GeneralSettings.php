@@ -21,6 +21,13 @@ class GeneralSettings extends Component
     public $box_number_prefix_maritime;
     public $box_number_template_maritime;
 
+    // Locker Physical Address (USA Hub)
+    public $locker_address;
+    public $locker_city;
+    public $locker_state;
+    public $locker_zip_code;
+    public $locker_phone;
+
     public $box_number_counter;
 
     // Service Toggles
@@ -43,6 +50,12 @@ class GeneralSettings extends Component
 
         $this->box_number_prefix_maritime = $settings['box_number_prefix_maritime'] ?? 'SEA';
         $this->box_number_template_maritime = $settings['box_number_template_maritime'] ?? '{PREFIX}M{ID} {NAME}';
+
+        $this->locker_address = $settings['locker_address'] ?? '2610 NW 89th CT';
+        $this->locker_city = $settings['locker_city'] ?? 'Doral';
+        $this->locker_state = $settings['locker_state'] ?? 'Florida';
+        $this->locker_zip_code = $settings['locker_zip_code'] ?? '33172-1615';
+        $this->locker_phone = $settings['locker_phone'] ?? '+1 (305) 848-1127';
 
         $this->box_number_counter = $settings['box_number_counter'] ?? 1000;
 
@@ -110,6 +123,29 @@ class GeneralSettings extends Component
 
         $tenant->update(['settings_json' => $settings]);
         session()->flash('message', 'Configuración de servicio marítimo actualizada.');
+    }
+
+    public function saveLockerAddress()
+    {
+        $this->validate([
+            'locker_address' => 'required|string',
+            'locker_city' => 'required|string',
+            'locker_state' => 'required|string',
+            'locker_zip_code' => 'required|string',
+            'locker_phone' => 'required|string',
+        ]);
+
+        $tenant = Tenant::find(session('tenant_id'));
+        $settings = $tenant->settings_json ?? [];
+
+        $settings['locker_address'] = $this->locker_address;
+        $settings['locker_city'] = $this->locker_city;
+        $settings['locker_state'] = $this->locker_state;
+        $settings['locker_zip_code'] = $this->locker_zip_code;
+        $settings['locker_phone'] = $this->locker_phone;
+
+        $tenant->update(['settings_json' => $settings]);
+        session()->flash('message', 'Dirección física de casilleros actualizada.');
     }
 
     public function saveCounter()
