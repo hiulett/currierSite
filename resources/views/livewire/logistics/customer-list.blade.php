@@ -81,12 +81,12 @@
                                                 {{ $c->box_number }}
                                             </span>
                                             <div class="d-flex gap-2 ps-1">
-                                                @if($c->box_number_air)
+                                                @if($airEnabled && $c->box_number_air)
                                                     <span class="text-info font-black uppercase" style="font-size: 0.75rem;">
                                                         <i data-feather="send" style="width: 10px; height: 10px; stroke-width: 3;"></i> {{ $c->box_number_air }}
                                                     </span>
                                                 @endif
-                                                @if($c->box_number_maritime)
+                                                @if($maritimeEnabled && $c->box_number_maritime)
                                                     <span class="text-warning font-black uppercase" style="font-size: 0.75rem;">
                                                         <i data-feather="anchor" style="width: 10px; height: 10px; stroke-width: 3;"></i> {{ $c->box_number_maritime }}
                                                     </span>
@@ -140,7 +140,7 @@
                                                         <p class="small mb-0">{{ $c->address ?? 'No registrada.' }}</p>
                                                     </div>
                                                     <div class="col-md-4">
-                                                        <div class="text-uppercase xsmall font-black text-muted mb-2">Cuenta</div>
+                                                        <div class="text-uppercase xsmall font-black text-muted mb-2">Cuenta e Identificadores</div>
                                                         <div class="small"><strong>Nivel:</strong>
                                                             @if($c->level)
                                                                 <span class="badge" style="background-color: {{ $c->level->color }}">{{ $c->level->name }}</span>
@@ -149,6 +149,10 @@
                                                             @endif
                                                         </div>
                                                         <div class="small mt-1"><strong>Puntos:</strong> {{ number_format($c->points) }} pts</div>
+                                                        <div class="mt-2 pt-2 border-top">
+                                                            @if($airEnabled) <div class="xsmall"><strong>Aéreo:</strong> {{ $c->box_number_air ?: 'N/A' }}</div> @endif
+                                                            @if($maritimeEnabled) <div class="xsmall"><strong>Marítimo:</strong> {{ $c->box_number_maritime ?: 'N/A' }}</div> @endif
+                                                        </div>
                                                     </div>
                                                     <div class="col-md-4 text-md-end d-flex flex-column justify-content-end">
                                                         <button wire:click="deleteCustomer({{ $c->id }})" wire:confirm="¿Borrar cliente?" class="btn btn-xs btn-outline-danger align-self-md-end">ELIMINAR PERFIL</button>
@@ -225,14 +229,18 @@
                                 <label class="form-label xsmall font-black text-uppercase text-muted">ID Master</label>
                                 <input type="text" wire:model="box_number" class="form-control border-2 fw-black text-primary">
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label xsmall font-black text-uppercase text-muted">ID Aéreo</label>
-                                <input type="text" wire:model="box_number_air" class="form-control border-2">
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label xsmall font-black text-uppercase text-muted">ID Marítimo</label>
-                                <input type="text" wire:model="box_number_maritime" class="form-control border-2">
-                            </div>
+                            @if($airEnabled)
+                                <div class="col-md-4">
+                                    <label class="form-label xsmall font-black text-uppercase text-muted">ID Aéreo</label>
+                                    <input type="text" wire:model="box_number_air" class="form-control border-2">
+                                </div>
+                            @endif
+                            @if($maritimeEnabled)
+                                <div class="col-md-4">
+                                    <label class="form-label xsmall font-black text-uppercase text-muted">ID Marítimo</label>
+                                    <input type="text" wire:model="box_number_maritime" class="form-control border-2">
+                                </div>
+                            @endif
                         </div>
                         <div class="mb-0">
                             <label class="form-label xsmall font-black text-uppercase text-muted">Dirección Local</label>

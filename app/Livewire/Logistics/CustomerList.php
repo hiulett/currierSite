@@ -203,11 +203,18 @@ class CustomerList extends Component
             'active_lockers' => Customer::whereNotNull('locker_id')->count(),
         ];
 
+        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $settings = $tenant->settings_json ?? [];
+        $airEnabled = $settings['service_air_enabled'] ?? true;
+        $maritimeEnabled = $settings['service_maritime_enabled'] ?? true;
+
         return view('livewire.logistics.customer-list', [
             'customers' => $customers,
             'availableLockers' => $availableLockers,
             'loyaltyLevels' => \App\Models\LoyaltyLevel::all(),
-            'stats' => $stats
+            'stats' => $stats,
+            'airEnabled' => $airEnabled,
+            'maritimeEnabled' => $maritimeEnabled,
         ])->layout('components.layouts.app');
     }
 }
