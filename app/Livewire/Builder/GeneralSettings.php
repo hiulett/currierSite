@@ -70,6 +70,22 @@ class GeneralSettings extends Component
         $this->service_maritime_enabled = $settings['service_maritime_enabled'] ?? true;
     }
 
+    public function updatedServiceAirEnabled($value)
+    {
+        $tenant = Tenant::find(session('tenant_id'));
+        $settings = $tenant->settings_json ?? [];
+        $settings['service_air_enabled'] = (bool) $value;
+        $tenant->update(['settings_json' => $settings]);
+    }
+
+    public function updatedServiceMaritimeEnabled($value)
+    {
+        $tenant = Tenant::find(session('tenant_id'));
+        $settings = $tenant->settings_json ?? [];
+        $settings['service_maritime_enabled'] = (bool) $value;
+        $tenant->update(['settings_json' => $settings]);
+    }
+
     public function saveGeneral()
     {
         $this->validate([
@@ -86,6 +102,10 @@ class GeneralSettings extends Component
         $settings['default_tax'] = $this->default_tax;
         $settings['default_rate'] = $this->default_rate;
         $settings['timezone'] = $this->timezone;
+
+        // Ensure toggles are saved here too
+        $settings['service_air_enabled'] = (bool) $this->service_air_enabled;
+        $settings['service_maritime_enabled'] = (bool) $this->service_maritime_enabled;
 
         $tenant->update([
             'settings_json' => $settings,
