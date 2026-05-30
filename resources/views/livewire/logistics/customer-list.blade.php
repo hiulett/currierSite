@@ -75,32 +75,40 @@
                         @foreach($customers as $c)
                             <tbody x-data="{ expanded: false }" class="border-0" wire:key="customer-row-{{ $c->id }}">
                                 <tr class="border-top">
-                                    <td class="ps-4">
-                                        <div class="d-flex flex-column gap-1">
-                                            <span class="badge bg-primary text-white fw-black xsmall text-uppercase px-2 shadow-sm">{{ $c->box_number }}</span>
-                                            @if($c->box_number_air)
-                                                <span class="xsmall text-info font-bold uppercase" style="font-size: 0.55rem;"><i data-feather="send" style="width: 8px;"></i> {{ $c->box_number_air }}</span>
-                                            @endif
-                                            @if($c->box_number_maritime)
-                                                <span class="xsmall text-warning font-bold uppercase" style="font-size: 0.55rem;"><i data-feather="anchor" style="width: 8px;"></i> {{ $c->box_number_maritime }}</span>
-                                            @endif
+                                    <td class="ps-4 py-3">
+                                        <div class="d-flex flex-column align-items-start gap-1">
+                                            <span class="badge bg-primary text-white font-black px-2 py-1 shadow-sm" style="font-size: 0.9rem; letter-spacing: 0.01rem; border-radius: 4px;">
+                                                {{ $c->box_number }}
+                                            </span>
+                                            <div class="d-flex gap-2 ps-1">
+                                                @if($c->box_number_air)
+                                                    <span class="text-info font-black uppercase" style="font-size: 0.75rem;">
+                                                        <i data-feather="send" style="width: 10px; height: 10px; stroke-width: 3;"></i> {{ $c->box_number_air }}
+                                                    </span>
+                                                @endif
+                                                @if($c->box_number_maritime)
+                                                    <span class="text-warning font-black uppercase" style="font-size: 0.75rem;">
+                                                        <i data-feather="anchor" style="width: 10px; height: 10px; stroke-width: 3;"></i> {{ $c->box_number_maritime }}
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="fw-black text-dark">{{ $c->user->name }}</div>
+                                        <div class="fw-black text-dark" style="font-size: 0.95rem;">{{ $c->user->name }}</div>
                                         <div class="d-flex align-items-center gap-2">
-                                            <div class="text-muted" style="font-size: 0.65rem;">ID: {{ $c->identification_number ?? 'S/N' }}</div>
+                                            <div class="text-muted" style="font-size: 0.75rem;">ID: {{ $c->identification_number ?? 'S/N' }}</div>
                                             @if($c->user->email_verified_at)
-                                                <span class="text-success" title="Verificado"><i data-feather="check-circle" style="width: 10px;"></i></span>
+                                                <span class="text-success" title="Verificado"><i data-feather="check-circle" style="width: 11px;"></i></span>
                                             @endif
                                         </div>
                                     </td>
                                     <td class="hidden md:table-cell">
-                                        <div class="small fw-bold text-muted">{{ $c->user->email }}</div>
-                                        <div class="text-muted" style="font-size: 0.65rem;">{{ $c->phone ?? 'Sin teléfono' }}</div>
+                                        <div class="fw-bold text-muted" style="font-size: 0.85rem;">{{ $c->user->email }}</div>
+                                        <div class="text-muted" style="font-size: 0.75rem;">{{ $c->phone ?? 'Sin teléfono' }}</div>
                                     </td>
                                     <td class="text-center">
-                                        <span class="fw-black {{ $c->balance > 0 ? 'text-danger' : 'text-success' }}">
+                                        <span class="fw-black" style="font-size: 1rem; color: {{ $c->balance > 0 ? '#dc3545' : '#198754' }}">
                                             ${{ number_format($c->balance, 2) }}
                                         </span>
                                     </td>
