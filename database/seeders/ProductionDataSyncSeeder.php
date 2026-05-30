@@ -92,5 +92,19 @@ class ProductionDataSyncSeeder extends Seeder
                 'settings_json' => ['currency' => 'USD', 'tax_rate' => 7],
             ]
         );
+
+        // 6. Loyalty Levels for Logy Express
+        \App\Models\LoyaltyLevel::updateOrCreate(
+            ['tenant_id' => $tenant1->id, 'name' => 'Bronce'],
+            ['min_points' => 0, 'multiplier' => 1.0, 'color' => '#cd7f32', 'icon' => 'award']
+        );
+        \App\Models\LoyaltyLevel::updateOrCreate(
+            ['tenant_id' => $tenant1->id, 'name' => 'Plata'],
+            ['min_points' => 500, 'multiplier' => 1.1, 'color' => '#c0c0c0', 'icon' => 'award']
+        );
+        \App\Models\LoyaltyLevel::updateOrCreate(
+            ['tenant_id' => $tenant1->id, 'name' => 'Oro'],
+            ['min_points' => 1500, 'multiplier' => 1.25, 'color' => '#ffd700', 'icon' => 'award']
+        );
     }
 }

@@ -16,7 +16,7 @@ class CustomerList extends Component
 
     public $search = '';
     public $filter = '';
-    public $name, $email, $phone, $box_number, $locker_id, $identification_number, $address;
+    public $name, $email, $phone, $box_number, $locker_id, $identification_number, $address, $loyalty_level_id;
     public $box_number_air, $box_number_maritime;
 
     public $is_editing = false;
@@ -38,7 +38,7 @@ class CustomerList extends Component
 
     public function resetFields()
     {
-        $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'identification_number', 'address', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id']);
+        $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'loyalty_level_id', 'identification_number', 'address', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id']);
     }
 
     public function openCreateModal()
@@ -58,6 +58,7 @@ class CustomerList extends Component
         $this->box_number_air = $customer->box_number_air;
         $this->box_number_maritime = $customer->box_number_maritime;
         $this->locker_id = $customer->locker_id;
+        $this->loyalty_level_id = $customer->loyalty_level_id;
         $this->identification_number = $customer->identification_number;
         $this->address = $customer->address;
         $this->is_editing = true;
@@ -77,6 +78,7 @@ class CustomerList extends Component
             ],
             'box_number' => 'required|unique:customers,box_number,' . ($this->customer_id ?: 'NULL'),
             'locker_id' => 'nullable|exists:lockers,id',
+            'loyalty_level_id' => 'nullable|exists:loyalty_levels,id',
             'phone' => 'nullable|string|max:20',
             'identification_number' => 'nullable|string|max:50',
             'address' => 'nullable|string|max:500',
@@ -97,6 +99,7 @@ class CustomerList extends Component
                 'box_number_maritime' => $this->box_number_maritime,
                 'phone' => $this->phone,
                 'locker_id' => $this->locker_id,
+                'loyalty_level_id' => $this->loyalty_level_id,
                 'identification_number' => $this->identification_number,
                 'address' => $this->address,
             ]);
@@ -119,6 +122,7 @@ class CustomerList extends Component
                 'box_number_maritime' => $this->box_number_maritime,
                 'phone' => $this->phone,
                 'locker_id' => $this->locker_id,
+                'loyalty_level_id' => $this->loyalty_level_id,
                 'identification_number' => $this->identification_number,
                 'address' => $this->address,
                 'balance' => 0,
@@ -202,6 +206,7 @@ class CustomerList extends Component
         return view('livewire.logistics.customer-list', [
             'customers' => $customers,
             'availableLockers' => $availableLockers,
+            'loyaltyLevels' => \App\Models\LoyaltyLevel::all(),
             'stats' => $stats
         ])->layout('components.layouts.app');
     }

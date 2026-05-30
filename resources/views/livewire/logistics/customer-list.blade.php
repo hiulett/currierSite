@@ -172,6 +172,13 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <h6 class="fw-black text-uppercase small text-muted mb-3">Información de Cuenta</h6>
+                                                        <div class="small mb-1"><strong>Nivel Actual:</strong>
+                                                            @if($c->level)
+                                                                <span class="badge" style="background-color: {{ $c->level->color }}">{{ $c->level->name }}</span>
+                                                            @else
+                                                                <span class="text-muted">Estándar</span>
+                                                            @endif
+                                                        </div>
                                                         <div class="small mb-1"><strong>Puntos acumulados:</strong> {{ number_format($c->points) }} pts</div>
                                                         <div class="small"><strong>Locker asignado:</strong> {{ $c->locker ? $c->locker->code : 'Ninguno' }}</div>
                                                     </div>
@@ -203,7 +210,6 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form wire:submit.prevent="saveCustomer">
-                    <div class="modal-body p-4 p-md-5">
                         <div class="row g-4 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label small font-black text-uppercase text-muted">Nombre Completo</label>
@@ -218,22 +224,31 @@
                         </div>
 
                         <div class="row g-4 mb-4">
-                            <div class="col-md-4">
-                                <label class="form-label small font-black text-uppercase text-muted">Cédula / Identificación</label>
+                            <div class="col-md-3">
+                                <label class="form-label small font-black text-uppercase text-muted">Identificación</label>
                                 <input type="text" wire:model="identification_number" class="form-control border-2 fw-bold" placeholder="8-000-000">
                                 @error('identification_number') <div class="text-danger small mt-1 fw-bold">{{ $message }}</div> @enderror
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label small font-black text-uppercase text-muted">Teléfono</label>
                                 <input type="text" wire:model="phone" class="form-control border-2 fw-bold" placeholder="+507 ...">
                                 @error('phone') <div class="text-danger small mt-1 fw-bold">{{ $message }}</div> @enderror
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label class="form-label small font-black text-uppercase text-muted">Casillero Físico</label>
                                 <select wire:model="locker_id" class="form-select border-2">
                                     <option value="">Ninguno</option>
                                     @foreach($availableLockers as $locker)
                                         <option value="{{ $locker->id }}">{{ $locker->code }} ({{ $locker->max_weight }} lbs)</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small font-black text-uppercase text-muted">Nivel Lealtad</label>
+                                <select wire:model="loyalty_level_id" class="form-select border-2 fw-bold">
+                                    <option value="">Auto (Puntos)</option>
+                                    @foreach($loyaltyLevels as $level)
+                                        <option value="{{ $level->id }}">{{ $level->name }}</option>
                                     @endforeach
                                 </select>
                             </div>

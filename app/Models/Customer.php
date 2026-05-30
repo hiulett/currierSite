@@ -17,6 +17,8 @@ class Customer extends Model
         'referrer_id',
         'loyalty_level_id',
         'box_number',
+        'box_number_air',
+        'box_number_maritime',
         'balance',
         'points',
         'phone',
