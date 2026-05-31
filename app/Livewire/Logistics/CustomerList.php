@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class CustomerList extends Component
 {
-    use WithPagination, WithSorting;
+    use WithPagination, WithSorting, \Livewire\WithFileUploads;
 
     public $search = '';
     public $filter = '';
@@ -22,6 +22,10 @@ class CustomerList extends Component
 
     public $is_editing = false;
     public $customer_id;
+
+    // CSV Import
+    public $csv_file;
+    public $is_importing = false;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -254,6 +258,80 @@ class CustomerList extends Component
 
         $customer->delete();
         session()->flash('message', 'Cliente y su cuenta de usuario eliminados.');
+    }
+
+    public function importCSV()
+    {
+        $this->validate([
+            'csv_file' => 'required|mimes:csv,txt|max:2048',
+        ]);
+
+        $path = $this->csv_file->getRealPath();
+        $file = fopen($path, 'r');
+
+        // Skip header
+        fgetcsv($file);
+
+        $count = 0;
+        $tenantId = session('tenant_id');
+
+        while (($row = fgetcsv($file)) !== FALSE) {
+            if (empty($row[1])) continue; // Skip if email is missing
+
+            $name = $row[0];
+            $email = $row[1];
+            $phone = $row[2] ?? '';
+            $id_num = $row[3] ?? '';
+
+            // 1. Create/Update User
+            $user = User::updateOrCreate(
+                ['email' => $email],
+                [
+                    'tenant_id' => $tenantId,
+                    'name' => $name,
+                    'password' => Hash::make('password123'),
+                    'role' => 'customer',
+                    'email_verified_at' => now(),
+                ]
+            );
+
+            // 2. Determine Box Number
+            $customer = Customer::where('user_id', $user->id)->first();
+            if (!$customer) {
+                // Get next counter
+                $tenant = \App\Models\Tenant::find($tenantId);
+                $settings = $tenant->settings_json;
+                $nextId = ($settings['box_number_counter'] ?? 1000) + 1;
+
+                $boxNumber = 'LGX' . $nextId;
+
+                Customer::create([
+                    'tenant_id' => $tenantId,
+                    'user_id' => $user->id,
+                    'box_number' => $boxNumber,
+                    'box_number_air' => $boxNumber,
+                    'box_number_maritime' => $boxNumber . 'M',
+                    'phone' => $phone,
+                    'identification_number' => $id_num,
+                    'balance' => 0,
+                    'points' => 0,
+                ]);
+
+                // Update counter
+                $settings['box_number_counter'] = $nextId;
+                $tenant->update(['settings_json' => $settings]);
+            } else {
+                $customer->update([
+                    'phone' => $phone,
+                    'identification_number' => $id_num,
+                ]);
+            }
+            $count++;
+        }
+
+        fclose($file);
+        $this->reset(['csv_file', 'is_importing']);
+        session()->flash('message', "Importación completada. Se procesaron $count clientes exitosamente.");
     }
 
     public function render()

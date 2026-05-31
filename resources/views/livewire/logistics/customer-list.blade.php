@@ -34,6 +34,34 @@
         </div>
     </div>
 
+    <!-- CSV Import Panel -->
+    @if($is_importing)
+        <div class="row mb-4 animate__animated animate__fadeIn">
+            <div class="col-12">
+                <div class="card border-primary border-2 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="fw-black uppercase text-primary">Importación Masiva de Clientes</h5>
+                                <p class="small text-muted mb-0">Sube un archivo CSV con las columnas: <strong>nombre, email, telefono, identificacion</strong>.</p>
+                            </div>
+                            <div class="col-md-6">
+                                <form wire:submit.prevent="importCSV" class="d-flex gap-2">
+                                    <input type="file" wire:model="csv_file" class="form-control border-2 rounded-pill">
+                                    <button type="submit" class="btn btn-primary fw-black rounded-pill px-4" wire:loading.attr="disabled">
+                                        <span wire:loading.remove>PROCESAR</span>
+                                        <span wire:loading class="spinner-border spinner-border-sm"></span>
+                                    </button>
+                                </form>
+                                @error('csv_file') <div class="text-danger xsmall mt-1 ps-3">{{ $message }}</div> @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-12">
             <div class="card shadow-sm border-0">
@@ -52,6 +80,9 @@
                         </h5>
                     </div>
                     <div class="d-flex gap-2 w-100 w-md-auto">
+                        <button wire:click="$toggle('is_importing')" class="btn btn-outline-primary shadow-sm fw-black rounded-pill px-3">
+                            <i class="align-middle me-1" data-feather="upload-cloud"></i> IMPORTAR CSV
+                        </button>
                         <select wire:model.live="filter_level" class="form-select form-select-sm border-0 bg-light rounded-pill px-3" style="width: 150px;">
                             <option value="">Todos Niveles</option>
                             @foreach($loyaltyLevels as $level)
