@@ -71,17 +71,21 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="bg-light bg-opacity-50">
                             <tr>
-                                <th class="ps-4">Casillero</th>
+                                <th class="ps-4" style="width: 50px;">#</th>
+                                <th>Casillero</th>
                                 <th>Información</th>
                                 <th class="hidden md:table-cell">Contacto</th>
                                 <th class="text-center">Saldo</th>
                                 <th class="pe-4 text-end">Acciones</th>
                             </tr>
                         </thead>
-                        @foreach($customers as $c)
+                        @foreach($customers as $index => $c)
                             <tbody x-data="{ expanded: false }" class="border-0" wire:key="customer-row-{{ $c->id }}">
                                 <tr class="border-top">
-                                    <td class="ps-4 py-3">
+                                    <td class="ps-4">
+                                        <span class="text-muted xsmall fw-bold">{{ ($customers->currentPage() - 1) * $customers->perPage() + $loop->iteration }}</span>
+                                    </td>
+                                    <td>
                                         <div class="d-flex flex-column align-items-start gap-1">
                                             <span class="badge bg-primary text-white font-black px-2 py-1 shadow-sm" style="font-size: 0.9rem; letter-spacing: 0.01rem; border-radius: 4px;">
                                                 {{ $c->box_number }}
