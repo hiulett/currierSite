@@ -26,15 +26,17 @@ class CustomerList extends Component
     protected $queryString = [
         'search' => ['except' => ''],
         'filter' => ['except' => ''],
+        'filter_level' => ['except' => ''],
     ];
-
-    // Password Management
-    public $selected_customer_id;
-    public $new_password;
 
     public function updatingSearch()
     {
         $this->resetPage();
+        // If searching, we usually want to search among all customers, not just the filtered ones
+        if ($this->search !== '') {
+            $this->filter = '';
+            $this->filter_level = '';
+        }
     }
 
     public function openPasswordModal($customerId)
