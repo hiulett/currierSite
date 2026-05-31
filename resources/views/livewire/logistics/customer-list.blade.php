@@ -162,7 +162,7 @@
                                                         <div class="text-uppercase xsmall font-black text-muted mb-2">Métricas de Valor</div>
                                                         <div class="small"><strong>Paquetes:</strong> {{ $c->packages_count }} recibidos</div>
                                                         <div class="small"><strong>Facturas:</strong> {{ $c->invoices_count }} generadas</div>
-                                                        <div class="small"><strong>LTV:</strong> ${{ number_format($c->invoices_sum_total, 2) }} total</div>
+                                                        <div class="small"><strong>LTV:</strong> ${{ number_format($c->invoices_sum_total ?? 0, 2) }} total</div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="text-uppercase xsmall font-black text-muted mb-2">Cuenta e Identificadores</div>

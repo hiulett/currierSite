@@ -83,33 +83,40 @@ class AppServiceProvider extends ServiceProvider
         // Shared data for sidebar and navbar notifications
         View::composer('components.layouts.app', function ($view) {
             if (auth()->check()) {
-                $alerts = [];
+                try {
+                    $alerts = [];
 
-                // 1. Overdue Invoices
-                $overdue = Invoice::where('status', 'unpaid')->where('due_date', '<', now()->today())->count();
-                if ($overdue > 0) $alerts['overdue'] = $overdue;
+                    // 1. Overdue Invoices
+                    $overdue = Invoice::where('status', 'unpaid')->where('due_date', '<', now()->today())->count();
+                    if ($overdue > 0) $alerts['overdue'] = $overdue;
 
-                // 2. Open Tickets
-                $tickets = Ticket::where('status', 'open')->count();
-                if ($tickets > 0) $alerts['tickets'] = $tickets;
+                    // 2. Open Tickets
+                    $tickets = Ticket::where('status', 'open')->count();
+                    if ($tickets > 0) $alerts['tickets'] = $tickets;
 
-                // 3. New Pre-alerts
-                $prealerts = Package::where('status', 'prealert')->count();
-                if ($prealerts > 0) $alerts['prealerts'] = $prealerts;
+                    // 3. New Pre-alerts
+                    $prealerts = Package::where('status', 'prealert')->count();
+                    if ($prealerts > 0) $alerts['prealerts'] = $prealerts;
 
-                // 4. New Customers (Last 48 hours)
-                $newCustomers = Customer::where('created_at', '>=', now()->subHours(48))->count();
-                if ($newCustomers > 0) $alerts['new_customers'] = $newCustomers;
+                    // 4. New Customers (Last 48 hours)
+                    $newCustomers = Customer::where('created_at', '>=', now()->subHours(48))->count();
+                    if ($newCustomers > 0) $alerts['new_customers'] = $newCustomers;
 
-                // 5. Pending Payments
-                $pendingPayments = \App\Models\PaymentProof::where('status', 'pending')->count();
-                if ($pendingPayments > 0) $alerts['pending_payments'] = $pendingPayments;
+                    // 5. Pending Payments
+                    if (\Illuminate\Support\Facades\Schema::hasTable('payment_proofs')) {
+                        $pendingPayments = \App\Models\PaymentProof::where('status', 'pending')->count();
+                        if ($pendingPayments > 0) $alerts['pending_payments'] = $pendingPayments;
+                    }
 
-                // 6. DB Notifications (Financial Alerts, etc)
-                $dbNotificationsCount = auth()->user()->unreadNotifications->count();
+                    // 6. DB Notifications (Financial Alerts, etc)
+                    $dbNotificationsCount = auth()->user()->unreadNotifications->count();
 
-                $view->with('navAlerts', $alerts);
-                $view->with('totalNavAlerts', array_sum($alerts) + $dbNotificationsCount);
+                    $view->with('navAlerts', $alerts);
+                    $view->with('totalNavAlerts', array_sum($alerts) + $dbNotificationsCount);
+                } catch (\Exception $e) {
+                    $view->with('navAlerts', []);
+                    $view->with('totalNavAlerts', 0);
+                }
             }
         });
     }

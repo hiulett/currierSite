@@ -39,7 +39,10 @@ class GeneralSettings extends Component
 
     public function mount()
     {
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::find(session('tenant_id')) ?? Tenant::first();
+        if (!$tenant) {
+             return; // Or handle empty DB
+        }
         $settings = $tenant->settings_json ?? [];
 
         $this->currency = $settings['currency'] ?? 'USD';

@@ -65,7 +65,8 @@ class Dashboard extends Component
             ')->first();
 
             // Projected Profit from stock (Received but not billed)
-            $tenantSettings = \App\Models\Tenant::find(session('tenant_id'))->settings_json ?? [];
+            $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
+            $tenantSettings = $tenant->settings_json ?? [];
             $defaultRate = $tenantSettings['default_rate'] ?? 2.50;
 
             $projectedRevenue = Package::whereNotIn('status', ['delivered', 'cancelled'])
@@ -274,7 +275,6 @@ class Dashboard extends Component
                 ];
             }
 
-            $tenant = \App\Models\Tenant::find(session('tenant_id'));
             $currency = $tenant->settings_json['currency'] ?? 'USD';
 
             return view('livewire.dashboard', [

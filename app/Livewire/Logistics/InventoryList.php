@@ -60,7 +60,7 @@ class InventoryList extends Component
 
     public function mount()
     {
-        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
         $this->custom_rate = $tenant->settings_json['default_rate'] ?? 2.50;
     }
 

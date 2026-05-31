@@ -297,7 +297,7 @@ class CustomerList extends Component
             'active_lockers' => Customer::whereNotNull('locker_id')->count(),
         ];
 
-        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
         $settings = $tenant->settings_json ?? [];
         $airEnabled = $settings['service_air_enabled'] ?? true;
         $maritimeEnabled = $settings['service_maritime_enabled'] ?? true;
