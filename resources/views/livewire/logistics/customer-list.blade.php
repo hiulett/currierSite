@@ -129,11 +129,9 @@
                                             <button wire:click="openPasswordModal({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-danger" title="Seguridad">
                                                 <i data-feather="key" style="width:14px;"></i>
                                             </button>
-                                            @if($c->temporary_password)
-                                                <button wire:click="sendPasswordEmail({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-warning" title="Enviar Clave por Email">
-                                                    <i data-feather="mail" style="width:14px;"></i>
-                                                </button>
-                                            @endif
+                                            <button wire:click="sendPasswordEmail({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-warning" title="Enviar Clave por Email">
+                                                <i data-feather="mail" style="width:14px;"></i>
+                                            </button>
                                             <a href="{{ route('billing.statement', ['c' => $c->id]) }}" class="btn btn-sm btn-light border shadow-none text-info" title="Estado Cuenta">
                                                 <i data-feather="bar-chart-2" style="width:14px;"></i>
                                             </a>
@@ -304,6 +302,13 @@
         });
         window.addEventListener('close-password-modal', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('passwordResetModal')).hide();
+        });
+
+        // Re-initialize icons after every Livewire update in this component
+        document.addEventListener('livewire:load', () => {
+            Livewire.on('customer-updated', () => {
+                if(typeof initFeather === 'function') initFeather();
+            });
         });
     </script>
 </div>

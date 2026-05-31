@@ -108,9 +108,14 @@ class CustomerList extends Component
     public function sendPasswordEmail($customerId)
     {
         $customer = Customer::findOrFail($customerId);
+
+        // If no temporary password exists, generate one now
         if (!$customer->temporary_password) {
-            session()->flash('error', 'El cliente no tiene una contraseña temporal asignada.');
-            return;
+            $newPass = \Illuminate\Support\Str::random(8);
+            $customer->update(['temporary_password' => $newPass]);
+            if ($customer->user) {
+                $customer->user->update(['password' => Hash::make($newPass)]);
+            }
         }
 
         if ($customer->user) {
