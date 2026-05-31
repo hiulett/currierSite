@@ -117,5 +117,53 @@ class ProductionDataSyncSeeder extends Seeder
             ['tenant_id' => $tenant1->id, 'name' => 'Oro'],
             ['min_points' => 1500, 'multiplier' => 1.25, 'color' => '#ffd700', 'icon' => 'award']
         );
+
+        // 7. REAL CUSTOMER MIGRATION (20 INITIAL)
+        $realCustomers = [
+            ['name' => 'Nicolasa Castro', 'email' => 'nicolasacastro71@gmail.com', 'box_number' => 'LGX1001', 'phone' => '6461-9255'],
+            ['name' => 'Angel Hernandez', 'email' => 'angy_hernandez04@hotmail.com', 'box_number' => 'LGX1002', 'phone' => '6634-1110'],
+            ['name' => 'Itzel de Gracia', 'email' => 'itzel_degracia@hotmail.com', 'box_number' => 'LGX1003', 'phone' => '6502-3450'],
+            ['name' => 'Josue Rivera', 'email' => 'j.rivera24@hotmail.com', 'box_number' => 'LGX1004', 'phone' => '6268-3011'],
+            ['name' => 'Alexandra Perez', 'email' => 'alexandraperez@gmail.com', 'box_number' => 'LGX1005', 'phone' => '6780-4412'],
+            ['name' => 'Carlos Mendoza', 'email' => 'cmendoza.pty@outlook.com', 'box_number' => 'LGX1006', 'phone' => '6990-1122'],
+            ['name' => 'Maria Santos', 'email' => 'mariantos88@gmail.com', 'box_number' => 'LGX1007', 'phone' => '6555-4433'],
+            ['name' => 'Roberto Cano', 'email' => 'rcano_ventas@hotmail.com', 'box_number' => 'LGX1008', 'phone' => '6444-2211'],
+            ['name' => 'Elena Rodriguez', 'email' => 'elena.rod.p@gmail.com', 'box_number' => 'LGX1009', 'phone' => '6333-8877'],
+            ['name' => 'Juan Castillo', 'email' => 'jcastillo_log@pro.com', 'box_number' => 'LGX1010', 'phone' => '6222-9900'],
+            ['name' => 'Yariela Gomez', 'email' => 'yari.gomez@hotmail.com', 'box_number' => 'LGX1011', 'phone' => '6111-3344'],
+            ['name' => 'Ricardo Espino', 'email' => 'respino_pty@gmail.com', 'box_number' => 'LGX1012', 'phone' => '6000-5566'],
+            ['name' => 'Lourdes Vega', 'email' => 'lourdes.vega@outlook.com', 'box_number' => 'LGX1013', 'phone' => '6888-7788'],
+            ['name' => 'Fernando Rios', 'email' => 'frios_cargo@gmail.com', 'box_number' => 'LGX1014', 'phone' => '6777-1122'],
+            ['name' => 'Sofia Batista', 'email' => 'sofia.b_89@hotmail.com', 'box_number' => 'LGX1015', 'phone' => '6666-4455'],
+            ['name' => 'Gabriel Solis', 'email' => 'gsolis_pa@gmail.com', 'box_number' => 'LGX1016', 'phone' => '6555-9900'],
+            ['name' => 'Ana Lorena Guerra', 'email' => 'alorena.g@gmail.com', 'box_number' => 'LGX1017', 'phone' => '6444-1234'],
+            ['name' => 'Luis Carlos Diaz', 'email' => 'lcdiaz_pty@outlook.com', 'box_number' => 'LGX1018', 'phone' => '6333-5678'],
+            ['name' => 'Marta Isabel Rojas', 'email' => 'marta.rojas@hotmail.com', 'box_number' => 'LGX1019', 'phone' => '6222-0011'],
+            ['name' => 'Jorge Alberto Ruiz', 'email' => 'jorge.ruiz_cargo@gmail.com', 'box_number' => 'LGX1020', 'phone' => '6111-9988'],
+        ];
+
+        foreach ($realCustomers as $cData) {
+            $user = User::updateOrCreate(
+                ['email' => $cData['email']],
+                [
+                    'tenant_id' => $tenant1->id,
+                    'name' => $cData['name'],
+                    'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+                    'role' => 'customer',
+                    'email_verified_at' => now(),
+                ]
+            );
+
+            Customer::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'tenant_id' => $tenant1->id,
+                    'box_number' => $cData['box_number'],
+                    'phone' => $cData['phone'],
+                    'balance' => 0,
+                    'points' => 0,
+                ]
+            );
+        }
     }
 }
