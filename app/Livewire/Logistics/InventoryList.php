@@ -146,6 +146,50 @@ class InventoryList extends Component
         $this->is_assigning = true;
     }
 
+    public function unassignPackage($id)
+    {
+        $package = Package::findOrFail($id);
+        $customer = $package->customer;
+
+        if ($customer) {
+            // Decrement points
+            $customer->decrement('points', ceil($package->weight));
+
+            // We don't touch the balance automatically because the invoice might have other items.
+            // We just warn the user or let them handle the invoice manually.
+        }
+
+        $package->update([
+            'customer_id' => null,
+            'status' => 'received', // Reset to received status
+            'shelf_location' => null
+        ]);
+
+        session()->flash('message', 'Paquete desasociado del cliente. Recuerde anular o editar la factura manualmente si es necesario.');
+    }
+
+    public function bulkUnassign()
+    {
+        if (empty($this->selected_packages)) return;
+
+        $packages = Package::whereIn('id', $this->selected_packages)->get();
+
+        foreach ($packages as $pkg) {
+            if ($pkg->customer) {
+                $pkg->customer->decrement('points', ceil($pkg->weight));
+            }
+            $pkg->update([
+                'customer_id' => null,
+                'status' => 'received',
+                'shelf_location' => null
+            ]);
+        }
+
+        $this->selected_packages = [];
+        $this->selectAll = false;
+        session()->flash('message', count($packages) . ' paquetes desasociados masivamente.');
+    }
+
     public function cancelAssignment()
     {
         $this->is_assigning = false;
@@ -241,6 +285,8 @@ class InventoryList extends Component
 
         if ($this->view_tab === 'pending') {
             $query->whereNull('customer_id');
+        } elseif ($this->view_tab === 'assigned') {
+            $query->whereNotNull('customer_id');
         } elseif ($this->view_tab === 'recent') {
             $query->where('created_at', '>=', now()->subDays(2));
         }

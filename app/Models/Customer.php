@@ -24,6 +24,7 @@ class Customer extends Model
         'phone',
         'identification_number',
         'address',
+        'temporary_password',
         'latitude',
         'longitude',
     ];

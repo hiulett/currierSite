@@ -79,6 +79,13 @@
                         <option value="ready_for_pickup">Listo Entrega</option>
                     </select>
                 </div>
+                <div class="col-md-2">
+                    <select wire:model.live="view_tab" class="form-select border-0 bg-light">
+                        <option value="all">Filtro: Todos</option>
+                        <option value="pending">Solo Sin Asignar</option>
+                        <option value="assigned">Solo Asignados</option>
+                    </select>
+                </div>
                 <div class="col-md-4 text-end">
                     <button onclick="openReceiveModal()" class="btn btn-primary fw-black text-uppercase px-4 shadow-sm">
                         <i class="align-middle me-1" data-feather="plus"></i> NUEVO INGRESO
@@ -141,6 +148,10 @@
                                         <button wire:click="editPackage({{ $package->id }})" class="btn btn-sm btn-primary fw-black px-3">
                                             ASIGNAR
                                         </button>
+                                    @else
+                                        <button wire:click="unassignPackage({{ $package->id }})" wire:confirm="¿Seguro que deseas quitar este paquete del cliente? El inventario volverá a estar libre." class="btn btn-sm btn-outline-danger" title="Desasociar Cliente">
+                                            <i class="align-middle" data-feather="user-minus" style="width: 14px;"></i>
+                                        </button>
                                     @endif
                                     <button wire:click="editPackage({{ $package->id }})" class="btn btn-sm btn-light border shadow-none" title="Editar">
                                         <i class="align-middle" data-feather="edit-2" style="width: 14px;"></i>
@@ -170,7 +181,10 @@
                 </div>
                 <div class="vr"></div>
                 <button wire:click="openAssignment" class="btn btn-primary btn-sm rounded-pill fw-black px-4">
-                    ASIGNAR A CLIENTE <i class="align-middle ms-1" data-feather="users"></i>
+                    ASIGNAR <i class="align-middle ms-1" data-feather="users"></i>
+                </button>
+                <button wire:click="bulkUnassign" wire:confirm="¿Deseas desasociar todos los paquetes seleccionados?" class="btn btn-outline-danger btn-sm rounded-pill fw-black px-4">
+                    QUITAR CLIENTE <i class="align-middle ms-1" data-feather="user-minus"></i>
                 </button>
                 <button wire:click="$set('selected_packages', [])" class="btn btn-link text-white-50 btn-sm p-0 text-decoration-none fw-bold">Cancelar</button>
             </div>

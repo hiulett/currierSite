@@ -39,8 +39,13 @@ class CustomerList extends Component
     public function openPasswordModal($customerId)
     {
         $this->selected_customer_id = $customerId;
-        $this->new_password = '';
+        $this->new_password = \Illuminate\Support\Str::random(8); // Generar una por defecto
         $this->dispatch('open-password-modal');
+    }
+
+    public function generateRandomPassword()
+    {
+        $this->new_password = \Illuminate\Support\Str::random(8);
     }
 
     public function resetPassword()
@@ -98,6 +103,20 @@ class CustomerList extends Component
         }
 
         session()->flash('message', "Operación masiva completada. Se enviaron $count correos con nuevas contraseñas.");
+    }
+
+    public function sendPasswordEmail($customerId)
+    {
+        $customer = Customer::findOrFail($customerId);
+        if (!$customer->temporary_password) {
+            session()->flash('error', 'El cliente no tiene una contraseña temporal asignada.');
+            return;
+        }
+
+        if ($customer->user) {
+            $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($customer->temporary_password, $customer->user->name));
+            session()->flash('message', 'Credenciales enviadas correctamente a: ' . $customer->user->email);
+        }
     }
 
     public function resetFields()

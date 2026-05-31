@@ -52,9 +52,6 @@
                         </h5>
                     </div>
                     <div class="d-flex gap-2 w-100 w-md-auto">
-                        <button wire:click="sendBulkPasswords" wire:confirm="¿Estás seguro? Se cambiarán las contraseñas de TODOS los clientes y se les enviará un correo con la nueva clave." class="btn btn-warning shadow-sm fw-black rounded-pill px-3">
-                            <i class="align-middle me-1" data-feather="mail"></i> ENVIAR CLAVES MASIVAS
-                        </button>
                         <button wire:click="openCreateModal" class="btn btn-primary shadow-sm fw-black rounded-pill px-3">
                             <i class="align-middle me-1" data-feather="plus-circle"></i> NUEVO CLIENTE
                         </button>
@@ -132,6 +129,11 @@
                                             <button wire:click="openPasswordModal({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-danger" title="Seguridad">
                                                 <i data-feather="key" style="width:14px;"></i>
                                             </button>
+                                            @if($c->temporary_password)
+                                                <button wire:click="sendPasswordEmail({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-warning" title="Enviar Clave por Email">
+                                                    <i data-feather="mail" style="width:14px;"></i>
+                                                </button>
+                                            @endif
                                             <a href="{{ route('billing.statement', ['c' => $c->id]) }}" class="btn btn-sm btn-light border shadow-none text-info" title="Estado Cuenta">
                                                 <i data-feather="bar-chart-2" style="width:14px;"></i>
                                             </a>
@@ -273,11 +275,17 @@
                 </div>
                 <form wire:submit.prevent="resetPassword">
                     <div class="modal-body p-4 text-center">
-                        <input type="text" wire:model="new_password" class="form-control border-2 text-center fw-bold" placeholder="Contraseña...">
+                        <div class="input-group mb-2">
+                            <input type="text" wire:model="new_password" class="form-control border-2 text-center fw-bold" placeholder="Contraseña...">
+                            <button class="btn btn-outline-dark border-2" type="button" wire:click="generateRandomPassword" title="Generar Aleatoria">
+                                <i data-feather="refresh-cw" style="width: 14px;"></i>
+                            </button>
+                        </div>
+                        <p class="xsmall text-muted mb-0">Esta clave será visible para ti y se enviará al cliente.</p>
                         @error('new_password') <div class="text-danger xsmall mt-2">{{ $message }}</div> @enderror
                     </div>
                     <div class="modal-footer bg-light p-2">
-                        <button type="submit" class="btn btn-danger w-100 fw-black">ACTUALIZAR</button>
+                        <button type="submit" class="btn btn-danger w-100 fw-black">ACTUALIZAR Y ENVIAR</button>
                     </div>
                 </form>
             </div>
