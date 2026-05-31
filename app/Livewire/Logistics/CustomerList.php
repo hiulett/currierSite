@@ -16,7 +16,8 @@ class CustomerList extends Component
 
     public $search = '';
     public $filter = '';
-    public $name, $email, $phone, $box_number, $locker_id, $identification_number, $address, $loyalty_level_id;
+    public $filter_level = '';
+    public $name, $email, $phone, $box_number, $locker_id, $identification_number, $address, $loyalty_level_id, $admin_notes;
     public $box_number_air, $box_number_maritime;
 
     public $is_editing = false;
@@ -126,7 +127,7 @@ class CustomerList extends Component
 
     public function resetFields()
     {
-        $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'loyalty_level_id', 'identification_number', 'address', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id']);
+        $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'loyalty_level_id', 'identification_number', 'address', 'admin_notes', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id']);
     }
 
     public function openCreateModal()
@@ -149,6 +150,7 @@ class CustomerList extends Component
         $this->loyalty_level_id = $customer->loyalty_level_id;
         $this->identification_number = $customer->identification_number;
         $this->address = $customer->address;
+        $this->admin_notes = $customer->admin_notes;
         $this->is_editing = true;
 
         $this->dispatch('open-customer-modal');
@@ -190,6 +192,7 @@ class CustomerList extends Component
                 'loyalty_level_id' => $this->loyalty_level_id,
                 'identification_number' => $this->identification_number,
                 'address' => $this->address,
+                'admin_notes' => $this->admin_notes,
             ]);
 
             session()->flash('message', 'Cliente actualizado exitosamente.');
@@ -213,6 +216,7 @@ class CustomerList extends Component
                 'loyalty_level_id' => $this->loyalty_level_id,
                 'identification_number' => $this->identification_number,
                 'address' => $this->address,
+                'admin_notes' => $this->admin_notes,
                 'balance' => 0,
                 'points' => 0,
             ]);
@@ -247,7 +251,9 @@ class CustomerList extends Component
 
     public function render()
     {
-        $query = Customer::with(['user', 'locker']);
+        $query = Customer::with(['user', 'locker', 'level'])
+            ->withCount(['packages', 'invoices'])
+            ->withSum('invoices', 'total');
 
         if ($this->filter === 'new') {
             $query->where('customers.created_at', '>=', now()->subHours(48));
@@ -255,13 +261,13 @@ class CustomerList extends Component
             $query->whereHas('user', function($q) {
                 $q->whereNull('email_verified_at');
             });
-        } elseif ($this->filter === 'verified') {
-            $query->whereHas('user', function($q) {
-                $q->whereNotNull('email_verified_at');
-            });
         } elseif ($this->filter === 'inactive') {
             $query->whereDoesntHave('packages')
                   ->where('customers.created_at', '<=', now()->subDays(7));
+        }
+
+        if ($this->filter_level) {
+            $query->where('loyalty_level_id', $this->filter_level);
         }
 
         if (!empty(trim($this->search))) {

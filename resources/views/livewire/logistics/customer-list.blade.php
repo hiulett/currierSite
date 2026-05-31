@@ -52,6 +52,12 @@
                         </h5>
                     </div>
                     <div class="d-flex gap-2 w-100 w-md-auto">
+                        <select wire:model.live="filter_level" class="form-select form-select-sm border-0 bg-light rounded-pill px-3" style="width: 150px;">
+                            <option value="">Todos Niveles</option>
+                            @foreach($loyaltyLevels as $level)
+                                <option value="{{ $level->id }}">{{ $level->name }}</option>
+                            @endforeach
+                        </select>
                         <button wire:click="openCreateModal" class="btn btn-primary shadow-sm fw-black rounded-pill px-3">
                             <i class="align-middle me-1" data-feather="plus-circle"></i> NUEVO CLIENTE
                         </button>
@@ -143,11 +149,22 @@
                                         <div class="card border shadow-sm mb-0">
                                             <div class="card-body py-3">
                                                 <div class="row text-start">
-                                                    <div class="col-md-4">
-                                                        <div class="text-uppercase xsmall font-black text-muted mb-2">Dirección</div>
-                                                        <p class="small mb-0">{{ $c->address ?? 'No registrada.' }}</p>
+                                                    <div class="col-md-3">
+                                                        <div class="text-uppercase xsmall font-black text-muted mb-2">Dirección y Notas</div>
+                                                        <p class="small mb-2"><strong>Local:</strong> {{ $c->address ?? 'No registrada.' }}</p>
+                                                        @if($c->admin_notes)
+                                                            <div class="p-2 bg-warning bg-opacity-10 border-start border-warning border-3 small italic">
+                                                                <i data-feather="edit-3" class="me-1" style="width:10px;"></i> {{ $c->admin_notes }}
+                                                            </div>
+                                                        @endif
                                                     </div>
-                                                    <div class="col-md-4">
+                                                    <div class="col-md-3">
+                                                        <div class="text-uppercase xsmall font-black text-muted mb-2">Métricas de Valor</div>
+                                                        <div class="small"><strong>Paquetes:</strong> {{ $c->packages_count }} recibidos</div>
+                                                        <div class="small"><strong>Facturas:</strong> {{ $c->invoices_count }} generadas</div>
+                                                        <div class="small"><strong>LTV:</strong> ${{ number_format($c->invoices_sum_total, 2) }} total</div>
+                                                    </div>
+                                                    <div class="col-md-3">
                                                         <div class="text-uppercase xsmall font-black text-muted mb-2">Cuenta e Identificadores</div>
                                                         <div class="small"><strong>Nivel:</strong>
                                                             @if($c->level)
@@ -162,7 +179,7 @@
                                                             @if($maritimeEnabled) <div class="xsmall"><strong>Marítimo:</strong> {{ $c->box_number_maritime ?: 'N/A' }}</div> @endif
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4 text-md-end d-flex flex-column justify-content-end">
+                                                    <div class="col-md-3 text-md-end d-flex flex-column justify-content-end">
                                                         <button wire:click="deleteCustomer({{ $c->id }})" wire:confirm="¿Borrar cliente?" class="btn btn-xs btn-outline-danger align-self-md-end">ELIMINAR PERFIL</button>
                                                     </div>
                                                 </div>
@@ -250,9 +267,13 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="mb-0">
+                        <div class="mb-3">
                             <label class="form-label xsmall font-black text-uppercase text-muted">Dirección Local</label>
                             <textarea wire:model="address" rows="2" class="form-control border-2"></textarea>
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label xsmall font-black text-uppercase text-muted text-warning"><i data-feather="edit-3" style="width:12px;"></i> Notas Administrativas (Privado)</label>
+                            <textarea wire:model="admin_notes" rows="2" class="form-control border-2 bg-light bg-opacity-50" placeholder="Escribe aquí recordatorios o detalles sobre este cliente..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer bg-light p-4">
