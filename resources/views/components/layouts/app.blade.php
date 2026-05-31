@@ -297,6 +297,18 @@
 						</a>
 					</li>
 
+                    <li class="sidebar-item {{ request()->routeIs('builder.integrations') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('builder.integrations') }}'>
+							<i class="align-middle" data-feather="credit-card"></i> <span class="align-middle">Pagos e Integraciones</span>
+						</a>
+					</li>
+
+                    <li class="sidebar-item {{ request()->routeIs('builder.mail') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('builder.mail') }}'>
+							<i class="align-middle" data-feather="mail"></i> <span class="align-middle">Ajustes de Correo</span>
+						</a>
+					</li>
+
                     <li class="sidebar-item {{ request()->routeIs('builder.statuses') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('builder.statuses') }}'>
 							<i class="align-middle" data-feather="list"></i> <span class="align-middle">Estados de Carga</span>

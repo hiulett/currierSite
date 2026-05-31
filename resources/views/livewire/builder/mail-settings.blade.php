@@ -1,70 +1,115 @@
-<div class="max-w-4xl mx-auto">
-    <div class="flex justify-between items-center mb-8">
-        <div>
-            <h2 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Configuración SMTP</h2>
-            <p class="text-slate-500 text-sm">Personaliza el remitente de los correos que reciben tus clientes.</p>
+<div class="container-fluid p-0">
+    <div class="row mb-4 align-items-center">
+        <div class="col-12 col-md-6">
+            <h2 class="h3 mb-0 uppercase font-black tracking-tight text-dark">Configuración de Correo (SMTP)</h2>
+            <p class="text-muted small mb-0">Personaliza el servidor desde el cual se envían las notificaciones a tus clientes.</p>
         </div>
-        <button wire:click="save" class="bg-blue-600 text-white px-8 py-2 rounded-xl font-bold shadow-lg hover:bg-blue-700 transition">
-            Guardar Configuración
-        </button>
+        <div class="col-12 col-md-6 text-md-end mt-3 mt-md-0">
+            <button wire:click="save" class="btn btn-primary fw-black shadow-lg px-4">
+                <i class="align-middle me-1" data-feather="save"></i> GUARDAR CONFIGURACIÓN
+            </button>
+        </div>
     </div>
 
     @if (session()->has('message'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-8 rounded-r-xl shadow-sm">
-            {{ session('message') }}
+        <div class="alert alert-success alert-dismissible shadow-sm mb-4" role="alert">
+            <div class="alert-message">
+                <strong>¡Éxito!</strong> {{ session('message') }}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="bg-white p-8 rounded-[30px] shadow-sm border border-slate-200 md:col-span-2">
-            <h3 class="text-lg font-bold text-slate-800 mb-6">Servidor de Salida</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Host SMTP</label>
-                    <input type="text" wire:model="mail_host" placeholder="smtp.mailtrap.io" class="w-full border-slate-200 rounded-xl focus:ring-blue-500">
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <!-- SMTP Server Settings -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="server"></i> Servidor de Salida</h5>
                 </div>
-                <div>
-                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Puerto</label>
-                    <input type="text" wire:model="mail_port" placeholder="587" class="w-full border-slate-200 rounded-xl focus:ring-blue-500">
+                <div class="card-body p-4 p-md-5">
+                    <div class="row g-4">
+                        <div class="col-md-8">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">Host SMTP</label>
+                            <input type="text" wire:model="mail_host" class="form-control border-2 fw-bold" placeholder="smtp.mailtrap.io">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">Puerto</label>
+                            <input type="text" wire:model="mail_port" class="form-control border-2 fw-bold" placeholder="587">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">Usuario / Email</label>
+                            <input type="text" wire:model="mail_username" class="form-control border-2 fw-bold">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">Contraseña</label>
+                            <input type="password" wire:model="mail_password" class="form-control border-2 fw-bold">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">Encriptación</label>
+                            <select wire:model="mail_encryption" class="form-select border-2 fw-bold">
+                                <option value="tls">TLS (Recomendado)</option>
+                                <option value="ssl">SSL</option>
+                                <option value="none">Ninguna</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Encriptación</label>
-                    <select wire:model="mail_encryption" class="w-full border-slate-200 rounded-xl">
-                        <option value="tls">TLS</option>
-                        <option value="ssl">SSL</option>
-                        <option value="none">Ninguna</option>
-                    </select>
+            </div>
+
+            <!-- Sender Identity -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="user"></i> Identidad del Remitente</h5>
                 </div>
-                <div>
-                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Usuario / Email</label>
-                    <input type="text" wire:model="mail_username" class="w-full border-slate-200 rounded-xl focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Contraseña</label>
-                    <input type="password" wire:model="mail_password" class="w-full border-slate-200 rounded-xl focus:ring-blue-500">
+                <div class="card-body p-4 p-md-5">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">Email Remitente</label>
+                            <input type="email" wire:model="mail_from_address" class="form-control border-2 fw-bold" placeholder="no-reply@tuempresa.com">
+                            <div class="form-text xsmall mt-1">Este es el correo que verán tus clientes al recibir notificaciones.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">Nombre Remitente</label>
+                            <input type="text" wire:model="mail_from_name" class="form-control border-2 fw-bold">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white p-8 rounded-[30px] shadow-sm border border-slate-200 md:col-span-2">
-            <h3 class="text-lg font-bold text-slate-800 mb-6">Remitente (Sender)</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Email Remitente</label>
-                    <input type="email" wire:model="mail_from_address" placeholder="no-reply@tuempresa.com" class="w-full border-slate-200 rounded-xl focus:ring-blue-500">
+        <div class="col-12 col-lg-4">
+            <div class="card bg-dark text-white border-0 shadow-lg mb-4" style="border-radius: 1rem;">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="stat bg-primary text-white rounded-circle me-3">
+                            <i data-feather="zap"></i>
+                        </div>
+                        <h5 class="card-title text-white mb-0 uppercase font-black small tracking-widest">¿Por qué configurar esto?</h5>
+                    </div>
+                    <p class="text-white-50 small leading-relaxed">
+                        Por defecto, los correos se envían desde nuestro servidor general. Al configurar tu propio SMTP:
+                    </p>
+                    <ul class="text-white-50 small ps-3 mb-0">
+                        <li class="mb-2">Tus clientes verán que los correos vienen directamente de <strong>tu marca</strong>.</li>
+                        <li class="mb-2">Mejoras drásticamente la <strong>entregabilidad</strong> (evitas la carpeta de SPAM).</li>
+                        <li>Generas mayor confianza y profesionalismo en cada notificación de carga.</li>
+                    </ul>
                 </div>
-                <div>
-                    <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Nombre Remitente</label>
-                    <input type="text" wire:model="mail_from_name" class="w-full border-slate-200 rounded-xl focus:ring-blue-500">
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-3 text-warning">
+                        <i data-feather="alert-triangle" style="width: 48px; height: 48px; opacity: 0.5;"></i>
+                    </div>
+                    <h6 class="fw-black text-dark uppercase small">Prueba de Conexión</h6>
+                    <p class="text-muted xsmall mb-3">Una vez guardes, te recomendamos enviar un correo de prueba.</p>
+                    <button class="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold disabled">ENVIAR TEST (PRÓXIMAMENTE)</button>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="mt-8 bg-blue-50 p-6 rounded-[30px] border border-blue-100 flex items-start space-x-4">
-        <div class="text-blue-500">💡</div>
-        <p class="text-xs text-blue-800 leading-relaxed font-medium">
-            <strong>¿Por qué configurar esto?</strong> Por defecto, los correos se envían desde nuestro servidor general. Al configurar tu propio SMTP, tus clientes verán que los correos vienen directamente de tu marca, mejorando la confianza y la entregabilidad.
-        </p>
     </div>
 </div>

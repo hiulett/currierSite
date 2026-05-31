@@ -50,6 +50,37 @@ class IdentifyTenant
 
             // Also ensure it's in session for Livewire or other parts
             session(['locale' => $locale]);
+
+            // 4. Dynamic Mail Configuration (SMTP Override)
+            $settings = $tenant->settings_json ?? [];
+            if (!empty($settings['mail_host'])) {
+                config([
+                    'mail.mailers.smtp.host' => $settings['mail_host'],
+                    'mail.mailers.smtp.port' => $settings['mail_port'] ?? '587',
+                    'mail.mailers.smtp.username' => $settings['mail_username'],
+                    'mail.mailers.smtp.password' => $settings['mail_password'],
+                    'mail.mailers.smtp.encryption' => $settings['mail_encryption'] ?? 'tls',
+                    'mail.from.address' => $settings['mail_from_address'] ?? 'no-reply@logisaas.com',
+                    'mail.from.name' => $settings['mail_from_name'] ?? $tenant->name,
+                ]);
+            }
+
+            // 5. Dynamic Payment Configuration (Stripe/PayPal Override)
+            if (!empty($settings['stripe_secret'])) {
+                config([
+                    'services.stripe.key' => $settings['stripe_key'],
+                    'services.stripe.secret' => $settings['stripe_secret'],
+                ]);
+            }
+            if (!empty($settings['paypal_mode'])) {
+                config([
+                    'paypal.mode' => $settings['paypal_mode'],
+                    'paypal.sandbox.client_id' => $settings['paypal_sandbox_client_id'] ?? '',
+                    'paypal.sandbox.client_secret' => $settings['paypal_sandbox_client_secret'] ?? '',
+                    'paypal.live.client_id' => $settings['paypal_live_client_id'] ?? '',
+                    'paypal.live.client_secret' => $settings['paypal_live_client_secret'] ?? '',
+                ]);
+            }
         }
 
         return $next($request);
