@@ -267,71 +267,105 @@ class CustomerList extends Component
         ]);
 
         $path = $this->csv_file->getRealPath();
+
+        // Auto-detect delimiter
+        $fileContent = file_get_contents($path);
+        $delimiters = [",", ";", "\t"];
+        $delimiter = ",";
+        foreach ($delimiters as $d) {
+            if (strpos($fileContent, $d) !== false) {
+                $delimiter = $d;
+                break;
+            }
+        }
+
         $file = fopen($path, 'r');
+        ini_set('auto_detect_line_endings', true);
 
         // Skip header
-        fgetcsv($file);
+        fgetcsv($file, 0, $delimiter);
 
         $count = 0;
-        $tenantId = session('tenant_id');
+        $skipped = 0;
+        $tenantId = session('tenant_id') ?? 1;
 
-        while (($row = fgetcsv($file)) !== FALSE) {
-            if (empty($row[1])) continue; // Skip if email is missing
-
-            $name = $row[0];
-            $email = $row[1];
-            $phone = $row[2] ?? '';
-            $id_num = $row[3] ?? '';
-
-            // 1. Create/Update User
-            $user = User::updateOrCreate(
-                ['email' => $email],
-                [
-                    'tenant_id' => $tenantId,
-                    'name' => $name,
-                    'password' => Hash::make('password123'),
-                    'role' => 'customer',
-                    'email_verified_at' => now(),
-                ]
-            );
-
-            // 2. Determine Box Number
-            $customer = Customer::where('user_id', $user->id)->first();
-            if (!$customer) {
-                // Get next counter
-                $tenant = \App\Models\Tenant::find($tenantId);
-                $settings = $tenant->settings_json;
-                $nextId = ($settings['box_number_counter'] ?? 1000) + 1;
-
-                $boxNumber = 'LGX' . $nextId;
-
-                Customer::create([
-                    'tenant_id' => $tenantId,
-                    'user_id' => $user->id,
-                    'box_number' => $boxNumber,
-                    'box_number_air' => $boxNumber,
-                    'box_number_maritime' => $boxNumber . 'M',
-                    'phone' => $phone,
-                    'identification_number' => $id_num,
-                    'balance' => 0,
-                    'points' => 0,
-                ]);
-
-                // Update counter
-                $settings['box_number_counter'] = $nextId;
-                $tenant->update(['settings_json' => $settings]);
-            } else {
-                $customer->update([
-                    'phone' => $phone,
-                    'identification_number' => $id_num,
-                ]);
+        while (($row = fgetcsv($file, 0, $delimiter)) !== FALSE) {
+            // Basic sanity check: row must have at least name and email
+            if (count($row) < 2 || empty($row[1])) {
+                $skipped++;
+                continue;
             }
-            $count++;
+
+            $name = trim($row[0]);
+            $email = trim($row[1]);
+            $phone = isset($row[2]) ? trim($row[2]) : '';
+            $id_num = isset($row[3]) ? trim($row[3]) : '';
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $skipped++;
+                continue;
+            }
+
+            try {
+                DB::transaction(function() use ($email, $tenantId, $name, $phone, $id_num, &$count) {
+                    // 1. Create/Update User
+                    $user = User::updateOrCreate(
+                        ['email' => $email],
+                        [
+                            'tenant_id' => $tenantId,
+                            'name' => $name,
+                            'password' => Hash::make('password123'),
+                            'role' => 'customer',
+                            'email_verified_at' => now(),
+                        ]
+                    );
+
+                    // 2. Determine Box Number
+                    $customer = Customer::where('user_id', $user->id)->first();
+                    if (!$customer) {
+                        $tenant = \App\Models\Tenant::find($tenantId);
+                        $settings = $tenant->settings_json;
+                        $nextId = ($settings['box_number_counter'] ?? 1000) + 1;
+
+                        $boxNumber = 'LGX' . $nextId;
+
+                        Customer::create([
+                            'tenant_id' => $tenantId,
+                            'user_id' => $user->id,
+                            'box_number' => $boxNumber,
+                            'box_number_air' => $boxNumber,
+                            'box_number_maritime' => $boxNumber . 'M',
+                            'phone' => $phone,
+                            'identification_number' => $id_num,
+                            'balance' => 0,
+                            'points' => 0,
+                        ]);
+
+                        // Update counter
+                        $settings['box_number_counter'] = $nextId;
+                        $tenant->update(['settings_json' => $settings]);
+                    } else {
+                        $customer->update([
+                            'phone' => $phone,
+                            'identification_number' => $id_num,
+                        ]);
+                    }
+                    $count++;
+                });
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error importing CSV row for $email: " . $e->getMessage());
+                $skipped++;
+            }
         }
 
         fclose($file);
         $this->reset(['csv_file', 'is_importing']);
-        session()->flash('message', "Importación completada. Se procesaron $count clientes exitosamente.");
+
+        if ($count > 0) {
+            session()->flash('message', "Importación finalizada: $count clientes procesados." . ($skipped > 0 ? " ($skipped filas omitidas por formato incorrecto)" : ""));
+        } else {
+            session()->flash('error', "No se pudo cargar ningún cliente. Verifique que el archivo use comas (,) o puntos y comas (;) y que la segunda columna sea un email válido.");
+        }
     }
 
     public function render()
