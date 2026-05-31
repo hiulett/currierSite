@@ -296,7 +296,7 @@ LGX100 Jorge Rueda;Jorge Rueda;jorgerueda2929@gmail.com;6041-8739";
                     'tenant_id' => $tenant->id,
                     'box_number' => $boxNumber,
                     'box_number_air' => $boxNumber,
-                    'box_number_maritime' => $boxNumber . 'M',
+                    'box_number_maritime' => $boxNumber,
                     'phone' => $phone,
                     'balance' => 0,
                     'points' => 0,

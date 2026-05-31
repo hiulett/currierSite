@@ -200,7 +200,7 @@ class ProductionDataSyncSeeder extends Seeder
                     'tenant_id' => $tenant1->id,
                     'box_number' => $cData['box_number'],
                     'box_number_air' => $cData['box_number'],
-                    'box_number_maritime' => $cData['box_number'] . 'M',
+                    'box_number_maritime' => $cData['box_number'],
                     'phone' => $cData['phone'],
                     'balance' => 0,
                     'points' => 0,
