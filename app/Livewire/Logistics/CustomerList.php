@@ -120,8 +120,13 @@ class CustomerList extends Component
         }
 
         if ($customer->user) {
-            $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($customer->temporary_password, $customer->user->name));
-            session()->flash('message', 'Credenciales enviadas correctamente a: ' . $customer->user->email);
+            try {
+                $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($customer->temporary_password, $customer->user->name));
+                session()->flash('message', 'Credenciales enviadas correctamente a: ' . $customer->user->email);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error enviando correo de contraseña: ' . $e->getMessage());
+                session()->flash('message', 'La contraseña se actualizó en el sistema, pero no se pudo enviar el correo. Por favor, proporcione la clave manualmente: ' . $customer->temporary_password);
+            }
         }
     }
 

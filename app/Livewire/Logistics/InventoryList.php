@@ -48,6 +48,10 @@ class InventoryList extends Component
     public $extra_charge_reason = '';
     public $shelf_location;
 
+    // Temporary storage for notifications
+    protected $invoice_to_notify;
+    protected $packages_to_notify;
+
     // Edit Package Properties (Standard Modal)
     public $editing_package_id = null;
     public $edit_tracking_number;
@@ -261,13 +265,23 @@ class InventoryList extends Component
             $this->selected_customer->increment('balance', $total);
             $this->selected_customer->increment('points', ceil($total_weight));
 
-            // 4. Notify Customer
-            if ($this->selected_customer->user) {
-                $this->selected_customer->user->notify(new \App\Notifications\PackagesArrivedNotification($invoice, $packages));
-            }
+            $this->invoice_to_notify = $invoice;
+            $this->packages_to_notify = $packages;
         });
 
-        session()->flash('message', 'Asignación completada y factura generada con éxito. El cliente ha sido notificado vía correo.');
+        // 4. Notify Customer (Outside transaction to prevent rollback on mail failure)
+        if ($this->selected_customer->user) {
+            try {
+                $this->selected_customer->user->notify(new \App\Notifications\PackagesArrivedNotification($this->invoice_to_notify, $this->packages_to_notify));
+                session()->flash('message', 'Asignación completada y factura generada con éxito. El cliente ha sido notificado vía correo.');
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error enviando notificación de paquetes: ' . $e->getMessage());
+                session()->flash('message', 'Asignación completada con éxito, pero no se pudo enviar el correo de notificación. Por favor, verifique la configuración de correo.');
+            }
+        } else {
+            session()->flash('message', 'Asignación completada con éxito.');
+        }
+
         $this->selected_packages = [];
         $this->selectAll = false;
         $this->cancelAssignment();
