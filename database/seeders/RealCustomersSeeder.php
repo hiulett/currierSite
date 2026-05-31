@@ -58,7 +58,7 @@ class RealCustomersSeeder extends Seeder
                 [
                     'tenant_id' => $tenant->id,
                     'box_number' => 'LGX' . $data['id'],
-                    'box_number_air' => 'LGX' . $data['id'] . 'A',
+                    'box_number_air' => 'LGX' . $data['id'],
                     'box_number_maritime' => 'LGX' . $data['id'] . 'M',
                     'phone' => $data['phone'],
                     'balance' => 0,
