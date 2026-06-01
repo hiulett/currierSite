@@ -74,16 +74,43 @@
                 <div class="card-body py-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
-                            <h3 class="mb-2 fw-black text-white">${{ number_format($total_revenue, 2) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">Facturación Tenants</p>
-                            <div class="mt-2 small text-danger font-bold">
-                                ${{ number_format($pending_collection, 2) }} pendiente
+                            <h3 class="mb-2 fw-black text-white">${{ number_format($saas_revenue_month, 2) }}</h3>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75">Tu Ganancia (Este Mes)</p>
+                            <div class="mt-2 small text-white-50">
+                                SaaS: ${{ number_format($saas_pending, 2) }} por cobrar
                             </div>
                         </div>
                         <div class="d-inline-block ms-3">
                             <div class="stat text-white" style="background: rgba(255,255,255,0.1);">
                                 <i class="align-middle" data-feather="dollar-sign"></i>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Health Row -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="card-body p-0">
+                    <div class="row g-0">
+                        <div class="col-12 col-md-4 p-4 border-end">
+                            <h6 class="text-uppercase font-black small text-muted mb-3">Facturación Total Tenants</h6>
+                            <h2 class="fw-black text-dark mb-1">${{ number_format($total_revenue, 2) }}</h2>
+                            <p class="text-success small fw-bold mb-0">Dinero procesado por el sistema</p>
+                        </div>
+                        <div class="col-12 col-md-4 p-4 border-end bg-light">
+                            <h6 class="text-uppercase font-black small text-muted mb-3">Cartera Pendiente (Logística)</h6>
+                            <h2 class="fw-black text-danger mb-1">${{ number_format($pending_collection, 2) }}</h2>
+                            <p class="text-muted small mb-0">Monto total por cobrar de todas las empresas</p>
+                        </div>
+                        <div class="col-12 col-md-4 p-4">
+                            <h6 class="text-uppercase font-black small text-muted mb-3">Morosidad SaaS (Tus Facturas)</h6>
+                            <h2 class="fw-black text-warning mb-1">{{ $saas_overdue_count }}</h2>
+                            <p class="text-muted small mb-0">Empresas con mensualidad vencida</p>
                         </div>
                     </div>
                 </div>
