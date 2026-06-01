@@ -389,6 +389,13 @@ LGX100 Jorge Rueda;Jorge Rueda;jorgerueda2929@gmail.com;6041-8739";
                     'points' => 0,
                 ]
             );
+
+            // 3. Assign Customer Role for Permissions
+            $customerRole = Role::updateOrCreate(
+                ['tenant_id' => $tenant1->id, 'name' => 'Cliente'],
+                ['description' => 'Acceso al portal de clientes']
+            );
+            $user->update(['role_id' => $customerRole->id]);
         }
     }
 }
