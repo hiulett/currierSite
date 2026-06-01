@@ -43,12 +43,6 @@ class IdentifyTenant
         if ($tenant) {
             session(['tenant_id' => $tenant->id]);
             config(['app.name' => $tenant->name]);
-            // ...
-        } else {
-            // Safety fallback if no tenant exists yet
-            session()->forget('tenant_id');
-            config(['app.name' => 'LogiSaaS']);
-        }
 
             // Critical: Set the locale globally
             $locale = $tenant->locale ?? config('app.locale');
@@ -70,11 +64,6 @@ class IdentifyTenant
                     'mail.from.address' => trim($settings['mail_from_address'] ?? 'no-reply@logisaas.com'),
                     'mail.from.name' => trim($settings['mail_from_name'] ?? $tenant->name),
                 ]);
-
-                // Reset Mailer Instance to apply new config immediately
-                // if (app()->resolved('mail.manager')) {
-                //    app()->make('mail.manager')->forgetMailers();
-                // }
             }
 
             // 5. Dynamic Payment Configuration (Stripe/PayPal Override)
@@ -94,7 +83,8 @@ class IdentifyTenant
                 ]);
             }
         } else {
-            // Safety fallback if no tenant exists yet
+            // Safety fallback if no tenant identified
+            session()->forget('tenant_id');
             config(['app.name' => 'LogiSaaS']);
         }
 
