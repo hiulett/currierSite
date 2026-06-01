@@ -75,6 +75,8 @@ class CustomerList extends Component
             // Enviar notificación al correo
             $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($this->new_password, $customer->user->name));
 
+            $customer->update(['password_sent_at' => now()]);
+
             session()->flash('message', 'Contraseña actualizada y enviada por correo a: ' . $customer->user->name);
         }
 
@@ -112,9 +114,15 @@ class CustomerList extends Component
         session()->flash('message', "Operación masiva completada. Se enviaron $count correos con nuevas contraseñas.");
     }
 
-    public function sendPasswordEmail($customerId)
+    public function confirmSendPassword($customerId)
     {
-        $customer = Customer::findOrFail($customerId);
+        $this->selected_customer_id = $customerId;
+        $this->dispatch('open-confirm-password-modal');
+    }
+
+    public function sendPasswordEmail()
+    {
+        $customer = Customer::findOrFail($this->selected_customer_id);
 
         // If no temporary password exists, generate one now
         if (!$customer->temporary_password) {
@@ -128,12 +136,15 @@ class CustomerList extends Component
         if ($customer->user) {
             try {
                 $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($customer->temporary_password, $customer->user->name));
+                $customer->update(['password_sent_at' => now()]);
                 session()->flash('message', 'Credenciales enviadas correctamente a: ' . $customer->user->email);
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Error enviando correo de contraseña: ' . $e->getMessage());
                 session()->flash('message', 'La contraseña se actualizó en el sistema, pero no se pudo enviar el correo. Por favor, proporcione la clave manualmente: ' . $customer->temporary_password);
             }
         }
+
+        $this->dispatch('close-confirm-password-modal');
     }
 
     public function resetFields()
@@ -177,7 +188,7 @@ class CustomerList extends Component
                 'required', 'email',
                 'unique:users,email,' . $targetUserId
             ],
-            'box_number' => 'required|unique:customers,box_number,' . ($this->customer_id ?: 'NULL'),
+            'box_number' => 'required',
             'locker_id' => 'nullable|exists:lockers,id',
             'loyalty_level_id' => 'nullable|exists:loyalty_levels,id',
             'phone' => 'nullable|string|max:20',

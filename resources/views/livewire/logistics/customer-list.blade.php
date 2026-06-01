@@ -106,6 +106,7 @@
                                 <th>Casillero</th>
                                 <th>Información</th>
                                 <th class="hidden md:table-cell">Contacto</th>
+                                <th class="text-center">Seguridad</th>
                                 <th class="text-center">Saldo</th>
                                 <th class="pe-4 text-end">Acciones</th>
                             </tr>
@@ -121,18 +122,6 @@
                                             <span class="badge bg-primary text-white font-black px-2 py-1 shadow-sm" style="font-size: 0.9rem; letter-spacing: 0.01rem; border-radius: 4px;">
                                                 {{ $c->box_number }}
                                             </span>
-                                            <div class="d-flex gap-2 ps-1">
-                                                @if($airEnabled && $c->box_number_air)
-                                                    <span class="text-info font-black uppercase" style="font-size: 0.75rem;">
-                                                        <i data-feather="send" style="width: 10px; height: 10px; stroke-width: 3;"></i> {{ $c->box_number_air }}
-                                                    </span>
-                                                @endif
-                                                @if($maritimeEnabled && $c->box_number_maritime)
-                                                    <span class="text-warning font-black uppercase" style="font-size: 0.75rem;">
-                                                        <i data-feather="anchor" style="width: 10px; height: 10px; stroke-width: 3;"></i> {{ $c->box_number_maritime }}
-                                                    </span>
-                                                @endif
-                                            </div>
                                         </div>
                                     </td>
                                     <td>
@@ -154,6 +143,15 @@
                                         <div class="text-muted" style="font-size: 0.75rem;">{{ $c->phone ?? 'Sin teléfono' }}</div>
                                     </td>
                                     <td class="text-center">
+                                        @if($c->password_sent_at)
+                                            <span class="badge bg-success-light text-success xsmall font-black uppercase" title="Enviado el {{ $c->password_sent_at->format('d/m/Y H:i') }}">
+                                                <i data-feather="check" class="me-1" style="width:10px;"></i> ENVIADA
+                                            </span>
+                                        @else
+                                            <span class="badge bg-light text-muted xsmall font-black uppercase">PENDIENTE</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
                                         <span class="fw-black" style="font-size: 1rem; color: {{ $c->balance > 0 ? '#dc3545' : '#198754' }}">
                                             ${{ number_format($c->balance, 2) }}
                                         </span>
@@ -167,10 +165,10 @@
                                             <button wire:click="openEditModal({{ $c->id }})" class="btn btn-sm btn-light border shadow-none" title="Editar">
                                                 <i data-feather="edit-2" style="width:14px;"></i>
                                             </button>
-                                            <button wire:click="openPasswordModal({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-danger" title="Seguridad">
+                                            <button wire:click="openPasswordModal({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-danger" title="Asignar Nueva Clave">
                                                 <i data-feather="key" style="width:14px;"></i>
                                             </button>
-                                            <button wire:click="sendPasswordEmail({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-warning" title="Enviar Clave por Email">
+                                            <button wire:click="confirmSendPassword({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-warning" title="Enviar Clave por Email">
                                                 <i data-feather="mail" style="width:14px;"></i>
                                             </button>
                                             <a href="{{ route('billing.statement', ['c' => $c->id]) }}" class="btn btn-sm btn-light border shadow-none text-info" title="Estado Cuenta">
@@ -346,6 +344,25 @@
         </div>
     </div>
 
+    <!-- Confirm Send Password Modal -->
+    <div class="modal fade" id="confirmPasswordModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
+                <div class="modal-body p-4 text-center">
+                    <div class="mb-3 text-warning">
+                        <i data-feather="mail" style="width: 48px; height: 48px;"></i>
+                    </div>
+                    <h5 class="fw-black uppercase small">¿Enviar credenciales?</h5>
+                    <p class="text-muted xsmall">Se enviará un correo con la contraseña actual al cliente.</p>
+                </div>
+                <div class="modal-footer bg-light p-2 gap-2 border-0">
+                    <button type="button" class="btn btn-light border fw-bold flex-grow-1" data-bs-dismiss="modal">CANCELAR</button>
+                    <button type="button" wire:click="sendPasswordEmail" class="btn btn-warning fw-black flex-grow-1">ENVIAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         window.addEventListener('open-customer-modal', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('customerModal')).show();
@@ -358,6 +375,12 @@
         });
         window.addEventListener('close-password-modal', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('passwordResetModal')).hide();
+        });
+        window.addEventListener('open-confirm-password-modal', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmPasswordModal')).show();
+        });
+        window.addEventListener('close-confirm-password-modal', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmPasswordModal')).hide();
         });
 
         // Re-initialize icons after every Livewire update in this component

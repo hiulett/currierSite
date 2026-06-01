@@ -26,6 +26,7 @@ class Customer extends Model
         'address',
         'admin_notes',
         'temporary_password',
+        'password_sent_at',
         'latitude',
         'longitude',
     ];

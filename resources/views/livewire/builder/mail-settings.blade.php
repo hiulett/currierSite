@@ -22,6 +22,15 @@
 
     <div class="row">
         <div class="col-12 col-lg-8">
+            @if (session()->has('error'))
+                <div class="alert alert-danger alert-dismissible shadow-sm mb-4" role="alert">
+                    <div class="alert-message">
+                        <strong>¡Error!</strong> {{ session('error') }}
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             <!-- SMTP Server Settings -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white border-bottom py-3">
@@ -107,7 +116,10 @@
                     </div>
                     <h6 class="fw-black text-dark uppercase small">Prueba de Conexión</h6>
                     <p class="text-muted xsmall mb-3">Una vez guardes, te recomendamos enviar un correo de prueba.</p>
-                    <button class="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold disabled">ENVIAR TEST (PRÓXIMAMENTE)</button>
+                    <button wire:click="sendTestMail" wire:loading.attr="disabled" class="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold">
+                        <span wire:loading.remove>ENVIAR TEST</span>
+                        <span wire:loading class="spinner-border spinner-border-sm"></span>
+                    </button>
                 </div>
             </div>
         </div>

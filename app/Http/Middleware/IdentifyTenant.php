@@ -55,6 +55,7 @@ class IdentifyTenant
             $settings = $tenant->settings_json ?? [];
             if (!empty($settings['mail_host'])) {
                 config([
+                    'mail.default' => 'smtp',
                     'mail.mailers.smtp.host' => $settings['mail_host'],
                     'mail.mailers.smtp.port' => $settings['mail_port'] ?? '587',
                     'mail.mailers.smtp.username' => $settings['mail_username'],

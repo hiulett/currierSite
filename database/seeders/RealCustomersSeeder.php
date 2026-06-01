@@ -267,16 +267,6 @@ LGX100 Jorge Rueda;Jorge Rueda;jorgerueda2929@gmail.com;6041-8739";
                 $name = trim($cols[1]);
             }
 
-            // --- Robust Multi-Locker Handling ---
-            // If the box number is already used, append a suffix to make it unique
-            $baseBox = $boxNumber;
-            $counter = 1;
-            while (in_array($boxNumber, $assignedBoxNumbers)) {
-                $boxNumber = $baseBox . "-" . $counter;
-                $counter++;
-            }
-            $assignedBoxNumbers[] = $boxNumber;
-
             // 1. Create or Update User account
             $user = User::updateOrCreate(
                 ['email' => $email],
