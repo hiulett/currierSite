@@ -356,15 +356,6 @@
                             data: @json($costData),
                             barPercentage: .5,
                             categoryPercentage: .5
-                        },
-                        {
-                            label: "{{ __('Meta Proyectada') }}",
-                            type: 'line',
-                            borderColor: projectionColor,
-                            borderDash: [5, 5],
-                            data: @json($projectionData),
-                            fill: false,
-                            pointRadius: 0
                         }
                     ]
                 },

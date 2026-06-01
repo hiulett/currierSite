@@ -289,7 +289,6 @@ class Dashboard extends Component
                 'chartData' => array_values($chartData),
                 'revenueData' => array_values($revenueData),
                 'costData' => array_values($costData),
-                'projectionData' => array_values($projectionData),
                 'warehouseLabels' => array_keys($warehouseUsage),
                 'warehouseData' => array_values($warehouseUsage),
                 'actionAlerts' => $actionAlerts,
