@@ -59,7 +59,7 @@ class ProductionDataSyncSeeder extends Seeder
         );
 
         // 3. Main Admin User
-        User::updateOrCreate(
+        $adminUser = User::updateOrCreate(
             ['email' => 'admin@empresa1.com'],
             [
                 'tenant_id' => $tenant1->id,
@@ -68,6 +68,19 @@ class ProductionDataSyncSeeder extends Seeder
                 'role' => 'admin',
             ]
         );
+
+        // 3b. Create Admin Role for Tenant and Assign to User
+        $adminRole = Role::updateOrCreate(
+            ['tenant_id' => $tenant1->id, 'name' => 'Administrador'],
+            ['description' => 'Acceso total al sistema']
+        );
+
+        // Assign all current permissions to this role
+        $allPermissions = Permission::all();
+        $adminRole->permissions()->sync($allPermissions->pluck('id'));
+
+        // Link User to Role
+        $adminUser->update(['role_id' => $adminRole->id]);
 
         // 4. Warehouses for Logy Express
         Warehouse::updateOrCreate(
