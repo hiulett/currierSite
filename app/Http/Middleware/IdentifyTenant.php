@@ -66,9 +66,9 @@ class IdentifyTenant
                 ]);
 
                 // Reset Mailer Instance to apply new config immediately
-                if (app()->resolved('mail.manager')) {
-                    app()->make('mail.manager')->forgetMailers();
-                }
+                // if (app()->resolved('mail.manager')) {
+                //    app()->make('mail.manager')->forgetMailers();
+                // }
             }
 
             // 5. Dynamic Payment Configuration (Stripe/PayPal Override)
@@ -87,6 +87,9 @@ class IdentifyTenant
                     'paypal.live.client_secret' => $settings['paypal_live_client_secret'] ?? '',
                 ]);
             }
+        } else {
+            // Safety fallback if no tenant exists yet
+            config(['app.name' => 'LogiSaaS']);
         }
 
         return $next($request);

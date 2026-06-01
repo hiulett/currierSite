@@ -144,7 +144,7 @@
                                     </td>
                                     <td class="text-center">
                                         @if($c->password_sent_at)
-                                            <span class="badge bg-success-light text-success xsmall font-black uppercase" title="Enviado el {{ $c->password_sent_at->format('d/m/Y H:i') }}">
+                                            <span class="badge bg-success-light text-success xsmall font-black uppercase" title="Enviado el {{ \Carbon\Carbon::parse($c->password_sent_at)->format('d/m/Y H:i') }}">
                                                 <i data-feather="check" class="me-1" style="width:10px;"></i> ENVIADA
                                             </span>
                                         @else
