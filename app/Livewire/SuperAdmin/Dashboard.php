@@ -34,9 +34,9 @@ class Dashboard extends Component
         $total_users = User::withoutGlobalScope('tenant')->count();
         $total_customers = Customer::withoutGlobalScope('tenant')->count();
 
-        // Active in last 7 days (using updated_at as proxy for now)
+        // Active in last 7 days (Using real last_seen_at field)
         $active_users_7d = User::withoutGlobalScope('tenant')
-            ->where('updated_at', '>=', now()->subDays(7))
+            ->where('last_seen_at', '>=', now()->subDays(7))
             ->count();
 
         // Online Users (Activity in last 15 mins from sessions table)

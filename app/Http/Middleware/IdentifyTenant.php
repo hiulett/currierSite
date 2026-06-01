@@ -94,6 +94,14 @@ class IdentifyTenant
             config(['app.name' => 'LogiSaaS']);
         }
 
+        // Update Last Seen for authenticated users
+        if (auth()->check()) {
+            // We use DB::table to avoid triggering observers or updated_at timestamps
+            \Illuminate\Support\Facades\DB::table('users')
+                ->where('id', auth()->id())
+                ->update(['last_seen_at' => now()]);
+        }
+
         return $next($request);
     }
 }
