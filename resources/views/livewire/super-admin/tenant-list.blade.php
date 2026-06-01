@@ -70,6 +70,9 @@
                             <td class="small fw-bold text-muted">{{ $t->created_at->format('d/m/Y') }}</td>
                             <td class="pe-4 text-end">
                                 <div class="btn-group">
+                                    <button wire:click="editTenant({{ $t->id }})" class="btn btn-sm btn-light border shadow-sm" title="Editar">
+                                        <i class="align-middle text-info" data-feather="edit-2"></i>
+                                    </button>
                                     <button wire:click="configureBilling({{ $t->id }})" class="btn btn-sm btn-light border shadow-sm" title="Facturación">
                                         <i class="align-middle text-warning" data-feather="dollar-sign"></i>
                                         <span class="ms-1 d-none d-md-inline fw-bold text-uppercase" style="font-size: 0.6rem;">Pago</span>
@@ -107,6 +110,56 @@
             {{ $tenants->links() }}
         </div>
     </div>
+
+    <!-- Modal for Tenant Profile Editing -->
+    @if($editing_tenant_id)
+        <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
+                    <div class="modal-header bg-info text-white p-4">
+                        <h5 class="modal-title uppercase font-black tracking-widest text-white">Editar Perfil de Empresa</h5>
+                        <button type="button" class="btn-close btn-close-white" wire:click="$set('editing_tenant_id', null)"></button>
+                    </div>
+                    <div class="modal-body p-4 bg-light">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label small fw-black uppercase text-muted">Nombre Comercial</label>
+                                <input type="text" wire:model="tenant_name" class="form-control border-0 shadow-sm">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-black uppercase text-muted">Subdominio</label>
+                                <input type="text" wire:model="tenant_subdomain" class="form-control border-0 shadow-sm">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-black uppercase text-muted">Dominio Propio</label>
+                                <input type="text" wire:model="tenant_domain" class="form-control border-0 shadow-sm" placeholder="empresa.com">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-black uppercase text-muted">Plan de Servicio</label>
+                                <select wire:model="tenant_plan_id" class="form-select border-0 shadow-sm">
+                                    @foreach(\App\Models\Plan::all() as $p)
+                                        <option value="{{ $p->id }}">{{ $p->name }} - ${{ $p->price }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-black uppercase text-muted">Estado del Servicio</label>
+                                <select wire:model="tenant_status" class="form-select border-0 shadow-sm">
+                                    <option value="active">Activo</option>
+                                    <option value="suspended">Suspendido</option>
+                                    <option value="trial">Prueba</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-white border-top-0 p-4 pt-0 d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-light fw-bold" wire:click="$set('editing_tenant_id', null)">CANCELAR</button>
+                        <button type="button" class="btn btn-info text-white px-4 shadow-lg fw-black" wire:click="saveTenant">ACTUALIZAR EMPRESA</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- Modal for Features/Modules (Bootstrap 5) -->
     @if($configuring_tenant_id)

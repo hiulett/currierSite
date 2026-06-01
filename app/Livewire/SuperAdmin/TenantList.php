@@ -13,14 +13,50 @@ class TenantList extends Component
 
     public $search = '';
     public $configuring_tenant_id = null;
-    public $configuring_billing_id = null; // New
+    public $configuring_billing_id = null;
+    public $editing_tenant_id = null; // New
     public $features = [];
+
+    // Tenant Edit state
+    public $tenant_name, $tenant_subdomain, $tenant_domain, $tenant_plan_id, $tenant_status;
 
     // Billing state
     public $next_billing_at;
     public $payment_warning_active;
 
     protected $listeners = ['stop-impersonating' => 'stopImpersonating'];
+
+    public function editTenant($id)
+    {
+        $this->editing_tenant_id = $id;
+        $tenant = Tenant::find($id);
+        $this->tenant_name = $tenant->name;
+        $this->tenant_subdomain = $tenant->subdomain;
+        $this->tenant_domain = $tenant->domain;
+        $this->tenant_plan_id = $tenant->plan_id;
+        $this->tenant_status = $tenant->status;
+    }
+
+    public function saveTenant()
+    {
+        $this->validate([
+            'tenant_name' => 'required|string|max:255',
+            'tenant_subdomain' => 'required|string|unique:tenants,subdomain,' . $this->editing_tenant_id,
+            'tenant_plan_id' => 'required|exists:plans,id',
+        ]);
+
+        $tenant = Tenant::find($this->editing_tenant_id);
+        $tenant->update([
+            'name' => $this->tenant_name,
+            'subdomain' => $this->tenant_subdomain,
+            'domain' => $this->tenant_domain,
+            'plan_id' => $this->tenant_plan_id,
+            'status' => $this->tenant_status,
+        ]);
+
+        $this->editing_tenant_id = null;
+        session()->flash('message', 'Información de ' . $tenant->name . ' actualizada.');
+    }
 
     public function configureBilling($id)
     {

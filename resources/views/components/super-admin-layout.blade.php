@@ -132,9 +132,15 @@
 						</a>
 					</li>
 
-                    <li class="sidebar-item">
-						<a class='sidebar-link' href='#'>
+                    <li class="sidebar-item {{ request()->routeIs('super.users') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('super.users') }}'>
 							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Usuarios Globales</span>
+						</a>
+					</li>
+
+                    <li class="sidebar-item {{ request()->routeIs('super.audit') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('super.audit') }}'>
+							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">Auditoría Financiera</span>
 						</a>
 					</li>
 
