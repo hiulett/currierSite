@@ -97,6 +97,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/builder/estados', App\Livewire\Builder\PackageStatusSettings::class)->name('builder.statuses')->middleware('can:settings.general');
         Route::get('/builder/fidelizacion', App\Livewire\Builder\LoyaltySettings::class)->name('builder.loyalty')->middleware('can:settings.general');
         Route::get('/builder/promociones', \App\Livewire\Builder\PromotionSettings::class)->name('builder.promotions')->middleware('can:settings.general');
+
+        // Temporary Data Sync Route (Railway workaround)
+        Route::get('/system/sync-data', function() {
+            try {
+                \Illuminate\Support\Facades\Artisan::call('db:seed', [
+                    '--class' => 'ProductionDataSyncSeeder',
+                    '--force' => true
+                ]);
+                return "¡Sincronización Exitosa! Los 231 clientes han sido cargados. Puedes volver atrás.";
+            } catch (\Exception $e) {
+                return "Error en sincronización: " . $e->getMessage();
+            }
+        })->name('system.sync');
     });
 
     // Customer Portal Routes

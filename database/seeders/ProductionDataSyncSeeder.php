@@ -25,6 +25,7 @@ class ProductionDataSyncSeeder extends Seeder
             [
                 'uuid' => 'b2f91dec-c418-4d6b-ad46-73038127ba12',
                 'name' => 'Logy Express',
+                'domain' => 'curriersite-production.up.railway.app', // Added for Railway
                 'status' => 'active',
                 'plan_id' => 5,
                 'locale' => 'es',
