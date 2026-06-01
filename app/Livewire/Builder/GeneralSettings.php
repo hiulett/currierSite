@@ -32,6 +32,7 @@ class GeneralSettings extends Component
     public $maritime_phone;
 
     public $box_number_counter;
+    public $force_password_change = false;
 
     // Service Toggles
     public $service_air_enabled = true;
@@ -68,9 +69,18 @@ class GeneralSettings extends Component
         $this->maritime_phone = $settings['maritime_phone'] ?? '+1 (305) 848-1127';
 
         $this->box_number_counter = $settings['box_number_counter'] ?? 1000;
+        $this->force_password_change = $settings['force_password_change'] ?? false;
 
         $this->service_air_enabled = $settings['service_air_enabled'] ?? true;
         $this->service_maritime_enabled = $settings['service_maritime_enabled'] ?? true;
+    }
+
+    public function updatedForcePasswordChange($value)
+    {
+        $tenant = Tenant::find(session('tenant_id'));
+        $settings = $tenant->settings_json ?? [];
+        $settings['force_password_change'] = (bool) $value;
+        $tenant->update(['settings_json' => $settings]);
     }
 
     public function updatedServiceAirEnabled($value)

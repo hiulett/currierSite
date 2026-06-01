@@ -52,6 +52,16 @@
                             </div>
                         </div>
                     </div>
+
+                    <hr class="my-4">
+
+                    <div class="form-check form-switch custom-switch">
+                        <input class="form-check-input" type="checkbox" wire:model.live="force_password_change" id="forcePasswordToggle">
+                        <label class="form-check-label fw-black text-uppercase small text-danger" for="forcePasswordToggle">
+                            <i data-feather="shield" class="me-1" style="width:14px;"></i> Obligar cambio de contraseña
+                        </label>
+                        <p class="text-muted xsmall mb-0 mt-1">Si está activo, los clientes que reciban una clave temporal deberán cambiarla en su primer inicio de sesión.</p>
+                    </div>
                 </div>
             </div>
         </div>

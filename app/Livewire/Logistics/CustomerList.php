@@ -63,8 +63,12 @@ class CustomerList extends Component
 
         $customer = Customer::find($this->selected_customer_id);
         if ($customer && $customer->user) {
+            $tenant = \App\Models\Tenant::find(session('tenant_id'));
+            $mustChange = $tenant->settings_json['force_password_change'] ?? false;
+
             $customer->user->update([
-                'password' => Hash::make($this->new_password)
+                'password' => Hash::make($this->new_password),
+                'must_change_password' => $mustChange
             ]);
 
             // Guardar en texto plano para el admin (bajo responsabilidad del admin)
@@ -127,9 +131,15 @@ class CustomerList extends Component
         // If no temporary password exists, generate one now
         if (!$customer->temporary_password) {
             $newPass = \Illuminate\Support\Str::random(8);
+            $tenant = \App\Models\Tenant::find(session('tenant_id'));
+            $mustChange = $tenant->settings_json['force_password_change'] ?? false;
+
             $customer->update(['temporary_password' => $newPass]);
             if ($customer->user) {
-                $customer->user->update(['password' => Hash::make($newPass)]);
+                $customer->user->update([
+                    'password' => Hash::make($newPass),
+                    'must_change_password' => $mustChange
+                ]);
             }
         }
 
