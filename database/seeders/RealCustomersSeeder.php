@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Customer;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 
 class RealCustomersSeeder extends Seeder
 {
@@ -15,6 +14,10 @@ class RealCustomersSeeder extends Seeder
     {
         $tenant = Tenant::where('subdomain', 'logiexpress')->first();
         if (!$tenant) return;
+
+        // Limpieza profunda opcional (comentada por seguridad, habilitar si es necesario resetear)
+        // Customer::where('tenant_id', $tenant->id)->delete();
+        // User::where('tenant_id', $tenant->id)->where('role', 'customer')->delete();
 
         $dataRaw = "LGX319 David Arauz;David Arauz;davidarauz@cableonda.net;6930-5350
 LGX522 Euris Ortega;Euris Ortega;Info@detalleslace.com;6112-1957
@@ -69,6 +72,7 @@ LGX490 Isabel Justiniani ;Isabel Justiniani ;Justinisabel10@gmail.com;6738-7535
 LGX100 Marianny Lemus;Marianny Lemus;Marianny.lemus@gmail.com;6232-9251
 LGXPFL Javier Figueroa;Javier Figueroa;navaselias29@gmail.com;6257-9891
 LGX204 Ariel Suira;Ariel Suira;arielsn3@hotmail.com;6871-2130
+LGX533 Angel Camargo;Angel Camargo;Infodiazg@gmail.com;61006948;
 LGX532 Oliver Martin;Oliver Martin;Ojmn1977@gmail.com;6983-1397
 LGX131 Alison Lozano;Alison Lozano;alilozano8@hotmail.com;6026-1458
 LGX314 Sandra Miro;Sandra Miro;Sandymiro24@gmail.com;69803460
@@ -118,9 +122,11 @@ LGX264 Luis Velsco;Luis Velasco;luisvcelta2021@gmail.com;6882-7281
 LGX381 Jenniffer Warszawczyk;Jenniffer Warszawczyk;jenywar@hotmail.com;6674-0043
 LGX100 Jean Carlos Moreno;Jean Carlos Moreno;jeancarlosmoreno41@gmail.com;6305-2169
 LGX121 Luis Gonzalez;Luis Gonzalez;gofarmpma@gmail.com;6678-4310
+LGX100 Hugo Cobos;Hugo Cobos;;6612-8962;
 LGX520 María Elena Ureña;Maria Elena Ureña;urena.mari@gmail.com;6613-6060
 LGX409 Antonio Herrera;Antonio Herrera;toninjr18@gmail.com;63208976
 LGX499 Hellen Azcarate;Hellen Azcarate;azcaratehellen@gmail.com;6878-7949
+LGX497 Carolina Alvarez;Carolina Alvarez;;6681-7130;
 LGX424 Javier Guevara;Javier Guevara;Blackchapi8@gmail.com;6664-8322
 LGX518 Yoveris Portugal;Yoveris Portugal;Yoveris19@gmail.com;6677-4557
 LGX503 Aaron Gonzalez;Aaron Gonzalez;irra1622@gmail.com;64531072
@@ -130,6 +136,7 @@ LGX403 Lenissell Hidalgo;Lenissell Hidalgo;Lehidalg12@gmail.com;6704-8611
 LGX377 Karla Ramos;Karla Ramos;Karladeniiser@gmail.com;62837368
 LGX516 Luis Ellis;Luis Ellis;luigiellis@hotmail.com;60903851
 LGX389 Jaime Meneses;Jaime Meneses;jaime.m.meneses@gmail.com;67253704
+LGX100 Gustavo Dominguez;Gustavo Dominguez;;6671-3982;
 LGX100 Julianny Tabares;Julianny Tabares;any.tabares@hotmail.com;6965-7889
 LGX491 Raul Moreno;Raul Moreno;raulmoreno50707@gmail.com;6276-4109
 LGX481 Kayra Pachon;Kayra Pachon;Kayra.pachon@gmail.com;66172725
@@ -148,6 +155,7 @@ LGX100 Daniel Arujo;Daniel Arujo;Belkime@hotmail.es;6606-1968
 LGX492 Miguel Zamora;Miguel Zamora;migzam15@gmail.com;67811095
 LGX489 Keisy Arauz;Keisy Arauz;KEISYARAUZ21@GMAIL.COM;60254162
 LGX509 Fernando Rodríguez;Fernando Rodriguez;fernandoarielrodriguezmojica@gmail.com;6729-1460
+LGX100 Luis Barria;Luis Barria;Luisbar74@yahoo.com;;
 LGX423 Ambar Arosemena;Ambar Arosemena;ambararosemena@gmail.com;6671-3344
 LGX506 Ali Omais;Ali Omais;Aliomais.1693@gmail.com;6150-8315
 LGX347 Jorge Fisher;Jorge Fisher;fisherjorge7@gmail.com;6612-6023
@@ -166,6 +174,7 @@ LGX502 Efrain Bonilla;Efrain Bonilla;efrain@byapa.com;6747-9937
 LGX498 Winfried Mundl;Winfried Mundl;winfried.mundl@gmail.com;49 173 4567894
 LGX493 Luis Gonzalez;Luis Gonzalez;luisesteban-89@outlook.com;65963287
 LGX474 Oscar Landecho;Oscar Landecho;Olandechodeleon@gmail.com;60329227
+LGX100 Carlos Correa;Carlos Correa;carcorrea_08@hotmail.com;;
 LGX191 Milagros Lesmany;Milagros Lesmany;milagros.lesmany@gmail.com;6389-9074
 LGX100 Edwin Medina;Edwin Medina;edwin_medina31@hotmail.com;6678-6406
 LGX100 Cesar Saenz;Cesar Saenz;cesar03csz@gmail.com;60018775
@@ -174,6 +183,7 @@ LGX467 Ionattan Delgado;Ionattan Delgado;ionattan-delgado@outlook.com;6326-2458
 LGX100 Yazmin Evans;Yazmin Evans;crismeilyserrano@gmail.com;6752-0514
 LGX100 Karina Romero;Karina Romero;karinnaromero16@yahoo.com;6930-5350
 LGX281 Rider Jose;Rider Jose;Riderram91@gmail.com;6073-0291
+LGX100 Dalila Suarez ;Dalila Suarez ;dalila.suarez7@gmail.com;;
 LGX478 Jorge Caballos;Jorge Caballos;Jorgepan200074@gmail.com;6117-7099
 LGX477 Yoveris Portugal;Yoveris Portugal;Yoveris19@gmail.com;67664557
 LGX476 Emanuel Martinez;Emanuel Martinez;wolgem1616@gmail.com;68079451
@@ -182,6 +192,7 @@ LGX160 Marcia Herazo;Marcia Herazo;marcia.herazo@gmail.com;6767-2733
 LGX 282 Wilmedis Zambrano;Wilmedis Zambrano;Wilmediszambrano@gmail.com;6219-9297
 LGX430 Andrea Martinez;Andrea Martinez;Andre0-7@hotmail.com;63485595
 LGX413 Oscar Sheu;Oscar Sheu;Sheu077@gmail.com;6017-7155
+LGX100 Isaac Barrios  ;Isaac Barrios;Ibarrios550@hotmail.com;;
 LGX269 Yunier Casimiri;Yunier Casimiri;Casimiriyunier@gmail.com;6031-0067
 LGX472 Laura Torrealba;Laura Torrealba;Fc424751@gmail.com;6496-5039
 LGX316 Carlos Luzcando;Carlos Luzcando;Luzcandocarlos2@gmail.com;6115-7420
@@ -198,6 +209,7 @@ LGX418 Rodrigo Alfaro;Rodrigo Alfaro;rodrigo.alfarolm@gmail.com;62518116
 LGX455 Anthony Pile;Anthony Pile;apile0621@gmail.com;6910-4122
 LGX458 David Cisneros;David Cisneros;daviditmk@gmail.com;6583-8477
 LGX457 Ana Garijo;Ana Garijo;Agarijo@amgpanana.com;6673-5144
+LGX207 Ramon Quintero ; Ramon Quintero;rquintero18@gmail.com;;
 LGX454 Maria Reyes;Maria Reyes;mary31reyesmedrano@gmail.com;64089517
 LGX453 Ricauter Moreno;Ricauter Moreno;Ricaurtemoreno03@gmail.com;6038-3688
 LGX437 Ana Castillo;Ana Castillo;Anacastillo1399@gmail.com;69869343
@@ -213,10 +225,12 @@ LGX174 Zabdiel Rodriguez ;Zabdiel Rodriguez;Zabdiel.e.rodriguez.a@gmail.com;6748
 LGX443 Rosmery Sandoval;Rosmery Sandoval;rosmeryjoelianis1906@gmail.com;65900330
 LGX100 Abraham Mendez ;Abraham Mendez;aryensinamhir2117@gmail.com;6101-1801
 LGX438 Josue Mancilla;Josue Mancilla;jdmrcv@gmail.com;66214284
+LGX100 Emilio Juarez;Emilio Juarez;ejuarez@cca-apolo.com.mx;;
 LGX433 Yamileth Cardenas;Yamileth Cardenas;Amih121314@gmail.com;64128842
 LGX428 Martina Atencio;Martina Atencio;jessikashley@hotmail.com;63643319
 LGX431 Karolinne Biso;Karolinne Biso;karolinnebiso@gmail.com;61624204
 LGX429 Maria Cortez;Maria Cortez;maria.ecortez28@gmail.com;6399-2010
+LGX100 Isaac Marin ;Isaac Marin;Imarin960@outlook.com;;
 LGX417 Marcos Chavez;Marcos Chavez;EmpOttoStore@gmail.com;63896911
 LGX408 Jose Esteves;Jose Esteves;estevesjose1987@gmail.com;61078528
 LGX425 Jaremis Moran;Jaremis Moran;JASIEL3021@GMAIL.COM;6574-1204
@@ -241,7 +255,7 @@ LGX100 Luis Bravo ;Luis Bravo;loco@gmail.com;65220600
 LGX100 Jorge Rueda;Jorge Rueda;jorgerueda2929@gmail.com;6041-8739";
 
         $rows = explode("\n", $dataRaw);
-        $assignedBoxNumbers = [];
+        $count = 0;
 
         foreach ($rows as $row) {
             $cols = explode(';', $row);
@@ -253,6 +267,7 @@ LGX100 Jorge Rueda;Jorge Rueda;jorgerueda2929@gmail.com;6041-8739";
 
             if (empty($email)) continue;
 
+            // Extract box number and name
             $boxParts = explode(' ', $fullNameRaw);
             $boxNumber = $boxParts[0];
 
@@ -267,11 +282,11 @@ LGX100 Jorge Rueda;Jorge Rueda;jorgerueda2929@gmail.com;6041-8739";
                 $name = trim($cols[1]);
             }
 
-            // 1. Create or Update User account
+            // --- 1. Create or Update User account ---
+            // Usamos updateOrCreate para evitar errores de duplicidad si el email ya existe
             $user = User::updateOrCreate(
-                ['email' => $email],
+                ['email' => $email, 'tenant_id' => $tenant->id],
                 [
-                    'tenant_id' => $tenant->id,
                     'name' => $name,
                     'password' => Hash::make('password123'),
                     'role' => 'customer',
@@ -279,11 +294,13 @@ LGX100 Jorge Rueda;Jorge Rueda;jorgerueda2929@gmail.com;6041-8739";
                 ]
             );
 
-            // 2. Create or Update Customer Profile
+            // --- 2. Create or Update Customer Profile ---
+            // Como box_number ya NO es único, usamos create para que
+            // múltiples personas puedan compartir el mismo LGX100 si es necesario.
+            // Pero verificamos si el cliente ya existe para este usuario específico.
             Customer::updateOrCreate(
-                ['user_id' => $user->id],
+                ['user_id' => $user->id, 'tenant_id' => $tenant->id],
                 [
-                    'tenant_id' => $tenant->id,
                     'box_number' => $boxNumber,
                     'box_number_air' => $boxNumber,
                     'box_number_maritime' => $boxNumber,
@@ -292,8 +309,9 @@ LGX100 Jorge Rueda;Jorge Rueda;jorgerueda2929@gmail.com;6041-8739";
                     'points' => 0,
                 ]
             );
+            $count++;
         }
 
-        echo "Carga masiva exitosa de " . count($assignedBoxNumbers) . " clientes.\n";
+        echo "Carga masiva finalizada: $count clientes procesados localmente.\n";
     }
 }
