@@ -31,7 +31,7 @@ class IdentifyTenant
         }
 
         // 2. Local/Session fallbacks (ONLY for authenticated routes or specific contexts)
-        if (!$tenant && !$request->routeIs('login') && !$request->routeIs('register')) {
+        if (!$tenant && !in_array($request->route()->getName(), ['login', 'register'])) {
             if (session()->has('tenant_id')) {
                 $tenant = Tenant::find(session('tenant_id'));
             } elseif (auth()->check() && auth()->user()->tenant_id) {
@@ -40,9 +40,15 @@ class IdentifyTenant
         }
 
         // 3. Apply Tenant Context
-        if ($tenant && ($tenant->subdomain !== 'curriersite-production')) {
+        if ($tenant) {
             session(['tenant_id' => $tenant->id]);
             config(['app.name' => $tenant->name]);
+            // ...
+        } else {
+            // Safety fallback if no tenant exists yet
+            session()->forget('tenant_id');
+            config(['app.name' => 'LogiSaaS']);
+        }
 
             // Critical: Set the locale globally
             $locale = $tenant->locale ?? config('app.locale');

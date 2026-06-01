@@ -64,17 +64,22 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         Fortify::authenticateUsing(function (Request $request) {
+            $email = trim($request->email);
             $user = \App\Models\User::withoutGlobalScope('tenant')
-                ->where('email', $request->email)
+                ->where('email', $email)
                 ->first();
 
             if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
                 // If the user belongs to a tenant, ensure the session matches
                 if ($user->tenant_id) {
                     session()->put('tenant_id', $user->tenant_id);
+                } else {
+                    session()->forget('tenant_id');
                 }
                 return $user;
             }
+
+            return null;
         });
 
         Fortify::createUsersUsing(CreateNewUser::class);
