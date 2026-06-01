@@ -56,6 +56,11 @@ class Tenant extends Model
         return $this->hasMany(Invoice::class);
     }
 
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class);
+    }
+
     public function getStripeKey()
     {
         return $this->settings_json['stripe_key'] ?? config('services.stripe.key');
