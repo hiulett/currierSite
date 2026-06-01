@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+}
+
+[x-cloak] { display: none !important; }

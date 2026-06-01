@@ -14,6 +14,7 @@ class MailSettings extends Component
     public $mail_encryption;
     public $mail_from_address;
     public $mail_from_name;
+    public $mail_driver = 'smtp'; // smtp or sendgrid_api
 
     public function mount()
     {
@@ -27,6 +28,7 @@ class MailSettings extends Component
         $this->mail_encryption = $settings['mail_encryption'] ?? 'tls';
         $this->mail_from_address = $settings['mail_from_address'] ?? '';
         $this->mail_from_name = $settings['mail_from_name'] ?? $tenant->name;
+        $this->mail_driver = $settings['mail_driver'] ?? 'smtp';
     }
 
     public function save()
@@ -41,6 +43,7 @@ class MailSettings extends Component
         $settings['mail_encryption'] = trim($this->mail_encryption);
         $settings['mail_from_address'] = trim($this->mail_from_address);
         $settings['mail_from_name'] = trim($this->mail_from_name);
+        $settings['mail_driver'] = $this->mail_driver;
 
         $tenant->update(['settings_json' => $settings]);
 
@@ -49,12 +52,29 @@ class MailSettings extends Component
 
     public function sendTestMail()
     {
-        $this->save(); // Save first to ensure we use current values
+        if ($this->mail_driver === 'smtp') {
+            $this->validate([
+                'mail_host' => 'required',
+                'mail_port' => 'required',
+                'mail_username' => 'required',
+                'mail_password' => 'required',
+                'mail_from_address' => 'required|email',
+            ]);
+        } else {
+            $this->validate([
+                'mail_password' => 'required', // Here it's the API Key
+                'mail_from_address' => 'required|email',
+            ]);
+        }
 
-        $tenant = Tenant::find(session('tenant_id'));
+        $this->save();
 
         try {
-            // Force config reload for this request
+            if ($this->mail_driver === 'sendgrid_api') {
+                return $this->sendViaSendGridApi();
+            }
+
+            // SMTP Logic...
             config([
                 'mail.default' => 'smtp',
                 'mail.mailers.smtp.host' => $this->mail_host,
@@ -62,6 +82,7 @@ class MailSettings extends Component
                 'mail.mailers.smtp.username' => $this->mail_username,
                 'mail.mailers.smtp.password' => $this->mail_password,
                 'mail.mailers.smtp.encryption' => $this->mail_encryption,
+                'mail.mailers.smtp.timeout' => 30,
                 'mail.from.address' => $this->mail_from_address,
                 'mail.from.name' => $this->mail_from_name,
             ]);
@@ -71,10 +92,41 @@ class MailSettings extends Component
                         ->subject('Prueba de Configuración de Correo - LogiSaaS');
             });
 
-            session()->flash('message', '¡Éxito! Correo de prueba enviado a: ' . $this->mail_from_address);
+            session()->flash('message', '¡Éxito! Correo de prueba enviado (vía SMTP) a: ' . $this->mail_from_address);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Test Mail Error: ' . $e->getMessage());
             session()->flash('error', 'Error al enviar el correo: ' . $e->getMessage());
+        }
+    }
+
+    protected function sendViaSendGridApi()
+    {
+        $response = \Illuminate\Support\Facades\Http::withToken($this->mail_password)
+            ->post('https://api.sendgrid.com/v3/mail/send', [
+                'personalizations' => [
+                    [
+                        'to' => [['email' => $this->mail_from_address]],
+                    ]
+                ],
+                'from' => [
+                    'email' => $this->mail_from_address,
+                    'name' => $this->mail_from_name
+                ],
+                'subject' => 'Prueba de Configuración - SendGrid API',
+                'content' => [
+                    [
+                        'type' => 'text/plain',
+                        'value' => 'Este es un correo de prueba enviado a través de la API oficial de SendGrid desde LogiSaaS.'
+                    ]
+                ]
+            ]);
+
+        if ($response->successful()) {
+            session()->flash('message', '¡Éxito! Correo de prueba enviado vía API de SendGrid.');
+        } else {
+            $error = $response->json();
+            $errorMessage = $error['errors'][0]['message'] ?? 'Error desconocido en la API';
+            session()->flash('error', 'Error SendGrid API: ' . $errorMessage);
         }
     }
 

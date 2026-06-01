@@ -1,8 +1,8 @@
 <div class="container-fluid p-0">
     <div class="row mb-4 align-items-center">
         <div class="col-12 col-md-6">
-            <h2 class="h3 mb-0 uppercase font-black tracking-tight text-dark">Configuración de Correo (SMTP)</h2>
-            <p class="text-muted small mb-0">Personaliza el servidor desde el cual se envían las notificaciones a tus clientes.</p>
+            <h2 class="h3 mb-0 uppercase font-black tracking-tight text-dark">Configuración de Correo</h2>
+            <p class="text-muted small mb-0">Personaliza el método y servidor desde el cual se envían las notificaciones.</p>
         </div>
         <div class="col-12 col-md-6 text-md-end mt-3 mt-md-0">
             <button wire:click="save" class="btn btn-primary fw-black shadow-lg px-4">
@@ -31,10 +31,29 @@
                 </div>
             @endif
 
-            <!-- SMTP Server Settings -->
+            <!-- Driver Selection -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="server"></i> Servidor de Salida</h5>
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="settings"></i> Método de Envío</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">Protocolo / API</label>
+                            <select wire:model.live="mail_driver" class="form-select border-2 fw-bold">
+                                <option value="smtp">SMTP (Tradicional)</option>
+                                <option value="sendgrid_api">SendGrid API (Recomendado)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SMTP Server Settings -->
+            @if($mail_driver === 'smtp')
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="server"></i> Configuración SMTP</h5>
                 </div>
                 <div class="card-body p-4 p-md-5">
                     <div class="row g-4">
@@ -67,6 +86,23 @@
                     </div>
                 </div>
             </div>
+            @else
+            <!-- SendGrid API Settings -->
+            <div class="card border-0 shadow-sm mb-4 border-start border-primary border-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="zap"></i> Configuración SendGrid API</h5>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">SendGrid API Key</label>
+                            <input type="password" wire:model="mail_password" class="form-control border-2 fw-bold" placeholder="SG.xxxxxxxxxxxxxxxx">
+                            <div class="form-text xsmall mt-2">Introduce tu clave de API generada en el panel de SendGrid. El envío se realizará mediante peticiones HTTP seguras (más rápido y fiable).</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Sender Identity -->
             <div class="card border-0 shadow-sm mb-4">
@@ -78,7 +114,7 @@
                         <div class="col-md-6">
                             <label class="form-label xsmall font-black text-uppercase text-muted">Email Remitente</label>
                             <input type="email" wire:model="mail_from_address" class="form-control border-2 fw-bold" placeholder="no-reply@tuempresa.com">
-                            <div class="form-text xsmall mt-1">Este es el correo que verán tus clientes al recibir notificaciones.</div>
+                            <div class="form-text xsmall mt-1">Este correo debe estar verificado en tu proveedor (SendGrid/SMTP).</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label xsmall font-black text-uppercase text-muted">Nombre Remitente</label>
@@ -96,15 +132,15 @@
                         <div class="stat bg-primary text-white rounded-circle me-3">
                             <i data-feather="zap"></i>
                         </div>
-                        <h5 class="card-title text-white mb-0 uppercase font-black small tracking-widest">¿Por qué configurar esto?</h5>
+                        <h5 class="card-title text-white mb-0 uppercase font-black small tracking-widest">¿Por qué usar API?</h5>
                     </div>
                     <p class="text-white-50 small leading-relaxed">
-                        Por defecto, los correos se envían desde nuestro servidor general. Al configurar tu propio SMTP:
+                        El envío por API es superior al SMTP tradicional:
                     </p>
                     <ul class="text-white-50 small ps-3 mb-0">
-                        <li class="mb-2">Tus clientes verán que los correos vienen directamente de <strong>tu marca</strong>.</li>
-                        <li class="mb-2">Mejoras drásticamente la <strong>entregabilidad</strong> (evitas la carpeta de SPAM).</li>
-                        <li>Generas mayor confianza y profesionalismo en cada notificación de carga.</li>
+                        <li class="mb-2"><strong>Mayor Velocidad:</strong> No hay negociación de conexión manual.</li>
+                        <li class="mb-2"><strong>Más Seguro:</strong> No requiere abrir puertos de red (25, 465, 587).</li>
+                        <li><strong>Mejor Entregabilidad:</strong> Menos propenso a ser bloqueado por firewalls de servidores.</li>
                     </ul>
                 </div>
             </div>

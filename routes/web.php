@@ -49,8 +49,10 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Logistics\LabelController;
 use App\Http\Controllers\Logistics\ReportController;
 
+use App\Http\Controllers\LandingController;
+
 // Public Routes
-Route::get('/', PublicHome::class)->name('home');
+Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/calculadora', DutyCalculator::class)->name('public.calculator');
 // Route::get('/tracking', TrackingSearch::class)->name('public.tracking');
 
