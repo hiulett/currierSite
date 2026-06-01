@@ -16,6 +16,29 @@ class ProductionDataSyncSeeder extends Seeder
 {
     public function run(): void
     {
+        // 0. Create Global SuperAdmins
+        User::updateOrCreate(
+            ['email' => 'superadmin@logisaas.com'],
+            [
+                'name' => 'Super Administrator Global',
+                'password' => Hash::make('LogiSaaS2026!'),
+                'role' => 'superadmin',
+                'tenant_id' => null,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'admin@logisaas.com'],
+            [
+                'name' => 'Secondary SuperAdmin',
+                'password' => Hash::make('SaaSAdmin2026!'),
+                'role' => 'superadmin',
+                'tenant_id' => null,
+                'email_verified_at' => now(),
+            ]
+        );
+
         // 1. Sync Roles and Permissions (Global/System)
         $this->call(PermissionSeeder::class);
 
