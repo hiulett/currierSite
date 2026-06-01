@@ -82,6 +82,12 @@ class IdentifyTenant
                     'paypal.live.client_secret' => $settings['paypal_live_client_secret'] ?? '',
                 ]);
             }
+
+            // 6. Suspension Check (Hard Lock)
+            $isSuperAdmin = auth()->check() && auth()->user()->role === 'superadmin';
+            if ($tenant->status === 'suspended' && !$isSuperAdmin) {
+                return response()->view('errors.suspended', [], 403);
+            }
         } else {
             // Safety fallback if no tenant identified
             session()->forget('tenant_id');
