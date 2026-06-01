@@ -139,7 +139,7 @@
                         <thead>
                             <tr>
                                 <th class="ps-4">Empresa</th>
-                                <th>Dominio</th>
+                                <th>Plan Contratado</th>
                                 <th>Estado</th>
                                 <th class="pe-4 text-end">Registro</th>
                             </tr>
@@ -151,7 +151,10 @@
                                         <div class="fw-black text-dark">{{ $t->name }}</div>
                                         <div class="small text-muted">{{ $t->subdomain }}.logisaas.com</div>
                                     </td>
-                                    <td><span class="badge bg-light text-dark border">{{ $t->domain ?: 'Subdominio' }}</span></td>
+                                    <td>
+                                        <div class="fw-bold small">{{ $t->plan?->name ?? 'Sin Plan' }}</div>
+                                        <div class="small text-muted">${{ number_format($t->plan?->price ?? 0, 2) }}/mes</div>
+                                    </td>
                                     <td>
                                         <span class="badge {{ $t->status === 'active' ? 'bg-success' : 'bg-danger' }} text-uppercase">
                                             {{ $t->status }}
@@ -169,32 +172,70 @@
             </div>
         </div>
 
-        <!-- Infrastructure & Security -->
+        <!-- Breakdown of Plans -->
         <div class="col-12 col-lg-5 d-flex">
             <div class="card flex-fill w-100 border-0 shadow-sm">
                 <div class="card-header bg-light border-bottom">
-                    <h5 class="card-title mb-0 uppercase font-black small">Estado Global de Carga</h5>
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary">Planes Activos en el Sistema</h5>
                 </div>
                 <div class="card-body">
                     <div class="chart chart-xs mb-3">
-                        <canvas id="chart-packages-status"></canvas>
+                        <canvas id="chart-plans-usage"></canvas>
                     </div>
                     <table class="table table-sm mt-3 mb-0">
                         <thead>
                             <tr class="small font-black uppercase text-muted">
-                                <th>Estado</th>
-                                <th class="text-end">Conteo</th>
+                                <th>Plan</th>
+                                <th class="text-end">Empresas</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($packages_by_status as $status => $count)
+                            @foreach($plans_usage as $plan_name => $count)
                                 <tr>
-                                    <td class="small text-uppercase fw-bold">{{ $status }}</td>
+                                    <td class="small fw-bold">{{ $plan_name }}</td>
                                     <td class="text-end fw-black">{{ number_format($count) }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Global Status Carga -->
+        <div class="col-12 col-lg-7 d-flex">
+            <div class="card flex-fill w-100 border-0 shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="card-title mb-0 uppercase font-black small">Estado Global de Carga</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-5">
+                            <div class="chart chart-xs">
+                                <canvas id="chart-packages-status"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            <div class="table-responsive">
+                                <table class="table table-sm mb-0">
+                                    <thead>
+                                        <tr class="small font-black uppercase text-muted">
+                                            <th>Estado</th>
+                                            <th class="text-end">Conteo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($packages_by_status as $status => $count)
+                                            <tr>
+                                                <td class="small text-uppercase fw-bold">{{ $status }}</td>
+                                                <td class="text-end fw-black">{{ number_format($count) }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -260,6 +301,31 @@
                     maintainAspectRatio: false,
                     cutout: "70%",
                     plugins: { legend: { display: false } }
+                }
+            });
+
+            // 3. Plans Usage Chart
+            const planLabels = @json(array_keys($plans_usage));
+            const planData = @json(array_values($plans_usage));
+
+            new Chart(document.getElementById("chart-plans-usage"), {
+                type: "bar",
+                data: {
+                    labels: planLabels,
+                    datasets: [{
+                        label: "Empresas",
+                        data: planData,
+                        backgroundColor: "#3b7ddd",
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
                 }
             });
         });

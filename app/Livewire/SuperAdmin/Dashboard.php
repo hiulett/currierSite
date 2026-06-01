@@ -8,6 +8,7 @@ use App\Models\Package;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\Plan;
 
 class Dashboard extends Component
 {
@@ -67,6 +68,13 @@ class Dashboard extends Component
             ->take(5)
             ->get();
 
+        // 4. Breakdown of Contracted Plans
+        $plans_usage = Plan::withCount('tenants')
+            ->where('is_active', true)
+            ->get()
+            ->pluck('tenants_count', 'name')
+            ->toArray();
+
         return view('livewire.super-admin.dashboard', [
             'total_tenants' => $tenants_stats['total'],
             'active_tenants' => $tenants_stats['active'],
@@ -78,11 +86,12 @@ class Dashboard extends Component
             'online_users' => $online_users,
             'total_revenue' => $total_revenue,
             'pending_collection' => $pending_collection,
-            'recent_tenants' => Tenant::latest()->take(5)->get(),
+            'recent_tenants' => Tenant::with('plan')->latest()->take(5)->get(),
             'package_growth' => $package_growth,
             'top_tenants' => $top_tenants,
             'total_weight' => $total_weight,
             'packages_by_status' => $packages_by_status,
+            'plans_usage' => $plans_usage,
         ])->layout('components.super-admin-layout');
     }
 }
