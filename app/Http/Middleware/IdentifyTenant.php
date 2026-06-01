@@ -27,15 +27,12 @@ class IdentifyTenant
             $tenant = Tenant::find(session('impersonate_tenant_id'));
         }
 
-        // 2. Local/Session/Production fallbacks
+        // 2. Local/Session fallbacks
         if (!$tenant) {
             if (session()->has('tenant_id')) {
                 $tenant = Tenant::find(session('tenant_id'));
             } elseif (auth()->check() && auth()->user()->tenant_id) {
                 $tenant = Tenant::find(auth()->user()->tenant_id);
-            } else {
-                // If on Railway/Cloud and no tenant identified, use the first one as a safety fallback
-                $tenant = Tenant::first();
             }
         }
 
