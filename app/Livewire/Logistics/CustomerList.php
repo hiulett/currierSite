@@ -23,6 +23,10 @@ class CustomerList extends Component
     public $is_editing = false;
     public $customer_id;
 
+    // Password Management
+    public $selected_customer_id;
+    public $new_password;
+
     // CSV Import
     public $csv_file;
     public $is_importing = false;
