@@ -15,20 +15,23 @@ class IdentifyTenant
     public function handle(Request $request, Closure $next): Response
     {
         $host = $request->getHost();
-        $isGlobalDomain = in_array($host, ['localhost', '127.0.0.1', 'logisaas.test']);
+        $subdomain = explode('.', $host)[0];
 
         // 1. Try to find tenant by domain or subdomain
-        $tenant = Tenant::where('domain', $host)
-            ->orWhere('subdomain', explode('.', $host)[0])
-            ->first();
+        $tenant = null;
+        if (!in_array($subdomain, ['curriersite-production', 'localhost', '127'])) {
+            $tenant = Tenant::where('domain', $host)
+                ->orWhere('subdomain', $subdomain)
+                ->first();
+        }
 
         // [IMPERSONATION OVERRIDE]
         if (session()->has('impersonate_tenant_id')) {
             $tenant = Tenant::find(session('impersonate_tenant_id'));
         }
 
-        // 2. Local/Session fallbacks
-        if (!$tenant) {
+        // 2. Local/Session fallbacks (ONLY for authenticated routes or specific contexts)
+        if (!$tenant && !$request->routeIs('login') && !$request->routeIs('register')) {
             if (session()->has('tenant_id')) {
                 $tenant = Tenant::find(session('tenant_id'));
             } elseif (auth()->check() && auth()->user()->tenant_id) {
@@ -37,7 +40,7 @@ class IdentifyTenant
         }
 
         // 3. Apply Tenant Context
-        if ($tenant) {
+        if ($tenant && ($tenant->subdomain !== 'curriersite-production')) {
             session(['tenant_id' => $tenant->id]);
             config(['app.name' => $tenant->name]);
 
