@@ -28,7 +28,7 @@ class Dashboard extends Component
         }
 
         // If SuperAdmin and NO tenant context, go to super dashboard
-        if ($user->role === 'superadmin' && !session()->has('tenant_id')) {
+        if ($user->role === 'superadmin' && !session()->has('tenant_id') && !session()->has('impersonate_tenant_id')) {
             return redirect()->route('super.dashboard');
         }
     }
