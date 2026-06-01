@@ -147,6 +147,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::group(['prefix' => 'superadmin'], function () {
             Route::get('/', SuperDashboard::class)->name('super.dashboard');
             Route::get('/tenants', SuperTenantList::class)->name('super.tenants');
+            Route::get('/tracking-maestro', \App\Livewire\SuperAdmin\GlobalTrackingSearch::class)->name('super.tracking');
             Route::get('/planes', SuperPlanList::class)->name('super.plans');
             Route::get('/facturacion', App\Livewire\SuperAdmin\BillingManagement::class)->name('super.billing');
             Route::get('/inventario', SuperGlobalInventory::class)->name('super.inventory');

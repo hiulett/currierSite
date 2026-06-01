@@ -114,8 +114,19 @@ class AppServiceProvider extends ServiceProvider
                     // 6. DB Notifications (Financial Alerts, etc)
                     $dbNotificationsCount = auth()->user()->unreadNotifications->count();
 
+                    // 7. Tenant Billing Alert
+                    $billingAlert = false;
+                    if (session()->has('tenant_id')) {
+                        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+                        if ($tenant) {
+                            $isOverdue = $tenant->next_billing_at && $tenant->next_billing_at->isPast();
+                            $billingAlert = $tenant->payment_warning_active || $isOverdue;
+                        }
+                    }
+
                     $view->with('navAlerts', $alerts);
                     $view->with('totalNavAlerts', array_sum($alerts) + $dbNotificationsCount);
+                    $view->with('showBillingAlert', $billingAlert);
                 } catch (\Exception $e) {
                     $view->with('navAlerts', []);
                     $view->with('totalNavAlerts', 0);

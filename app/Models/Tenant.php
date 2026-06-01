@@ -22,6 +22,8 @@ class Tenant extends Model
         'theme_config_json',
         'enabled_reports_json',
         'maintenance_mode_until',
+        'next_billing_at',
+        'payment_warning_active',
     ];
 
     protected $casts = [
@@ -30,6 +32,8 @@ class Tenant extends Model
         'theme_config_json' => 'array',
         'enabled_reports_json' => 'array',
         'maintenance_mode_until' => 'datetime',
+        'next_billing_at' => 'datetime',
+        'payment_warning_active' => 'boolean',
     ];
 
     public function users()

@@ -36,8 +36,8 @@
                             <h3 class="mb-2 fw-black text-white">{{ number_format($total_packages) }}</h3>
                             <p class="mb-0 text-uppercase font-bold small opacity-75">Paquetes Globales</p>
                             <div class="mt-2 small opacity-75">
-                                <i class="align-middle" data-feather="trending-up" style="width:12px;"></i>
-                                <span class="fw-bold">+12%</span> este mes
+                                <i class="align-middle" data-feather="box" style="width:12px;"></i>
+                                <span class="fw-bold">{{ number_format($total_weight, 1) }}</span> lbs totales
                             </div>
                         </div>
                         <div class="d-inline-block ms-3">
@@ -50,31 +50,35 @@
             </a>
         </div>
         <div class="col-12 col-sm-6 col-xxl-3 d-flex">
-            <a href="{{ route('super.inventory') }}" class="card flex-fill border-0 shadow-sm transform transition hover:scale-102 text-decoration-none bg-info text-white">
+            <div class="card flex-fill border-0 shadow-sm transform transition hover:scale-102 bg-info text-white">
                 <div class="card-body py-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
-                            <h3 class="mb-2 text-white fw-black">{{ number_format($total_weight, 2) }} lbs</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">Peso Total Almacenado</p>
-                            <div class="mt-2 small opacity-50">Carga activa en bodegas</div>
+                            <h3 class="mb-2 text-white fw-black">{{ number_format($total_users) }}</h3>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75">Usuarios en Red</p>
+                            <div class="mt-2 small opacity-75">
+                                <span class="fw-bold">{{ $online_users }}</span> Online ahora
+                            </div>
                         </div>
                         <div class="d-inline-block ms-3">
                             <div class="stat bg-white bg-opacity-25 text-white">
-                                <i class="align-middle" data-feather="database"></i>
+                                <i class="align-middle" data-feather="users"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
         <div class="col-12 col-sm-6 col-xxl-3 d-flex">
             <div class="card flex-fill bg-dark text-white shadow-lg border-0">
                 <div class="card-body py-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
-                            <h3 class="mb-2 fw-black text-white">${{ number_format($total_mrr, 2) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">Ingresos del Ecosistema</p>
-                            <div class="mt-2 small text-white-50">Suma de facturas pagadas</div>
+                            <h3 class="mb-2 fw-black text-white">${{ number_format($total_revenue, 2) }}</h3>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75">Facturación Tenants</p>
+                            <div class="mt-2 small text-danger font-bold">
+                                ${{ number_format($pending_collection, 2) }} pendiente
+                            </div>
                         </div>
                         <div class="d-inline-block ms-3">
                             <div class="stat text-white" style="background: rgba(255,255,255,0.1);">
@@ -92,7 +96,7 @@
         <div class="col-12 col-lg-8 d-flex">
             <div class="card flex-fill w-100 border-0 shadow-sm">
                 <div class="card-header bg-light border-bottom">
-                    <h5 class="card-title mb-0 uppercase font-black small text-primary">Crecimiento de Carga (6 Meses)</h5>
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary">Crecimiento de Carga (Meses del Año)</h5>
                 </div>
                 <div class="card-body py-3">
                     <div class="chart chart-sm">
@@ -147,7 +151,7 @@
                                         <div class="fw-black text-dark">{{ $t->name }}</div>
                                         <div class="small text-muted">{{ $t->subdomain }}.logisaas.com</div>
                                     </td>
-                                    <td><span class="badge bg-light text-dark border">{{ $t->domain }}</span></td>
+                                    <td><span class="badge bg-light text-dark border">{{ $t->domain ?: 'Subdominio' }}</span></td>
                                     <td>
                                         <span class="badge {{ $t->status === 'active' ? 'bg-success' : 'bg-danger' }} text-uppercase">
                                             {{ $t->status }}
@@ -169,36 +173,28 @@
         <div class="col-12 col-lg-5 d-flex">
             <div class="card flex-fill w-100 border-0 shadow-sm">
                 <div class="card-header bg-light border-bottom">
-                    <h5 class="card-title mb-0 uppercase font-black small">Estado de Infraestructura</h5>
+                    <h5 class="card-title mb-0 uppercase font-black small">Estado Global de Carga</h5>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex align-items-center mb-4 p-3 rounded bg-light">
-                        <div class="stat text-success bg-white shadow-sm me-3">
-                            <i data-feather="check-circle"></i>
-                        </div>
-                        <div>
-                            <div class="fw-black text-dark uppercase small">Base de Datos Principal</div>
-                            <div class="small text-muted">Latencia: 14ms | Conexiones: 24</div>
-                        </div>
+                    <div class="chart chart-xs mb-3">
+                        <canvas id="chart-packages-status"></canvas>
                     </div>
-                    <div class="d-flex align-items-center mb-4 p-3 rounded bg-light">
-                        <div class="stat text-primary bg-white shadow-sm me-3">
-                            <i data-feather="cloud"></i>
-                        </div>
-                        <div>
-                            <div class="fw-black text-dark uppercase small">Sincronización Webhooks</div>
-                            <div class="small text-muted">98.5% tasa de éxito (últimas 24h)</div>
-                        </div>
-                    </div>
-                    <div class="p-4 rounded bg-dark text-white text-center shadow-lg">
-                        <h6 class="text-uppercase font-black small mb-3 opacity-75">Capacidad del Ecosistema</h6>
-                        <h2 class="fw-black mb-0">{{ $total_customers }}</h2>
-                        <p class="small mb-3 text-white-50">Usuarios Finales Activos</p>
-                        <div class="progress progress-sm bg-white bg-opacity-10 mb-2">
-                            <div class="progress-bar bg-info" style="width: 45%"></div>
-                        </div>
-                        <span class="small opacity-50">45% de capacidad proyectada alcanzada</span>
-                    </div>
+                    <table class="table table-sm mt-3 mb-0">
+                        <thead>
+                            <tr class="small font-black uppercase text-muted">
+                                <th>Estado</th>
+                                <th class="text-end">Conteo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($packages_by_status as $status => $count)
+                                <tr>
+                                    <td class="small text-uppercase fw-bold">{{ $status }}</td>
+                                    <td class="text-end fw-black">{{ number_format($count) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -206,15 +202,14 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+            // 1. Growth Chart
             var ctx = document.getElementById("chart-package-growth").getContext("2d");
             var gradient = ctx.createLinearGradient(0, 0, 0, 225);
             gradient.addColorStop(0, "rgba(59, 125, 221, 0.2)");
             gradient.addColorStop(1, "rgba(59, 125, 221, 0)");
 
-            // Generate data from PHP
             const growthData = @json($package_growth);
             const labels = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-            // Extract values for the last 6 months
             const dataValues = labels.map((label, index) => {
                 const monthNum = (index + 1).toString().padStart(2, '0');
                 return growthData[monthNum] || 0;
@@ -236,9 +231,6 @@
                 options: {
                     maintainAspectRatio: false,
                     legend: { display: false },
-                    tooltips: { intersect: false },
-                    hover: { intersect: true },
-                    plugins: { filler: { propagate: false } },
                     scales: {
                         x: { grid: { display: false } },
                         y: {
@@ -246,6 +238,28 @@
                             beginAtZero: true
                         }
                     }
+                }
+            });
+
+            // 2. Status Distribution Chart
+            const statusLabels = @json(array_keys($packages_by_status));
+            const statusData = @json(array_values($packages_by_status));
+
+            new Chart(document.getElementById("chart-packages-status"), {
+                type: "doughnut",
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        data: statusData,
+                        backgroundColor: ["#3b7ddd", "#28a745", "#ffc107", "#dc3545", "#6f42c1", "#17a2b8"],
+                        borderWidth: 5,
+                        borderColor: "#fff"
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: "70%",
+                    plugins: { legend: { display: false } }
                 }
             });
         });

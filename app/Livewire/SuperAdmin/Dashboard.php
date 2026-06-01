@@ -7,6 +7,7 @@ use App\Models\Tenant;
 use App\Models\Package;
 use App\Models\Customer;
 use App\Models\Invoice;
+use App\Models\User;
 
 class Dashboard extends Component
 {
@@ -18,12 +19,40 @@ class Dashboard extends Component
             'total' => Tenant::count(),
         ];
 
-        // Package growth (last 6 months)
-        $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%m');
+        // 1. Carga Global Metrics
+        $total_packages = Package::withoutGlobalScope('tenant')->count();
+        $total_weight = Package::withoutGlobalScope('tenant')->sum('weight');
 
+        $packages_by_status = Package::withoutGlobalScope('tenant')
+            ->selectRaw('status, count(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        // 2. Analítica de Usuarios
+        $total_users = User::withoutGlobalScope('tenant')->count();
+        $total_customers = Customer::withoutGlobalScope('tenant')->count();
+
+        // Active in last 7 days (using updated_at as proxy for now)
+        $active_users_7d = User::withoutGlobalScope('tenant')
+            ->where('updated_at', '>=', now()->subDays(7))
+            ->count();
+
+        // Online Users (Activity in last 15 mins from sessions table)
+        $online_users = \Illuminate\Support\Facades\DB::table('sessions')
+            ->where('last_activity', '>=', now()->subMinutes(15)->getTimestamp())
+            ->whereNotNull('user_id')
+            ->count();
+
+        // 3. Finanzas Consolidadas
+        $total_revenue = Invoice::withoutGlobalScope('tenant')->where('status', 'paid')->sum('total');
+        $pending_collection = Invoice::withoutGlobalScope('tenant')->where('status', 'unpaid')->sum('total');
+
+        // Package growth (last 12 months)
+        $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%m');
         $package_growth = Package::withoutGlobalScope('tenant')
             ->selectRaw("$monthFormat as month, count(*) as count")
-            ->where('created_at', '>=', now()->subMonths(6))
+            ->where('created_at', '>=', now()->startOfYear())
             ->groupBy('month')
             ->orderBy('month')
             ->get()
@@ -42,13 +71,18 @@ class Dashboard extends Component
             'total_tenants' => $tenants_stats['total'],
             'active_tenants' => $tenants_stats['active'],
             'suspended_tenants' => $tenants_stats['suspended'],
-            'total_packages' => Package::withoutGlobalScope('tenant')->count(),
-            'total_customers' => Customer::withoutGlobalScope('tenant')->count(),
-            'total_mrr' => Invoice::withoutGlobalScope('tenant')->where('status', 'paid')->sum('total'),
+            'total_packages' => $total_packages,
+            'total_customers' => $total_customers,
+            'total_users' => $total_users,
+            'active_users_7d' => $active_users_7d,
+            'online_users' => $online_users,
+            'total_revenue' => $total_revenue,
+            'pending_collection' => $pending_collection,
             'recent_tenants' => Tenant::latest()->take(5)->get(),
             'package_growth' => $package_growth,
             'top_tenants' => $top_tenants,
-            'total_weight' => Package::withoutGlobalScope('tenant')->sum('weight'),
+            'total_weight' => $total_weight,
+            'packages_by_status' => $packages_by_status,
         ])->layout('components.super-admin-layout');
     }
 }

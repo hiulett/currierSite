@@ -126,9 +126,15 @@
 						</a>
 					</li>
 
+                    <li class="sidebar-item {{ request()->routeIs('super.tracking') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('super.tracking') }}'>
+							<i class="align-middle" data-feather="search"></i> <span class="align-middle">Buscador Maestro</span>
+						</a>
+					</li>
+
                     <li class="sidebar-item">
 						<a class='sidebar-link' href='#'>
-							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Clientes Globales</span>
+							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Usuarios Globales</span>
 						</a>
 					</li>
 

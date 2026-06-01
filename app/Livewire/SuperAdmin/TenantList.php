@@ -13,9 +13,34 @@ class TenantList extends Component
 
     public $search = '';
     public $configuring_tenant_id = null;
+    public $configuring_billing_id = null; // New
     public $features = [];
 
+    // Billing state
+    public $next_billing_at;
+    public $payment_warning_active;
+
     protected $listeners = ['stop-impersonating' => 'stopImpersonating'];
+
+    public function configureBilling($id)
+    {
+        $this->configuring_billing_id = $id;
+        $tenant = Tenant::find($id);
+        $this->next_billing_at = $tenant->next_billing_at ? $tenant->next_billing_at->format('Y-m-d') : null;
+        $this->payment_warning_active = (bool) $tenant->payment_warning_active;
+    }
+
+    public function saveBilling()
+    {
+        $tenant = Tenant::find($this->configuring_billing_id);
+        $tenant->update([
+            'next_billing_at' => $this->next_billing_at,
+            'payment_warning_active' => $this->payment_warning_active
+        ]);
+
+        $this->configuring_billing_id = null;
+        session()->flash('message', 'Configuración de facturación actualizada para ' . $tenant->name);
+    }
 
     public function stopImpersonating()
     {

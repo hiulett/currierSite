@@ -70,6 +70,10 @@
                             <td class="small fw-bold text-muted">{{ $t->created_at->format('d/m/Y') }}</td>
                             <td class="pe-4 text-end">
                                 <div class="btn-group">
+                                    <button wire:click="configureBilling({{ $t->id }})" class="btn btn-sm btn-light border shadow-sm" title="Facturación">
+                                        <i class="align-middle text-warning" data-feather="dollar-sign"></i>
+                                        <span class="ms-1 d-none d-md-inline fw-bold text-uppercase" style="font-size: 0.6rem;">Pago</span>
+                                    </button>
                                     <button wire:click="configureReports({{ $t->id }})" class="btn btn-sm btn-light border shadow-sm" title="Funcionalidades">
                                         <i class="align-middle text-primary" data-feather="settings"></i>
                                         <span class="ms-1 d-none d-md-inline fw-bold text-uppercase" style="font-size: 0.6rem;">Módulos</span>
@@ -163,6 +167,47 @@
                     <div class="modal-footer bg-white border-top-0 p-4 pt-0 d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-light fw-bold" wire:click="closeConfig">CERRAR</button>
                         <button type="button" class="btn btn-primary px-4 shadow-lg fw-black" wire:click="saveFeatures">GUARDAR CAMBIOS</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- Modal for Billing Management -->
+    @if($configuring_billing_id)
+        <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
+                    <div class="modal-header bg-warning text-dark p-4">
+                        <h5 class="modal-title uppercase font-black tracking-widest">
+                            Control de Cobranza: {{ \App\Models\Tenant::find($configuring_billing_id)->name }}
+                        </h5>
+                        <button type="button" class="btn-close" wire:click="$set('configuring_billing_id', null)"></button>
+                    </div>
+                    <div class="modal-body p-4 bg-light">
+                        <div class="mb-4">
+                            <label class="form-label small fw-black uppercase text-muted">Fecha de Próximo Pago</label>
+                            <input type="date" wire:model="next_billing_at" class="form-control form-control-lg border-0 shadow-sm">
+                            <div class="form-text xsmall">El sistema activará el banner automáticamente si la fecha es menor a hoy.</div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-bold">Banner de Alerta</div>
+                                        <div class="small text-muted">Forzar visualización del aviso de pago.</div>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" wire:model="payment_warning_active">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-white border-top-0 p-4 pt-0 d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-light fw-bold" wire:click="$set('configuring_billing_id', null)">CERRAR</button>
+                        <button type="button" class="btn btn-warning px-4 shadow-lg fw-black" wire:click="saveBilling">GUARDAR COBRANZA</button>
                     </div>
                 </div>
             </div>

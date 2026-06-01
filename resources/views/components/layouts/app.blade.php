@@ -88,6 +88,19 @@
             </a>
         </div>
     @endif
+
+    @if($showBillingAlert ?? false)
+        <div class="bg-danger text-white py-2 px-4 text-center fw-bold shadow-sm d-flex align-items-center justify-content-center" style="font-size: 0.85rem; border-bottom: 2px solid rgba(0,0,0,0.1);">
+            <i data-feather="alert-triangle" class="me-2" style="width: 18px; height: 18px;"></i>
+            <span>AVISO IMPORTANTE: Su periodo de suscripción ha vencido. Por favor, reporte su pago para evitar interrupciones en el servicio.</span>
+            @if(Auth::user()->role === 'admin')
+                <a href="#" class="btn btn-light btn-sm ms-3 py-0 px-3 fw-black text-danger" style="font-size: 0.7rem; height: 26px; line-height: 26px;">
+                    REPORTE AQUÍ
+                </a>
+            @endif
+        </div>
+    @endif
+
     @php
         $navAlerts = $navAlerts ?? [];
         $totalNavAlerts = $totalNavAlerts ?? 0;

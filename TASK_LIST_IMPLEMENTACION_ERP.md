@@ -51,6 +51,18 @@ Este documento rastrea el progreso detallado de los 5 módulos definidos en el P
     - [x] Generación automática de mensajes pre-formateados para el cliente (WhatsAppHelper).
     - [x] Integración de botones "Contactar por WhatsApp" en puntos críticos (Facturas/Pagos).
 
+## 🔥 FASE 6: Inteligencia Super Admin (Gobernanza)
+- [ ] **Métricas Globales (Inteligencia Operativa):**
+    - [ ] Dashboard Maestro: Conteo de paquetes, pesos y estados de toda la red.
+    - [ ] Analítica de Usuarios: Usuarios online (15min) y activos (7 días).
+    - [ ] Salud Financiera: Resumen consolidado de facturación y morosidad de todos los tenants.
+- [ ] **Gobernanza y Soporte:**
+    - [ ] Impersonación: Botón "Login as" en lista de Tenants (Super Admin visualiza como el cliente).
+    - [x] Estructura de Cobranza: Campos `next_billing_at` y `payment_warning_active` en DB.
+    - [ ] Sistema de Recordatorios: Banner automático en el Dashboard del Tenant basado en fecha de vencimiento.
+- [ ] **Buscador Maestro:**
+    - [ ] Explorador Cross-Tenant: Buscar trackings en todas las empresas simultáneamente.
+
 ---
 **Leyenda de Estados:**
 - 🔴 Bloqueado / No iniciado
