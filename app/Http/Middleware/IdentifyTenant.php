@@ -56,14 +56,18 @@ class IdentifyTenant
             if (!empty($settings['mail_host'])) {
                 config([
                     'mail.default' => 'smtp',
-                    'mail.mailers.smtp.host' => $settings['mail_host'],
-                    'mail.mailers.smtp.port' => $settings['mail_port'] ?? '587',
-                    'mail.mailers.smtp.username' => $settings['mail_username'],
-                    'mail.mailers.smtp.password' => $settings['mail_password'],
-                    'mail.mailers.smtp.encryption' => $settings['mail_encryption'] ?? 'tls',
-                    'mail.from.address' => $settings['mail_from_address'] ?? 'no-reply@logisaas.com',
-                    'mail.from.name' => $settings['mail_from_name'] ?? $tenant->name,
+                    'mail.mailers.smtp.host' => trim($settings['mail_host']),
+                    'mail.mailers.smtp.port' => trim($settings['mail_port'] ?? '587'),
+                    'mail.mailers.smtp.username' => trim($settings['mail_username']),
+                    'mail.mailers.smtp.password' => trim($settings['mail_password']),
+                    'mail.mailers.smtp.encryption' => trim($settings['mail_encryption'] ?? 'tls'),
+                    'mail.from.address' => trim($settings['mail_from_address'] ?? 'no-reply@logisaas.com'),
+                    'mail.from.name' => trim($settings['mail_from_name'] ?? $tenant->name),
                 ]);
+
+                // Reset Mailer Instance to apply new config immediately
+                app()->forgetInstances();
+                app()->make('mail.manager')->forgetMailers();
             }
 
             // 5. Dynamic Payment Configuration (Stripe/PayPal Override)

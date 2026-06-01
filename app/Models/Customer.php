@@ -31,6 +31,10 @@ class Customer extends Model
         'longitude',
     ];
 
+    protected $casts = [
+        'password_sent_at' => 'datetime',
+    ];
+
     public function level()
     {
         return $this->belongsTo(LoyaltyLevel::class, 'loyalty_level_id');

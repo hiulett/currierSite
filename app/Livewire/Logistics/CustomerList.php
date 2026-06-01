@@ -23,9 +23,9 @@ class CustomerList extends Component
     public $is_editing = false;
     public $customer_id;
 
-    // Password Management
-    public $selected_customer_id;
-    public $new_password;
+    // Password Management Properties (RE-DECLARED FOR SAFETY)
+    public $selected_customer_id = null;
+    public $new_password = '';
 
     // CSV Import
     public $csv_file;
@@ -130,6 +130,12 @@ class CustomerList extends Component
 
     public function sendPasswordEmail()
     {
+        if (!$this->selected_customer_id) {
+            session()->flash('error', 'No se ha seleccionado ningún cliente.');
+            $this->dispatch('close-confirm-password-modal');
+            return;
+        }
+
         $customer = Customer::findOrFail($this->selected_customer_id);
 
         // If no temporary password exists, generate one now
