@@ -14,17 +14,91 @@ class TenantList extends Component
     public $search = '';
     public $configuring_tenant_id = null;
     public $configuring_billing_id = null;
-    public $editing_tenant_id = null; // New
+    public $editing_tenant_id = null;
+    public $creating_tenant = false; // New
     public $features = [];
 
-    // Tenant Edit state
+    // Tenant Create/Edit state
     public $tenant_name, $tenant_subdomain, $tenant_domain, $tenant_plan_id, $tenant_status;
+    public $admin_email, $admin_password; // For creation
 
     // Billing state
     public $next_billing_at;
     public $payment_warning_active;
 
     protected $listeners = ['stop-impersonating' => 'stopImpersonating'];
+
+    public function openCreateModal()
+    {
+        $this->reset(['tenant_name', 'tenant_subdomain', 'tenant_domain', 'tenant_plan_id', 'tenant_status', 'admin_email', 'admin_password']);
+        $this->tenant_status = 'active';
+        $this->tenant_plan_id = \App\Models\Plan::where('is_active', true)->first()?->id;
+        $this->creating_tenant = true;
+    }
+
+    public function saveNewTenant()
+    {
+        $this->validate([
+            'tenant_name' => 'required|string|max:255',
+            'tenant_subdomain' => 'required|string|unique:tenants,subdomain',
+            'tenant_plan_id' => 'required|exists:plans,id',
+            'admin_email' => 'required|email|unique:users,email',
+            'admin_password' => 'required|string|min:8',
+        ]);
+
+        // 1. Create Tenant
+        $tenant = Tenant::create([
+            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'name' => $this->tenant_name,
+            'subdomain' => $this->tenant_subdomain,
+            'domain' => $this->tenant_domain,
+            'plan_id' => $this->tenant_plan_id,
+            'status' => $this->tenant_status,
+            'locale' => 'es',
+            'settings_json' => [
+                'currency' => 'USD',
+                'force_password_change' => true,
+            ]
+        ]);
+
+        // 2. Create Admin Role for this tenant
+        $role = \App\Models\Role::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Administrador',
+            'description' => 'Acceso total al sistema'
+        ]);
+
+        // 3. Assign all permissions to this role
+        $allPermissions = \App\Models\Permission::all();
+        $role->permissions()->sync($allPermissions->pluck('id'));
+
+        // 4. Create Admin User
+        \App\Models\User::create([
+            'tenant_id' => $tenant->id,
+            'role_id' => $role->id,
+            'name' => 'Admin ' . $tenant->name,
+            'email' => $this->admin_email,
+            'password' => \Illuminate\Support\Facades\Hash::make($this->admin_password),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]);
+
+        // 5. Create default Warehouse
+        \App\Models\Warehouse::create([
+            'tenant_id' => $tenant->id,
+            'name' => 'Miami Hub Principal',
+            'code' => 'MIA-01',
+            'address' => '8400 NW 25th St',
+            'city' => 'Miami',
+            'state' => 'FL',
+            'zip_code' => '33178',
+            'country' => 'USA',
+            'is_active' => true,
+        ]);
+
+        $this->creating_tenant = false;
+        session()->flash('message', 'Empresa ' . $tenant->name . ' creada exitosamente con su usuario administrador.');
+    }
 
     public function editTenant($id)
     {

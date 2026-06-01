@@ -16,9 +16,14 @@
     <div class="card shadow-sm border-0">
         <div class="card-header bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 border-bottom">
             <h5 class="card-title mb-0 uppercase font-black small">Directorio de Empresas</h5>
-            <div class="input-group input-group-sm" style="width: 300px;">
-                <input type="text" wire:model.live="search" class="form-control" placeholder="Buscar por nombre o dominio...">
-                <span class="input-group-text bg-white"><i class="align-middle text-muted" data-feather="search" style="width: 14px;"></i></span>
+            <div class="d-flex gap-2">
+                <div class="input-group input-group-sm" style="width: 250px;">
+                    <input type="text" wire:model.live="search" class="form-control" placeholder="Buscar empresa...">
+                    <span class="input-group-text bg-white"><i class="align-middle text-muted" data-feather="search" style="width: 14px;"></i></span>
+                </div>
+                <button wire:click="openCreateModal" class="btn btn-sm btn-primary shadow-sm fw-black uppercase">
+                    <i class="align-middle me-1" data-feather="plus"></i> NUEVA EMPRESA
+                </button>
             </div>
         </div>
         <div class="table-responsive">
@@ -110,6 +115,76 @@
             {{ $tenants->links() }}
         </div>
     </div>
+
+    <!-- Modal for Creating New Tenant -->
+    @if($creating_tenant)
+        <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
+                    <div class="modal-header bg-primary text-white p-4">
+                        <h5 class="modal-title uppercase font-black tracking-widest text-white">Dar de Alta Nueva Empresa</h5>
+                        <button type="button" class="btn-close btn-close-white" wire:click="$set('creating_tenant', false)"></button>
+                    </div>
+                    <form wire:submit="saveNewTenant">
+                        <div class="modal-body p-4 bg-light">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <div class="alert alert-info py-2 small mb-0">
+                                        <i data-feather="info" class="me-2" style="width: 14px;"></i>
+                                        Al crear una empresa, el sistema configurará automáticamente su rol administrador, bodega principal y acceso base.
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <h6 class="fw-black uppercase text-muted small mb-3">Información Comercial</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-black uppercase text-muted">Nombre de la Empresa</label>
+                                        <input type="text" wire:model="tenant_name" class="form-control border-0 shadow-sm" placeholder="Ej. Global Cargo PTY" required>
+                                        @error('tenant_name') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-black uppercase text-muted">Subdominio (URL)</label>
+                                        <div class="input-group">
+                                            <input type="text" wire:model="tenant_subdomain" class="form-control border-0 shadow-sm" placeholder="globalcargo" required>
+                                            <span class="input-group-text bg-white border-0 small">.logisaas.com</span>
+                                        </div>
+                                        @error('tenant_subdomain') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-black uppercase text-muted">Plan Inicial</label>
+                                        <select wire:model="tenant_plan_id" class="form-select border-0 shadow-sm" required>
+                                            @foreach(\App\Models\Plan::where('is_active', true)->get() as $p)
+                                                <option value="{{ $p->id }}">{{ $p->name }} - ${{ $p->price }}/mes</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <h6 class="fw-black uppercase text-muted small mb-3">Acceso Administrador</h6>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-black uppercase text-muted">Correo Electrónico Admin</label>
+                                        <input type="email" wire:model="admin_email" class="form-control border-0 shadow-sm" placeholder="admin@empresa.com" required>
+                                        @error('admin_email') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-black uppercase text-muted">Contraseña Temporal</label>
+                                        <input type="text" wire:model="admin_password" class="form-control border-0 shadow-sm" placeholder="Mínimo 8 caracteres" required>
+                                        @error('admin_password') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                                        <div class="form-text xsmall">Se le obligará a cambiarla al primer inicio de sesión.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-white border-top-0 p-4 pt-0 d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-light fw-bold" wire:click="$set('creating_tenant', false)">CANCELAR</button>
+                            <button type="submit" class="btn btn-primary px-4 shadow-lg fw-black">CREAR EMPRESA AHORA</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- Modal for Tenant Profile Editing -->
     @if($editing_tenant_id)
