@@ -19,7 +19,11 @@ class IdentifyTenant
 
         // 1. Try to find tenant by domain or subdomain
         $tenant = null;
-        if (!in_array($subdomain, ['curriersite-production', 'localhost', '127'])) {
+
+        // AUTO-IDENTIFY ON LOCALHOST
+        if (in_array($subdomain, ['localhost', '127'])) {
+            $tenant = Tenant::first();
+        } elseif ($subdomain !== 'curriersite-production') {
             $tenant = Tenant::where('domain', $host)
                 ->orWhere('subdomain', $subdomain)
                 ->first();

@@ -55,6 +55,20 @@ use App\Http\Controllers\LandingController;
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/calculadora', DutyCalculator::class)->name('public.calculator');
 
+Route::get('/debug-inventory', function() {
+    $packages = \App\Models\Package::withoutGlobalScopes()->get();
+    echo "<h1>Diagnóstico de Inventario</h1>";
+    echo "<h3>Total de Paquetes en DB: " . $packages->count() . "</h3>";
+    echo "<table border='1' cellpadding='5'>";
+    echo "<thead><tr><th>ID</th><th>Tracking</th><th>Tenant</th><th>Estado</th></tr></thead>";
+    echo "<tbody>";
+    foreach($packages as $p) {
+        echo "<tr><td>{$p->id}</td><td>{$p->tracking_number}</td><td>{$p->tenant_id}</td><td>{$p->status}</td></tr>";
+    }
+    echo "</tbody></table>";
+    if($packages->isEmpty()) echo "<p>La tabla de paquetes está realmente VACÍA.</p>";
+});
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 

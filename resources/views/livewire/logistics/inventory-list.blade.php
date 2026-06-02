@@ -11,7 +11,6 @@
                 <button wire:click="$set('view_tab', 'pending')" class="btn {{ $view_tab === 'pending' ? 'btn-primary' : 'btn-white' }} fw-bold">
                     Sin Asignar <span class="badge bg-danger ms-1">{{ $stats['pending_assignment'] }}</span>
                 </button>
-                <button wire:click="$set('view_tab', 'recent')" class="btn {{ $view_tab === 'recent' ? 'btn-primary' : 'btn-white' }} fw-bold">Recientes</button>
             </div>
         </div>
     </div>
@@ -80,6 +79,12 @@
                     </select>
                 </div>
                 <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0"><i data-feather="calendar" style="width: 14px;"></i></span>
+                        <input type="date" wire:model.live="filter_date" class="form-control border-0 bg-light px-0">
+                    </div>
+                </div>
+                <div class="col-md-2">
                     <select wire:model.live="view_tab" class="form-select border-0 bg-light">
                         <option value="all">Filtro: Todos</option>
                         <option value="pending">Solo Sin Asignar</option>
@@ -123,15 +128,18 @@
                                 <div class="text-muted xsmall">{{ Str::limit($package->description ?: 'Sin descripción', 40) }}</div>
                             </td>
                             <td>
-                                @if($package->customer)
+                                @if($package->customer && $package->customer->user)
                                     <div class="fw-bold leading-none text-dark">{{ $package->customer->user->name }}</div>
+                                    <div class="text-primary small font-black uppercase">{{ $package->customer->box_number }}</div>
+                                @elseif($package->customer)
+                                    <div class="text-danger small fw-bold">Usuario no vinculado</div>
                                     <div class="text-primary small font-black uppercase">{{ $package->customer->box_number }}</div>
                                 @else
                                     <span class="badge bg-warning-light text-warning fw-bold text-uppercase" style="font-size: 0.6rem;">PENDIENTE ASIGNAR</span>
                                 @endif
                             </td>
                             <td>
-                                <div class="small fw-bold text-dark">{{ $package->warehouse->code }}</div>
+                                <div class="small fw-bold text-dark">{{ $package->warehouse->code ?? 'N/A' }}</div>
                                 @if($package->shelf_location)
                                     <div class="badge bg-light text-dark border xsmall"><i data-feather="map-pin" class="me-1" style="width: 10px;"></i> {{ $package->shelf_location }}</div>
                                 @endif
