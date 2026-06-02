@@ -36,9 +36,11 @@ class SmartReceptionHub extends Component
     // Dashboard State
     public $mode = 'manual'; // 'manual', 'ocr'
     public $auto_invoice = true;
+    public $isModal = false;
 
-    public function mount()
+    public function mount($isModal = false)
     {
+        $this->isModal = $isModal;
         $this->warehouse_id = Warehouse::first()->id ?? null;
     }
 

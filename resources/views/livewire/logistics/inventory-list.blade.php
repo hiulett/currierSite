@@ -301,13 +301,22 @@
     <!-- Modals (Kept from existing functionality) -->
     <div class="modal fade" id="modalReceivePackage" tabindex="-1" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
-                <div class="modal-header bg-primary text-white p-4">
-                    <h5 class="modal-title uppercase font-black tracking-widest text-white">Nuevo Ingreso Inteligente</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 1.25rem; overflow: hidden; background: #f8fafc;">
+                <div class="modal-header border-0 p-4 d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle text-white flex-shrink-0" 
+                             style="width: 40px; height: 40px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15);">
+                            <i data-feather="zap" style="width: 18px; height: 18px; color: #60a5fa;"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title font-black uppercase text-white mb-0" style="letter-spacing: .05em; font-size: 1.1rem;">Nuevo Ingreso de Carga</h5>
+                            <p class="text-white-50 small mb-0 font-bold" style="font-size: 0.75rem;">Centro de Recepción Inteligente</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="opacity: 0.8; filter: invert(1);"></button>
                 </div>
-                <div class="modal-body p-0">
-                    @livewire('logistics.smart-reception-hub')
+                <div class="modal-body p-4" style="background: #f8fafc;">
+                    @livewire('logistics.smart-reception-hub', ['isModal' => true])
                 </div>
             </div>
         </div>
