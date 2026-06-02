@@ -9,6 +9,25 @@
                     </div>
                     <div class="card-body p-3">
                         <div class="mb-3">
+                            <label class="form-label small font-bold text-uppercase text-muted">Buscar Cliente (Nombre/PTY)</label>
+                            <div class="position-relative">
+                                <input type="text" wire:model.live="customer_search"
+                                       class="form-control fw-bold border-2"
+                                       placeholder="Escriba para buscar...">
+                                @if(!empty($customer_results))
+                                    <div class="position-absolute w-100 bg-white shadow-lg border rounded-3 mt-1" style="z-index: 1050;">
+                                        @foreach($customer_results as $result)
+                                            <button type="button" wire:click="selectCustomer({{ $result->id }})" class="w-100 text-start p-3 border-bottom btn btn-white hover:bg-light rounded-0">
+                                                <div class="fw-black text-dark">{{ $result->user->name }}</div>
+                                                <div class="small text-primary font-bold">{{ $result->box_number }}</div>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label small font-bold text-uppercase">Nº Casillero</label>
                             <input type="text" wire:model.live="box_number"
                                    class="form-control form-control-lg fw-black text-primary border-2"

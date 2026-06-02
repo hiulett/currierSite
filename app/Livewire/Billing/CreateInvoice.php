@@ -14,17 +14,20 @@ class CreateInvoice extends Component
     public $found_customer = null;
     public $items = [];
     public $notes;
-    public $tax_percent = 7;
+    public $tax_percent = 0; // Cambiado de 7 a 0 por defecto
     public $selectedPackages = [];
     public $availablePackages = [];
+    public $customer_search = '';
+    public $customer_results = [];
 
     public function mount()
     {
         $this->addItem();
 
-        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $tenant = \App\Models\Tenant::current();
         if ($tenant) {
-            $this->tax_percent = $tenant->settings_json['default_tax'] ?? 7;
+            // Intentar leer 'default_tax', si no existe buscar 'tax_rate' (compatibilidad con seeder), si no 0.
+            $this->tax_percent = $tenant->settings_json['default_tax'] ?? ($tenant->settings_json['tax_rate'] ?? 0);
         }
 
         if (request()->has('customer')) {
@@ -43,6 +46,31 @@ class CreateInvoice extends Component
             $this->loadAvailablePackages();
         } else {
             $this->availablePackages = [];
+        }
+    }
+
+    public function updatedCustomerSearch($value)
+    {
+        if (strlen($value) < 2) {
+            $this->customer_results = [];
+            return;
+        }
+
+        $this->customer_results = Customer::with('user')
+            ->where('box_number', 'like', '%' . $value . '%')
+            ->orWhereHas('user', function($q) use ($value) {
+                $q->where('name', 'like', '%' . $value . '%');
+            })->take(5)->get();
+    }
+
+    public function selectCustomer($id)
+    {
+        $this->found_customer = Customer::with('user')->find($id);
+        if ($this->found_customer) {
+            $this->box_number = $this->found_customer->box_number;
+            $this->customer_search = '';
+            $this->customer_results = [];
+            $this->loadAvailablePackages();
         }
     }
 
@@ -160,7 +188,7 @@ class CreateInvoice extends Component
 
         session()->flash('message', 'Factura generada exitosamente.');
         // return redirect()->route('billing.index'); // We don't want to redirect anymore
-        $this->reset(['box_number', 'found_customer', 'items', 'notes']);
+        $this->reset(['box_number', 'found_customer', 'items', 'notes', 'customer_search', 'customer_results']);
         $this->addItem();
     }
 

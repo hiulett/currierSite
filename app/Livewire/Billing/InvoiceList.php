@@ -4,8 +4,10 @@ namespace App\Livewire\Billing;
 
 use Livewire\Component;
 use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use App\Models\Customer;
 use App\Models\Package;
+use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use App\Traits\WithSorting;
 
@@ -90,6 +92,20 @@ class InvoiceList extends Component
         }
     }
 
+    public function deleteInvoice($invoiceId)
+    {
+        $invoice = Invoice::find($invoiceId);
+        if ($invoice) {
+            // Restore customer balance if it was unpaid
+            if ($invoice->status === 'unpaid' && $invoice->customer) {
+                $invoice->customer->decrement('balance', $invoice->total);
+            }
+
+            $invoice->delete();
+            session()->flash('message', 'Factura eliminada con éxito.');
+        }
+    }
+
     public function sendEmail($invoiceId)
     {
         $invoice = Invoice::with('customer.user')->find($invoiceId);
@@ -97,6 +113,32 @@ class InvoiceList extends Component
             $invoice->customer->user->notify(new \App\Notifications\InvoiceSent($invoice));
             session()->flash('message', 'Factura enviada por correo a ' . $invoice->customer->user->email);
         }
+    }
+
+    /**
+     * Elimina todas las facturas del tenant actual para iniciar producción.
+     */
+    public function purgeInvoices()
+    {
+        // Seguridad: Solo permitir a administradores
+        if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'superadmin') {
+            session()->flash('error', 'No tiene permisos para realizar esta acción.');
+            return;
+        }
+
+        $tenantId = session('tenant_id');
+
+        DB::transaction(function() use ($tenantId) {
+            // 1. Resetear balances de clientes (opcional, pero recomendado para fresh start)
+            Customer::where('tenant_id', $tenantId)->update(['balance' => 0]);
+
+            // 2. Eliminar items y facturas
+            InvoiceItem::where('tenant_id', $tenantId)->delete();
+            Invoice::where('tenant_id', $tenantId)->delete();
+        });
+
+        session()->flash('message', 'Todas las facturas de prueba han sido eliminadas. El sistema está listo para producción.');
+        $this->resetPage();
     }
 
     protected function getInvoicesQuery()

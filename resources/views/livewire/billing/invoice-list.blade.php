@@ -185,6 +185,9 @@
                                             <i class="align-middle" data-feather="slash" style="width: 14px;"></i>
                                         </button>
                                     @endif
+                                    <button wire:click="deleteInvoice({{ $invoice->id }})" wire:confirm="¿Seguro que deseas eliminar permanentemente esta factura?" class="btn btn-sm btn-outline-danger" title="Eliminar Factura">
+                                        <i class="align-middle" data-feather="trash-2" style="width: 14px;"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>

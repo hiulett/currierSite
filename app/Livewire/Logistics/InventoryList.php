@@ -222,8 +222,8 @@ class InventoryList extends Component
             $total_weight = $packages->sum('weight');
             $subtotal = ($total_weight * $this->custom_rate) + (float)$this->extra_charge;
 
-            $tenant = \App\Models\Tenant::find(session('tenant_id'));
-            $tax_percent = $tenant->settings_json['default_tax'] ?? 7;
+            $tenant = \App\Models\Tenant::current();
+            $tax_percent = $tenant->settings_json['default_tax'] ?? ($tenant->settings_json['tax_rate'] ?? 0);
             $tax = $subtotal * ($tax_percent / 100);
             $total = $subtotal + $tax;
 
