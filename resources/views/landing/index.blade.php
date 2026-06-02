@@ -1,80 +1,76 @@
 <x-layouts.landing>
     <!-- Hero Section -->
     <div class="relative overflow-hidden bg-white pt-32 pb-20 lg:pt-48 lg:pb-32">
-        <!-- Parallax Background Elements -->
+        <!-- Parallax Background Elements (Enriched) -->
         <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
-            <!-- Main Background Image with Parallax (Fixed Visibility) -->
-            <div class="parallax-element absolute inset-0 z-0 opacity-10" data-speed="0.02">
+            <!-- Global Background Image with Scroll Parallax -->
+            <div class="absolute inset-0 z-0 opacity-[0.15] scale-110" id="global-parallax-bg">
                 <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80&w=2000" alt="World Map Background" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white"></div>
             </div>
 
-            <!-- Animated Blobs -->
-            <div class="parallax-element absolute top-[10%] left-[5%] w-64 h-64 bg-blue-100 rounded-full blur-3xl opacity-60" data-speed="0.05"></div>
-            <div class="parallax-element absolute top-[40%] right-[10%] w-96 h-96 bg-indigo-100 rounded-full blur-3xl opacity-60" data-speed="0.1"></div>
-            <div class="parallax-element absolute bottom-[10%] left-[15%] w-80 h-80 bg-purple-50 rounded-full blur-3xl opacity-60" data-speed="0.08"></div>
-
-            <!-- Floating Decorative Shapes -->
-            <div class="parallax-element absolute top-1/4 right-1/4 w-12 h-12 bg-blue-500/10 rounded-lg rotate-12" data-speed="0.15"></div>
-            <div class="parallax-element absolute bottom-1/3 left-1/4 w-16 h-16 border-2 border-indigo-500/10 rounded-full" data-speed="0.12"></div>
+            <!-- Animated Blobs (More prominent) -->
+            <div class="parallax-element absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-[120px] opacity-70" data-speed="0.03"></div>
+            <div class="parallax-element absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-indigo-100/50 rounded-full blur-[120px] opacity-70" data-speed="0.06"></div>
         </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center">
-                <div class="hero-badge inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-bold mb-6 border border-blue-100 uppercase tracking-wider">
+                <div class="hero-badge inline-flex items-center px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-bold mb-8 border border-blue-100 uppercase tracking-wider shadow-sm">
                     <span class="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-ping"></span>
-                    Nuevo: Recepción Inteligente 2.0
+                    Powering 200+ Logistics Hubs
                 </div>
-                <h1 class="hero-title text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-[1.1]">
-                    La infraestructura digital para tu <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Courier del futuro</span>
+                <h1 class="hero-title text-6xl md:text-8xl font-black tracking-tighter text-slate-900 mb-8 leading-[0.95]">
+                    Escala tu Courier al <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">Siguiente Nivel</span>
                 </h1>
-                <p class="hero-subtitle max-w-2xl mx-auto text-lg md:text-xl text-slate-600 mb-10 leading-relaxed">
-                    Automatiza recepciones, fideliza clientes y gestiona tus finanzas en una sola plataforma Cloud diseñada para escalar tu negocio logístico.
+                <p class="hero-subtitle max-w-3xl mx-auto text-xl md:text-2xl text-slate-600 mb-12 leading-relaxed font-medium">
+                    La infraestructura digital definitiva. Automatización total desde Miami hasta la puerta de tu cliente, diseñada para empresas que no se detienen.
                 </p>
-                <div class="hero-buttons flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="#pricing" class="inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-full text-white bg-blue-600 hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all transform hover:-translate-y-1">
-                        Ver Planes
+                <div class="hero-buttons flex flex-col sm:flex-row justify-center gap-6">
+                    <a href="#pricing" class="inline-flex items-center justify-center px-10 py-5 border border-transparent text-xl font-bold rounded-full text-white bg-blue-600 hover:bg-blue-700 shadow-2xl shadow-blue-300 transition-all transform hover:-translate-y-1 hover:scale-105">
+                        Empezar Ahora
                     </a>
-                    <a href="#contact" class="inline-flex items-center justify-center px-8 py-4 border border-slate-200 text-lg font-bold rounded-full text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition-all transform hover:-translate-y-1">
-                        Solicitar Demo
+                    <a href="#contact" class="inline-flex items-center justify-center px-10 py-5 border-2 border-slate-200 text-xl font-bold rounded-full text-slate-700 bg-white/80 backdrop-blur hover:bg-slate-50 shadow-sm transition-all transform hover:-translate-y-1">
+                        Agendar Demo
                     </a>
                 </div>
 
                 <!-- Product Preview Mockup -->
-                <div class="hero-mockup mt-20 relative max-w-5xl mx-auto">
-                    <div class="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-[2.5rem] blur-2xl z-0"></div>
-                    <div class="relative bg-slate-900 rounded-[2rem] p-2 shadow-2xl border border-white/10 overflow-hidden transform perspective-1000">
-                        <div class="bg-slate-800 rounded-[1.5rem] overflow-hidden border border-slate-700">
-                            <div class="h-10 bg-slate-800 border-b border-slate-700 flex items-center px-6 gap-2">
-                                <div class="w-3 h-3 rounded-full bg-red-500/40"></div>
-                                <div class="w-3 h-3 rounded-full bg-yellow-500/40"></div>
-                                <div class="w-3 h-3 rounded-full bg-green-500/40"></div>
-                                <div class="ml-4 h-4 w-64 bg-slate-700/50 rounded-full"></div>
+                <div class="hero-mockup mt-24 relative max-w-6xl mx-auto">
+                    <div class="absolute -inset-10 bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 rounded-[4rem] blur-3xl z-0"></div>
+                    <div class="relative bg-slate-900 rounded-[3rem] p-3 shadow-[0_40px_100px_-15px_rgba(0,0,0,0.3)] border border-white/20 overflow-hidden transform perspective-2000">
+                        <div class="bg-slate-800 rounded-[2rem] overflow-hidden border border-slate-700">
+                            <div class="h-12 bg-slate-900/80 border-b border-slate-700 flex items-center px-8 gap-2 backdrop-blur">
+                                <div class="w-3.5 h-3.5 rounded-full bg-red-500/40"></div>
+                                <div class="w-3.5 h-3.5 rounded-full bg-yellow-500/40"></div>
+                                <div class="w-3.5 h-3.5 rounded-full bg-green-500/40"></div>
+                                <div class="ml-6 h-5 w-80 bg-slate-700/30 rounded-full"></div>
                             </div>
-                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=2000" alt="Dashboard Analytics" class="w-full opacity-90 hover:opacity-100 transition-opacity duration-700">
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=2400" alt="LogiSaaS Admin Dashboard" class="w-full opacity-95 group-hover:opacity-100 transition-opacity duration-1000">
                         </div>
                     </div>
 
-                    <!-- Floating Stat Cards -->
-                    <div class="parallax-element absolute -right-8 top-1/4 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 hidden lg:block" data-speed="0.2">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    <!-- Floating Stat Cards (Enhanced) -->
+                    <div class="parallax-element absolute -right-12 top-1/4 bg-white/90 backdrop-blur p-6 rounded-[2rem] shadow-2xl border border-white hidden lg:block" data-speed="0.15">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-green-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-green-200">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                             </div>
                             <div>
-                                <div class="text-xs text-slate-500 font-bold uppercase">ROI Promedio</div>
-                                <div class="text-lg font-black text-slate-900">+42%</div>
+                                <div class="text-xs text-slate-500 font-black uppercase tracking-widest">Revenue Growth</div>
+                                <div class="text-2xl font-black text-slate-900">+128%</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="parallax-element absolute -left-12 bottom-1/4 bg-white p-4 rounded-2xl shadow-xl border border-slate-100 hidden lg:block" data-speed="0.15">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    <div class="parallax-element absolute -left-16 bottom-1/4 bg-slate-900/90 backdrop-blur p-6 rounded-[2rem] shadow-2xl border border-white/10 hidden lg:block text-white" data-speed="0.12">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/50">
+                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                             </div>
                             <div>
-                                <div class="text-xs text-slate-500 font-bold uppercase">Paquetes Hoy</div>
-                                <div class="text-lg font-black text-slate-900">1,284</div>
+                                <div class="text-xs text-blue-400 font-black uppercase tracking-widest">Active Packages</div>
+                                <div class="text-2xl font-black">42,591</div>
                             </div>
                         </div>
                     </div>
@@ -83,15 +79,48 @@
         </div>
     </div>
 
-    <!-- Trust Section -->
-    <div class="py-12 bg-white border-y border-slate-50">
+    <!-- Trust Section (With Logo Marquee effect potential) -->
+    <div class="py-20 bg-slate-50 border-y border-slate-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p class="text-center text-sm font-bold text-slate-400 uppercase tracking-[0.2em] mb-8">Empresas que confían en nuestra tecnología</p>
-            <div class="flex flex-wrap justify-center gap-12 md:gap-24 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
-                <span class="text-2xl font-black text-slate-900 italic">LOGY EXPRESS</span>
-                <span class="text-2xl font-black text-slate-900">FASTBOX</span>
-                <span class="text-2xl font-black text-slate-900">GLOBAL CARGO</span>
-                <span class="text-2xl font-black text-slate-900">PANAMA COURIER</span>
+            <p class="text-center text-xs font-black text-slate-400 uppercase tracking-[0.4em] mb-12">Trusted by logistics leaders across Latin America</p>
+            <div class="flex flex-wrap justify-center items-center gap-16 md:gap-32 opacity-50">
+                <span class="text-3xl font-black text-slate-900 hover:opacity-100 transition-opacity cursor-default tracking-tighter">LOGY EXPRESS</span>
+                <span class="text-3xl font-black text-slate-900 hover:opacity-100 transition-opacity cursor-default tracking-tighter">FASTBOX.PA</span>
+                <span class="text-3xl font-black text-slate-900 hover:opacity-100 transition-opacity cursor-default tracking-tighter">GLOBAL CARGO</span>
+                <span class="text-3xl font-black text-slate-900 hover:opacity-100 transition-opacity cursor-default tracking-tighter">COURIER.IO</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- How it Works (New Content) -->
+    <div class="py-24 bg-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-20 reveal">
+                <h2 class="text-base font-bold text-blue-600 uppercase tracking-widest mb-2">Tu camino al éxito</h2>
+                <p class="text-4xl md:text-5xl font-black text-slate-900">Configuración en tiempo récord</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="text-center p-8 reveal" data-delay="0.1">
+                    <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-black">1</div>
+                    <h4 class="font-bold text-xl mb-4">Registro</h4>
+                    <p class="text-slate-500 text-sm">Crea tu cuenta corporativa y configura tu subdominio en segundos.</p>
+                </div>
+                <div class="text-center p-8 reveal" data-delay="0.2">
+                    <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-black">2</div>
+                    <h4 class="font-bold text-xl mb-4">White Label</h4>
+                    <p class="text-slate-500 text-sm">Sube tu logo y colores. La plataforma se convierte en tu propia App.</p>
+                </div>
+                <div class="text-center p-8 reveal" data-delay="0.3">
+                    <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-black">3</div>
+                    <h4 class="font-bold text-xl mb-4">Bodegas</h4>
+                    <p class="text-slate-500 text-sm">Configura tus direcciones en Miami y sucursales locales.</p>
+                </div>
+                <div class="text-center p-8 reveal" data-delay="0.4">
+                    <div class="w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-black">4</div>
+                    <h4 class="font-bold text-xl mb-4">¡A volar!</h4>
+                    <p class="text-slate-500 text-sm">Tus clientes ya pueden registrarse y pre-alertar carga.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -394,6 +423,18 @@
                     },
                     ease: "power2.out"
                 });
+            });
+
+            // Global Background Scroll Parallax
+            gsap.to("#global-parallax-bg", {
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: true
+                },
+                y: 300,
+                ease: "none"
             });
 
             // Scroll Reveal Animations
