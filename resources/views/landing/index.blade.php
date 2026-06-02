@@ -154,47 +154,102 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Startup Plan -->
                     <div class="pricing-card p-10 rounded-[3rem] border border-slate-200 bg-white flex flex-col transition-all hover:border-blue-600 group reveal">
-                        <h3 class="text-xl font-bold text-slate-900 mb-2">Startup</h3>
-                        <p class="text-slate-500 text-sm mb-8 italic">Para agencias nuevas que están despegando.</p>
+                        <h3 class="text-2xl font-black text-slate-900 mb-2">Startup</h3>
+                        <p class="text-slate-500 text-sm mb-8 italic">Ideal para iniciar con todo el poder operativo.</p>
                         <div class="mb-10 flex flex-col justify-center h-20">
                             <h4 class="text-3xl font-black text-slate-900">Consultar Precio</h4>
-                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Ideal para iniciar</p>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Incluye todas las funciones core</p>
                         </div>
-                        <ul class="space-y-4 mb-10 flex-grow">
-                            <li class="flex items-center text-slate-600 font-bold text-sm"><svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Hasta 500 paquetes/mes</li>
-                            <li class="flex items-center text-slate-600 font-bold text-sm"><svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> 1 Sucursal (Miami + Local)</li>
+                        <ul class="space-y-3 mb-10 flex-grow">
+                            @php
+                                $coreFeatures = [
+                                    'Recepción Inteligente con OCR',
+                                    'Gestión de Bodegas y Racks',
+                                    'Consolidación y Reempaque',
+                                    'Portal de Clientes Premium',
+                                    'Facturación Automática',
+                                    'Billetera Digital (Wallet)',
+                                    'Sistema de Casilleros (ID)',
+                                    'Fotos de Carga al Recibir',
+                                    'Tracking en Tiempo Real',
+                                    'Firma Digital de Entrega',
+                                    'Gestión Multi-sucursal',
+                                    'Panel Financiero (ROI)',
+                                    'Sistema de Pre-Alertas',
+                                    'Cupones y Promociones',
+                                    'Sistema de Puntos y Niveles',
+                                    'Constructor de Sitios (CMS)'
+                                ];
+                            @endphp
+                            @foreach($coreFeatures as $feature)
+                            <li class="flex items-start text-slate-600 font-bold text-[0.75rem]">
+                                <svg class="w-3.5 h-3.5 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                {{ $feature }}
+                            </li>
+                            @endforeach
                         </ul>
-                        <a href="#contact" class="block text-center py-4 px-8 rounded-full border-2 border-slate-900 font-black text-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-all">Más información</a>
+                        <a href="#contact" class="block text-center py-4 px-8 rounded-full border-2 border-slate-900 font-black text-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-all">Empezar ahora</a>
                     </div>
 
                     <!-- Business Plan -->
                     <div class="pricing-card p-10 rounded-[3rem] bg-slate-900 flex flex-col shadow-2xl shadow-blue-900/20 relative transition-all transform hover:-translate-y-2 text-white reveal">
                         <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white text-xs font-black px-8 py-2 rounded-full uppercase tracking-[0.2em] shadow-lg">RECOMENDADO</div>
-                        <h3 class="text-xl font-bold mb-2">Business</h3>
-                        <p class="text-slate-400 text-sm mb-8 italic">La solución completa para potencias regionales.</p>
+                        <h3 class="text-2xl font-black mb-2">Business</h3>
+                        <p class="text-slate-400 text-sm mb-8 italic">Automatización y comunicación avanzada.</p>
                         <div class="mb-10 flex flex-col justify-center h-20">
                             <h4 class="text-3xl font-black text-white">Consultar Precio</h4>
                             <p class="text-blue-400 text-xs font-bold uppercase tracking-widest">El plan más potente</p>
                         </div>
-                        <ul class="space-y-4 mb-10 flex-grow">
-                            <li class="flex items-center text-slate-300 font-bold text-sm"><svg class="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Paquetes Ilimitados</li>
-                            <li class="flex items-center text-slate-300 font-bold text-sm"><svg class="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Fidelización Activa</li>
-                            <li class="flex items-center text-slate-300 font-bold text-sm"><svg class="w-5 h-5 text-blue-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Marca Blanca Total</li>
+                        <ul class="space-y-3 mb-10 flex-grow">
+                            <li class="flex items-start text-blue-400 font-black text-sm mb-4">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                TODO LO DEL PLAN STARTUP +
+                            </li>
+                            <li class="flex items-start text-white font-bold text-sm">
+                                <svg class="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Notificaciones por WhatsApp
+                            </li>
+                            <li class="flex items-start text-white font-bold text-sm">
+                                <svg class="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Alertas de Saldo vía WhatsApp
+                            </li>
+                            <li class="flex items-start text-white font-bold text-sm">
+                                <svg class="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                ChatBot de Tracking Básico
+                            </li>
+                            <li class="flex items-start text-white font-bold text-sm">
+                                <svg class="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Marca Blanca Total (CNAME)
+                            </li>
                         </ul>
                         <a href="#contact" class="block text-center py-4 px-8 rounded-full bg-blue-600 text-white font-black hover:bg-blue-700 shadow-xl shadow-blue-600/30 transition-all">Solicitar Cotización</a>
                     </div>
 
                     <!-- Enterprise Plan -->
                     <div class="pricing-card p-10 rounded-[3rem] border border-slate-200 bg-white flex flex-col transition-all hover:border-blue-600 group reveal">
-                        <h3 class="text-xl font-bold text-slate-900 mb-2">Enterprise</h3>
-                        <p class="text-slate-500 text-sm mb-8 italic">Para redes multi-país y flujos corporativos.</p>
+                        <h3 class="text-2xl font-black text-slate-900 mb-2">Enterprise</h3>
+                        <p class="text-slate-500 text-sm mb-8 italic">Para corporaciones multi-país.</p>
                         <div class="mb-10 flex flex-col justify-center h-20">
                             <h4 class="text-3xl font-black text-blue-600">Personalizado</h4>
                             <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Hecho a tu medida</p>
                         </div>
-                        <ul class="space-y-4 mb-10 flex-grow">
-                            <li class="flex items-center text-slate-600 font-bold text-sm"><svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> API & Webhooks Access</li>
-                            <li class="flex items-center text-slate-600 font-bold text-sm"><svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Soporte Prioritario 24/7</li>
+                        <ul class="space-y-3 mb-10 flex-grow">
+                            <li class="flex items-start text-blue-600 font-black text-sm mb-4">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
+                                TODO LO DEL PLAN BUSINESS +
+                            </li>
+                            <li class="flex items-start text-slate-900 font-black text-sm">
+                                <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                App Móvil (iOS & Android)
+                            </li>
+                            <li class="flex items-start text-slate-900 font-black text-sm">
+                                <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 7.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                API Access & Webhooks
+                            </li>
+                            <li class="flex items-start text-slate-900 font-black text-sm">
+                                <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                Soporte Prioritario 24/7
+                            </li>
                         </ul>
                         <a href="#contact" class="block text-center py-4 px-8 rounded-full border-2 border-slate-900 font-black text-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-all">Hablar con Ventas</a>
                     </div>
