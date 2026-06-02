@@ -22,6 +22,8 @@ class Invoice extends Model
         'currency',
         'due_date',
         'paid_at',
+        'payment_method',
+        'payment_reference',
         'notes',
     ];
 

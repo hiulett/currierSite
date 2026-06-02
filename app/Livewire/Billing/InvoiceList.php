@@ -15,24 +15,78 @@ class InvoiceList extends Component
 
     public $search = '';
     public $filter_status = '';
+    public $filter_date_from = '';
+    public $filter_date_to = '';
+    public $selected_invoices = [];
+    public $selectAll = false;
 
-    protected $queryString = ['search', 'filter_status'];
+    // Payment Modal State
+    public $is_paying = false;
+    public $payment_method = 'cash';
+    public $payment_reference = '';
+    public $single_invoice_id = null;
+
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'filter_status' => ['except' => ''],
+        'filter_date_from' => ['except' => ''],
+        'filter_date_to' => ['except' => ''],
+    ];
 
     protected $listeners = ['invoice-saved' => '$refresh'];
 
-    public function markAsPaid($invoiceId)
+    public function updatedSelectAll($value)
     {
-        $invoice = Invoice::find($invoiceId);
-        if ($invoice && $invoice->status !== 'paid') {
+        if ($value) {
+            $this->selected_invoices = $this->getInvoicesQuery()->pluck('id')->map(fn($id) => (string)$id)->toArray();
+        } else {
+            $this->selected_invoices = [];
+        }
+    }
+
+    public function openPaymentModal($invoiceId = null)
+    {
+        $this->single_invoice_id = $invoiceId;
+        if (!$invoiceId && empty($this->selected_invoices)) {
+            session()->flash('error', 'Seleccione al menos una factura.');
+            return;
+        }
+        $this->is_paying = true;
+    }
+
+    public function confirmPayment()
+    {
+        $ids = $this->single_invoice_id ? [$this->single_invoice_id] : $this->selected_invoices;
+        $invoices = Invoice::whereIn('id', $ids)->where('status', '!=', 'paid')->get();
+
+        foreach ($invoices as $invoice) {
             $invoice->update([
                 'status' => 'paid',
                 'paid_at' => now(),
+                'payment_method' => $this->payment_method,
+                'payment_reference' => $this->payment_reference,
             ]);
 
-            // Update customer balance if necessary
-            $invoice->customer->decrement('balance', $invoice->total);
+            if ($invoice->customer) {
+                $invoice->customer->decrement('balance', $invoice->total);
+            }
+        }
 
-            session()->flash('message', 'Factura ' . $invoice->number . ' marcada como pagada.');
+        $this->reset(['is_paying', 'selected_invoices', 'selectAll', 'single_invoice_id', 'payment_reference']);
+        session()->flash('message', count($invoices) . ' factura(s) procesadas como pagadas.');
+    }
+
+    public function voidInvoice($invoiceId)
+    {
+        $invoice = Invoice::find($invoiceId);
+        if ($invoice && $invoice->status !== 'cancelled') {
+            // Restore customer balance if it was unpaid
+            if ($invoice->status === 'unpaid') {
+                $invoice->customer->decrement('balance', $invoice->total);
+            }
+
+            $invoice->update(['status' => 'cancelled']);
+            session()->flash('message', 'Factura ' . $invoice->number . ' ha sido anulada.');
         }
     }
 
@@ -45,13 +99,16 @@ class InvoiceList extends Component
         }
     }
 
-    public function render()
+    protected function getInvoicesQuery()
     {
         $query = Invoice::with('customer.user')
             ->where(function($query) {
                 $query->where('number', 'like', '%' . $this->search . '%')
                       ->orWhereHas('customer', function($q) {
-                          $q->where('box_number', 'like', '%' . $this->search . '%');
+                          $q->where('box_number', 'like', '%' . $this->search . '%')
+                            ->orWhereHas('user', function($u) {
+                                $u->where('name', 'like', '%' . $this->search . '%');
+                            });
                       });
             });
 
@@ -62,47 +119,20 @@ class InvoiceList extends Component
             $query->where('status', $this->filter_status);
         }
 
-        $invoices = $this->applySorting($query)
-            ->paginate(10);
-
-        $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%m');
-
-        // Prepare Revenue Chart Data for Billing Screen
-        $monthlyRevenue = Invoice::selectRaw("$monthFormat as month, sum(total) as total")
-            ->where('created_at', '>=', now()->startOfYear())
-            ->where('status', '!=', 'cancelled')
-            ->groupBy('month')
-            ->orderBy('month')
-            ->pluck('total', 'month')
-            ->toArray();
-
-        $revenueData = array_fill(1, 12, 0);
-        $projectionData = array_fill(1, 12, 0);
-        $totalMonthsWithData = 0;
-        $sumRevenue = 0;
-
-        foreach ($monthlyRevenue as $month => $total) {
-            $monthIdx = (int)$month;
-            $revenueData[$monthIdx] = $total;
-            $sumRevenue += $total;
-            if ($total > 0) $totalMonthsWithData++;
+        if ($this->filter_date_from) {
+            $query->whereDate('created_at', '>=', $this->filter_date_from);
         }
 
-        // Advanced Prediction Model
-        $avgRevenue = $totalMonthsWithData > 0 ? ($sumRevenue / $totalMonthsWithData) : 100;
-        $newCustomersWeight = Customer::where('created_at', '>=', now()->subDays(30))->count();
-        $packageVolume = Package::where('created_at', '>=', now()->subDays(30))->count();
-
-        $momentumFactor = 1 + (($newCustomersWeight * 0.05) + ($packageVolume * 0.001));
-        $currentMonth = (int)date('m');
-
-        for ($i = 1; $i <= 12; $i++) {
-            if ($i < $currentMonth) {
-                $projectionData[$i] = round($avgRevenue, 2);
-            } else {
-                $projectionData[$i] = round($avgRevenue * pow($momentumFactor, ($i - $currentMonth + 1)), 2);
-            }
+        if ($this->filter_date_to) {
+            $query->whereDate('created_at', '<=', $this->filter_date_to);
         }
+
+        return $query;
+    }
+
+    public function render()
+    {
+        $invoices = $this->applySorting($this->getInvoicesQuery())->paginate(15);
 
         $stats = [
             'total_invoiced' => Invoice::where('status', '!=', 'cancelled')->sum('total'),
@@ -110,6 +140,7 @@ class InvoiceList extends Component
             'paid_today' => Invoice::where('status', 'paid')->whereDate('paid_at', now()->today())->sum('total'),
             'pending_count' => Invoice::where('status', 'unpaid')->count(),
             'overdue_count' => Invoice::where('status', 'unpaid')->where('due_date', '<', now()->today())->count(),
+            'cancelled_count' => Invoice::where('status', 'cancelled')->count(),
         ];
 
         $tenant = \App\Models\Tenant::find(session('tenant_id'));
@@ -119,8 +150,6 @@ class InvoiceList extends Component
             'invoices' => $invoices,
             'stats' => $stats,
             'currency' => $currency,
-            'revenueData' => array_values($revenueData),
-            'projectionData' => array_values($projectionData),
         ])->layout('components.layouts.app');
     }
 }
