@@ -1,4 +1,5 @@
 <x-layouts.landing>
+    <!-- Version: 1.0.2 - Force Sync -->
     <!-- GLOBAL PARALLAX BACKGROUND -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <!-- Main World Map (Increased visibility) -->
