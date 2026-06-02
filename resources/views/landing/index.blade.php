@@ -29,7 +29,8 @@
             'Configuración de Marca Blanca',
             'Gestión de Roles y Permisos',
             'Sistema de Puntos (Loyalty)',
-            'Motor de Promociones y Cupones'
+            'Motor de Promociones y Cupones',
+            'Constructor de Sitios (CMS)'
         ];
 
         $whatsappFeatures = [
@@ -105,13 +106,163 @@
             </div>
         </div>
 
+        <!-- How it Works -->
+        <div class="py-24 bg-white relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-20 reveal">
+                    <h2 class="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4">Eficiencia Garantizada</h2>
+                    <h3 class="text-4xl md:text-5xl font-black text-slate-900">Tu camino al éxito</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+                    <div class="p-8 reveal shadow-sm hover:shadow-md transition-all bg-slate-50 rounded-3xl border border-slate-100">
+                        <div class="w-16 h-16 bg-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-black">1</div>
+                        <h4 class="font-bold text-xl mb-4">Registro</h4>
+                        <p class="text-slate-500 text-sm leading-relaxed">Crea tu cuenta corporativa y configura tu subdominio en segundos.</p>
+                    </div>
+                    <div class="p-8 reveal shadow-sm hover:shadow-md transition-all bg-slate-50 rounded-3xl border border-slate-100" data-delay="0.1">
+                        <div class="w-16 h-16 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-black">2</div>
+                        <h4 class="font-bold text-xl mb-4">White Label</h4>
+                        <p class="text-slate-500 text-sm leading-relaxed">Sube tu logo y colores. La plataforma se convierte en tu propia App.</p>
+                    </div>
+                    <div class="p-8 reveal shadow-sm hover:shadow-md transition-all bg-slate-50 rounded-3xl border border-slate-100" data-delay="0.2">
+                        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-black">3</div>
+                        <h4 class="font-bold text-xl mb-4">Bodegas</h4>
+                        <p class="text-slate-500 text-sm leading-relaxed">Configura tus direcciones en Miami y sucursales locales.</p>
+                    </div>
+                    <div class="p-8 reveal shadow-sm hover:shadow-md transition-all bg-slate-900 text-white rounded-3xl border border-slate-800" data-delay="0.3">
+                        <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-black">4</div>
+                        <h4 class="font-bold text-xl mb-4 italic">¡Lanzamiento!</h4>
+                        <p class="text-slate-400 text-sm leading-relaxed">Tus clientes ya pueden registrarse y mover carga.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Bento Grid -->
+        <div id="features" class="py-24 bg-slate-50 relative overflow-hidden">
+            <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[800px] h-[800px] border border-blue-100 rounded-full opacity-20 pointer-events-none" id="parallax-circle-1"></div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-20 reveal">
+                    <h2 class="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4">Innovación Constante</h2>
+                    <h3 class="text-3xl md:text-5xl font-black text-slate-900 mb-6">Módulos de Clase Mundial</h3>
+                    <p class="max-w-2xl mx-auto text-slate-600">Herramientas intuitivas que potencian cada área de tu negocio.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto">
+                    <!-- Smart Reception -->
+                    <div class="md:col-span-8 bg-white p-12 rounded-[3rem] border border-slate-200 overflow-hidden relative group reveal">
+                        <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-blue-50 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000"></div>
+                        <div class="relative z-10">
+                            <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-8 shadow-xl shadow-blue-200">
+                                <i class="fas fa-barcode text-3xl"></i>
+                            </div>
+                            <h3 class="text-3xl font-black text-slate-900 mb-6 tracking-tight">Recepción Inteligente 2.0</h3>
+                            <p class="text-slate-600 text-lg leading-relaxed max-w-lg">Procesa paquetes en milisegundos. Nuestro motor OCR extrae trackings y asocia paquetes a clientes automáticamente sin errores manuales.</p>
+                        </div>
+                    </div>
+
+                    <!-- Loyalty -->
+                    <div class="md:col-span-4 bg-slate-900 p-12 rounded-[3rem] text-white relative group overflow-hidden reveal">
+                        <div class="w-14 h-14 bg-indigo-500 rounded-2xl flex items-center justify-center mb-8 shadow-xl">
+                            <i class="fas fa-star text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-black mb-6 tracking-tight">Fidelización</h3>
+                        <p class="text-slate-400 leading-relaxed">Sistema de puntos y niveles gamificado para retener a tus clientes.</p>
+                    </div>
+
+                    <!-- Customer Portal -->
+                    <div class="md:col-span-5 bg-white p-12 rounded-[3rem] border border-slate-200 shadow-sm reveal">
+                         <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-8">
+                            <i class="fas fa-user-circle text-3xl"></i>
+                        </div>
+                        <h3 class="text-3xl font-black text-slate-900 mb-6 tracking-tight">Portal Premium</h3>
+                        <p class="text-slate-600 text-lg leading-relaxed">Pre-alertas, calculadora de fletes y billetera digital en una interfaz móvil intuitiva.</p>
+                    </div>
+
+                    <!-- Payments -->
+                    <div class="md:col-span-7 bg-blue-600 p-12 rounded-[3rem] text-white relative group overflow-hidden reveal">
+                        <h3 class="text-4xl font-black mb-6 tracking-tight">Pagos & Finanzas</h3>
+                        <p class="text-blue-100 text-xl leading-relaxed max-w-md">Integración nativa con Yappy, PayPal y Stripe. Genera facturas automáticas y gestiona cobros sin esfuerzo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Solutions Section -->
+        <div id="solutions" class="py-24 bg-white relative overflow-hidden border-y border-slate-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center mb-20 reveal">
+                    <h2 class="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4">Soluciones para cada etapa</h2>
+                    <h3 class="text-4xl font-black text-slate-900 tracking-tighter">Adaptado a tu modelo de negocio</h3>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <div class="bg-slate-50 p-12 rounded-[3rem] border border-slate-200 shadow-sm reveal hover:bg-white hover:shadow-xl transition-all">
+                        <h4 class="text-2xl font-black text-slate-900 mb-6 italic uppercase">Casilleros Virtuales</h4>
+                        <p class="text-slate-600 leading-relaxed">Ideal para agencias que ofrecen dirección en USA. Gestión automática de Locker ID y notificaciones de llegada.</p>
+                    </div>
+                    <div class="bg-slate-50 p-12 rounded-[3rem] border border-slate-200 shadow-sm reveal hover:bg-white hover:shadow-xl transition-all" data-delay="0.1">
+                        <h4 class="text-2xl font-black text-slate-900 mb-6 italic uppercase">Agencias de Carga</h4>
+                        <p class="text-slate-600 leading-relaxed">Consolidación, reempaque y manejo de carga pesada con reportes de inventario exhaustivos.</p>
+                    </div>
+                    <div class="bg-slate-50 p-12 rounded-[3rem] border border-slate-200 shadow-sm reveal hover:bg-white hover:shadow-xl transition-all" data-delay="0.2">
+                        <h4 class="text-2xl font-black text-slate-900 mb-6 italic uppercase">Última Milla</h4>
+                        <p class="text-slate-600 leading-relaxed">Optimización de rutas de entrega local, firmas digitales y gestión de mensajeros en campo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integrations Section -->
+        <div class="py-32 bg-slate-900 text-white relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                    <div class="reveal">
+                        <h2 class="text-blue-500 font-bold uppercase tracking-widest text-sm mb-4">Ecosistema Conectado</h2>
+                        <h3 class="text-5xl font-black mb-8 tracking-tighter leading-tight">Integraciones que impulsan tu crecimiento</h3>
+                        <p class="text-slate-400 text-xl leading-relaxed mb-12">LogiSaaS se conecta con los gigantes del e-commerce y pagos para que tu operación nunca se detenga.</p>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-4">
+                                <i class="fab fa-amazon text-2xl text-blue-400"></i>
+                                <span class="font-bold">Amazon OCR</span>
+                            </div>
+                            <div class="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-4">
+                                <i class="fab fa-stripe text-2xl text-blue-400"></i>
+                                <span class="font-bold">Stripe</span>
+                            </div>
+                            <div class="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-4">
+                                <i class="fab fa-paypal text-2xl text-blue-400"></i>
+                                <span class="font-bold">PayPal</span>
+                            </div>
+                            <div class="bg-white/5 p-6 rounded-3xl border border-white/10 flex items-center gap-4">
+                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center font-black text-xs">Y</div>
+                                <span class="font-bold">Yappy PA</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative reveal flex justify-center">
+                         <div class="w-80 h-80 bg-blue-600/20 rounded-full blur-[100px] absolute"></div>
+                         <div class="grid grid-cols-3 gap-4">
+                            @for($i=0; $i<9; $i++)
+                            <div class="w-20 h-20 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center">
+                                <div class="w-10 h-10 bg-blue-600/30 rounded-xl"></div>
+                            </div>
+                            @endfor
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Pricing Section -->
         <div id="pricing" class="py-24 bg-white relative overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20 reveal">
                     <h2 class="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4">Transparencia Total</h2>
                     <p class="text-4xl md:text-6xl font-black text-slate-900 mb-8 tracking-tighter">Planes que crecen contigo</p>
-                    <p class="max-w-2xl mx-auto text-slate-500">Potencia tu Courier con el inventario de funciones más avanzado del mercado.</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
@@ -154,7 +305,7 @@
                                 {{ $feature }}
                             </li>
                             @endforeach
-                            <li class="h-px bg-white/10 my-4"></li>
+                            <li class="h-px bg-white/10 my-4 text-blue-400 text-xs text-center uppercase tracking-widest font-black">Novedad WhatsApp</li>
                             @foreach($whatsappFeatures as $extra)
                             <li class="flex items-start text-white font-black text-[0.75rem]">
                                 <svg class="w-4 h-4 text-green-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -188,7 +339,7 @@
                                 {{ $extra }}
                             </li>
                             @endforeach
-                            <li class="h-px bg-slate-200 my-4"></li>
+                            <li class="h-px bg-slate-200 my-4 text-blue-600 text-xs text-center uppercase tracking-widest font-black">Exclusivo Enterprise</li>
                             @foreach($mobileFeatures as $extra)
                             <li class="flex items-start text-slate-900 font-black text-[0.75rem]">
                                 <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
@@ -214,7 +365,7 @@
                     <div x-data="{ open: false }" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden transition-all shadow-sm hover:shadow-md">
                         <button @click="open = !open" class="w-full px-8 py-6 text-left flex justify-between items-center group">
                             <span class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">¿Cómo funciona la marca blanca?</span>
-                            <svg class="w-5 h-5 text-slate-400 transition-transform duration-500" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-500" :class="{'rotate-180': open}"></i>
                         </button>
                         <div x-show="open" x-cloak class="px-8 pb-6 text-slate-600 leading-relaxed text-sm">
                             Podrás configurar tu logo, colores corporativos y conectar tu propio dominio. Tus clientes entrarán a "tu-empresa.com" y verán una plataforma que parece desarrollada 100% por ti.
@@ -224,7 +375,7 @@
                     <div x-data="{ open: false }" class="bg-white rounded-[2rem] border border-slate-200 overflow-hidden transition-all shadow-sm hover:shadow-md">
                         <button @click="open = !open" class="w-full px-8 py-6 text-left flex justify-between items-center group">
                             <span class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors">¿Es compatible con bodegas en Miami?</span>
-                            <svg class="w-5 h-5 text-slate-400 transition-transform duration-500" :class="{'rotate-180': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <i class="fas fa-chevron-down text-slate-400 transition-transform duration-500" :class="{'rotate-180': open}"></i>
                         </button>
                         <div x-show="open" x-cloak class="px-8 pb-6 text-slate-600 leading-relaxed text-sm">
                             Sí, está diseñado específicamente para el flujo Miami -> Latinoamérica. Permite gestionar recepciones en el extranjero y tránsitos internacionales hasta el destino final.
