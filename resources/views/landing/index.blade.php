@@ -40,6 +40,8 @@
         ];
 
         $mobileFeatures = [
+            'App Móvil para Entregas a Domicilio',
+            'Gestión de Perfiles para Conductores',
             'Aplicación Móvil Nativa (iOS & Android)',
             'Notificaciones Push en Tiempo Real',
             'Escaneo de Tracking vía Móvil',
