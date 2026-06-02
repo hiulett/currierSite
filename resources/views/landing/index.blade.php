@@ -13,37 +13,37 @@
     </div>
 
     @php
-        $coreFeatures = [
-            'Recepción Inteligente con OCR',
-            'Gestión de Bodegas y Racks',
+        $realCoreFeatures = [
+            'Recepción Inteligente (Smart Reception)',
+            'Motor de Extracción OCR e IA',
+            'Gestión Masiva de Manifiestos',
+            'Control de Inventario y Racks',
             'Consolidación y Reempaque',
-            'Portal de Clientes Premium',
-            'Facturación Automática',
+            'Sistema de Casilleros (Locker ID)',
+            'Última Milla y Firma Digital',
+            'Facturación Electrónica Automática',
             'Billetera Digital (Wallet)',
-            'Sistema de Casilleros (ID)',
-            'Fotos de Carga al Recibir',
-            'Tracking en Tiempo Real',
-            'Firma Digital de Entrega',
-            'Gestión Multi-sucursal',
-            'Panel Financiero (ROI)',
-            'Sistema de Pre-Alertas',
-            'Cupones y Promociones',
-            'Sistema de Puntos y Niveles',
-            'Constructor de Sitios (CMS)'
+            'Checkout Stripe / PayPal / Yappy',
+            'Dashboard Premium de Clientes',
+            'Sistema de Pre-Alertas Online',
+            'Configuración de Marca Blanca',
+            'Gestión de Roles y Permisos',
+            'Sistema de Puntos (Loyalty)',
+            'Motor de Promociones y Cupones'
         ];
 
-        $businessExtras = [
-            'Notificaciones automáticas por WhatsApp',
-            'Alertas de Saldo vía WhatsApp',
-            'ChatBot de Tracking vía WhatsApp',
-            'Marca Blanca Total (CNAME)'
+        $whatsappFeatures = [
+            'Notificaciones de Llegada vía WhatsApp',
+            'Alertas de Saldo Pendiente (WA)',
+            'ChatBot de Rastreo Automatizado',
+            'Comunicación Directa desde el Admin'
         ];
 
-        $enterpriseExtras = [
+        $mobileFeatures = [
             'Aplicación Móvil Nativa (iOS & Android)',
-            'API Access & Webhooks',
-            'Soporte Prioritario 24/7',
-            'Consultoría de Implementación'
+            'Notificaciones Push en Tiempo Real',
+            'Escaneo de Tracking vía Móvil',
+            'Soporte Prioritario y Consultoría'
         ];
     @endphp
 
@@ -80,7 +80,7 @@
                                     <div class="w-3 h-3 rounded-full bg-red-500/40"></div>
                                     <div class="w-3 h-3 rounded-full bg-yellow-500/40"></div>
                                     <div class="w-3 h-3 rounded-full bg-green-500/40"></div>
-                                    <div class="ml-6 h-4 w-64 bg-slate-700/30 rounded-full"></div>
+                                    <div class="ml-6 h-5 w-80 bg-slate-700/30 rounded-full"></div>
                                 </div>
                                 <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=2400" alt="Admin Dashboard" class="w-full opacity-95 group-hover:opacity-100 transition-opacity duration-1000">
                             </div>
@@ -103,100 +103,28 @@
             </div>
         </div>
 
-        <!-- Features Bento Grid -->
-        <div id="features" class="py-24 bg-white relative overflow-hidden">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="text-center mb-20 reveal">
-                    <h2 class="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4">Potencial Ilimitado</h2>
-                    <h3 class="text-4xl md:text-6xl font-black text-slate-900 mb-8 tracking-tighter leading-tight">Todo lo que necesitas <br>para dominar el mercado</h3>
-                    <p class="max-w-2xl mx-auto text-slate-600 text-lg leading-relaxed">Módulos robustos diseñados por expertos en logística internacional.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto">
-                    <!-- Smart Reception -->
-                    <div class="md:col-span-8 bg-slate-50 p-10 rounded-[3rem] border border-slate-200 overflow-hidden relative group reveal">
-                        <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000"></div>
-                        <div class="relative z-10">
-                            <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-blue-200">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                            </div>
-                            <h3 class="text-3xl font-black text-slate-900 mb-4 tracking-tight">Recepción Inteligente 2.0</h3>
-                            <p class="text-slate-600 text-lg leading-relaxed max-w-lg">Procesa miles de paquetes sin errores. Extracción automática de trackings vía OCR, validación de clientes y pesaje sincronizado en tiempo real.</p>
-                        </div>
-                    </div>
-
-                    <!-- CRM & Loyalty -->
-                    <div class="md:col-span-4 bg-slate-900 p-10 rounded-[3rem] text-white relative group overflow-hidden reveal">
-                        <div class="w-14 h-14 bg-indigo-500 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-indigo-500/50">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-black mb-4 tracking-tight">Fidelización Activa</h3>
-                        <p class="text-slate-400 text-lg leading-relaxed">Sistema de puntos por libra y niveles de cliente para maximizar la retención.</p>
-                    </div>
-
-                    <!-- Customer Portal -->
-                    <div class="md:col-span-5 bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm reveal">
-                         <div class="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                        </div>
-                        <h3 class="text-2xl font-black text-slate-900 mb-4 tracking-tight">Experiencia del Cliente</h3>
-                        <p class="text-slate-600 text-lg leading-relaxed">Un portal moderno donde tus clientes gestionan pre-alertas, pagos y tracking con un solo clic.</p>
-                    </div>
-
-                    <!-- Payments & Automation -->
-                    <div class="md:col-span-7 bg-blue-600 p-10 rounded-[3rem] text-white relative group overflow-hidden reveal">
-                        <div class="absolute -right-10 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
-                        <h3 class="text-3xl font-black mb-4 tracking-tight">Facturación & Pagos</h3>
-                        <p class="text-blue-100 text-lg leading-relaxed max-w-md">Integración directa con Yappy, PayPal y Stripe. Olvídate de los errores de cobro y automatiza tus flujos de caja.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Solutions Section -->
-        <div id="solutions" class="py-24 bg-slate-50 relative overflow-hidden">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="text-center mb-20 reveal">
-                    <h2 class="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4">Soluciones para cada etapa</h2>
-                    <h3 class="text-4xl font-black text-slate-900 tracking-tighter">Adaptado a tu modelo de negocio</h3>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    <div class="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm reveal">
-                        <h4 class="text-xl font-black text-slate-900 mb-4 italic uppercase">Casilleros Virtuales</h4>
-                        <p class="text-slate-600 leading-relaxed text-sm">Ideal para agencias que ofrecen dirección en USA. Gestión automática de Locker ID y notificaciones de llegada.</p>
-                    </div>
-                    <div class="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm reveal" data-delay="0.1">
-                        <h4 class="text-xl font-black text-slate-900 mb-4 italic uppercase">Agencias de Carga</h4>
-                        <p class="text-slate-600 leading-relaxed text-sm">Consolidación, reempaque y manejo de carga pesada con reportes de inventario exhaustivos.</p>
-                    </div>
-                    <div class="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm reveal" data-delay="0.2">
-                        <h4 class="text-xl font-black text-slate-900 mb-4 italic uppercase">Última Milla</h4>
-                        <p class="text-slate-600 leading-relaxed text-sm">Optimización de rutas de entrega local, firmas digitales y gestión de mensajeros.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Pricing Section -->
         <div id="pricing" class="py-24 bg-white relative overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-20 reveal">
                     <h2 class="text-blue-600 font-bold uppercase tracking-widest text-sm mb-4">Transparencia Total</h2>
                     <p class="text-4xl md:text-6xl font-black text-slate-900 mb-8 tracking-tighter">Planes que crecen contigo</p>
+                    <p class="max-w-2xl mx-auto text-slate-500">Potencia tu Courier con el inventario de funciones más avanzado del mercado.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                     <!-- Startup Plan -->
                     <div class="pricing-card p-10 rounded-[3rem] border border-slate-200 bg-white flex flex-col transition-all hover:border-blue-600 group reveal">
-                        <h3 class="text-2xl font-black text-slate-900 mb-2">Startup</h3>
-                        <p class="text-slate-500 text-sm mb-8 italic">Poder operativo completo para iniciar.</p>
+                        <div class="mb-8">
+                            <h3 class="text-2xl font-black text-slate-900 mb-2">Startup</h3>
+                            <p class="text-slate-500 text-sm italic">Poder operativo completo para iniciar.</p>
+                        </div>
                         <div class="mb-10 flex flex-col justify-center h-20">
                             <h4 class="text-3xl font-black text-slate-900">Consultar Precio</h4>
-                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Incluye funciones core</p>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Funciones Core de LogySaaS</p>
                         </div>
                         <ul class="space-y-3 mb-10 flex-grow">
-                            @foreach($coreFeatures as $feature)
+                            @foreach($realCoreFeatures as $feature)
                             <li class="flex items-start text-slate-600 font-bold text-[0.75rem]">
                                 <svg class="w-3.5 h-3.5 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 {{ $feature }}
@@ -209,20 +137,23 @@
                     <!-- Business Plan -->
                     <div class="pricing-card p-10 rounded-[3rem] bg-slate-900 flex flex-col shadow-2xl shadow-blue-900/20 relative transition-all transform hover:-translate-y-2 text-white reveal">
                         <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white text-xs font-black px-8 py-2 rounded-full uppercase tracking-[0.2em] shadow-lg">RECOMENDADO</div>
-                        <h3 class="text-2xl font-black mb-2">Business</h3>
-                        <p class="text-slate-400 text-sm mb-8 italic">Automatización y comunicación avanzada.</p>
+                        <div class="mb-8">
+                            <h3 class="text-2xl font-black mb-2">Business</h3>
+                            <p class="text-slate-400 text-sm italic">Automatización y comunicación 24/7.</p>
+                        </div>
                         <div class="mb-10 flex flex-col justify-center h-20">
                             <h4 class="text-3xl font-black text-white">Consultar Precio</h4>
-                            <p class="text-blue-400 text-xs font-bold uppercase tracking-widest">Comunicación Total</p>
+                            <p class="text-blue-400 text-xs font-bold uppercase tracking-widest">Todo Incluido + WhatsApp</p>
                         </div>
                         <ul class="space-y-3 mb-10 flex-grow">
-                            @foreach($coreFeatures as $feature)
+                            @foreach($realCoreFeatures as $feature)
                             <li class="flex items-start text-slate-400 font-bold text-[0.75rem]">
                                 <svg class="w-3.5 h-3.5 text-blue-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 {{ $feature }}
                             </li>
                             @endforeach
-                            @foreach($businessExtras as $extra)
+                            <li class="h-px bg-white/10 my-4"></li>
+                            @foreach($whatsappFeatures as $extra)
                             <li class="flex items-start text-white font-black text-[0.75rem]">
                                 <svg class="w-4 h-4 text-green-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 {{ $extra }}
@@ -234,28 +165,31 @@
 
                     <!-- Enterprise Plan -->
                     <div class="pricing-card p-10 rounded-[3rem] border border-slate-200 bg-white flex flex-col transition-all hover:border-blue-600 group reveal">
-                        <h3 class="text-2xl font-black text-slate-900 mb-2">Enterprise</h3>
-                        <p class="text-slate-500 text-sm mb-8 italic">Para corporaciones multi-país.</p>
+                        <div class="mb-8">
+                            <h3 class="text-2xl font-black text-slate-900 mb-2">Enterprise</h3>
+                            <p class="text-slate-500 text-sm italic">Para corporaciones y redes globales.</p>
+                        </div>
                         <div class="mb-10 flex flex-col justify-center h-20">
                             <h4 class="text-3xl font-black text-blue-600">Personalizado</h4>
-                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Ecosistema Completo</p>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Ecosistema Móvil y API</p>
                         </div>
                         <ul class="space-y-3 mb-10 flex-grow">
-                            @foreach($coreFeatures as $feature)
+                            @foreach($realCoreFeatures as $feature)
                             <li class="flex items-start text-slate-600 font-bold text-[0.75rem]">
                                 <svg class="w-3.5 h-3.5 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 {{ $feature }}
                             </li>
                             @endforeach
-                            @foreach($businessExtras as $extra)
+                            @foreach($whatsappFeatures as $extra)
                             <li class="flex items-start text-slate-600 font-bold text-[0.75rem]">
-                                <svg class="w-3.5 h-3.5 text-green-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <svg class="w-3.5 h-3.5 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                                 {{ $extra }}
                             </li>
                             @endforeach
-                            @foreach($enterpriseExtras as $extra)
+                            <li class="h-px bg-slate-200 my-4"></li>
+                            @foreach($mobileFeatures as $extra)
                             <li class="flex items-start text-slate-900 font-black text-[0.75rem]">
-                                <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                                 {{ $extra }}
                             </li>
                             @endforeach
