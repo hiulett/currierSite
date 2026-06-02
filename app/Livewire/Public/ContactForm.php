@@ -10,6 +10,7 @@ class ContactForm extends Component
 {
     public $name;
     public $email;
+    public $phone;
     public $company;
     public $message;
     public $successMessage = '';
@@ -17,6 +18,7 @@ class ContactForm extends Component
     protected $rules = [
         'name' => 'required|min:3',
         'email' => 'required|email',
+        'phone' => 'required|min:7',
         'company' => 'required|min:2',
     ];
 
@@ -28,13 +30,14 @@ class ContactForm extends Component
         Lead::create([
             'name' => $this->name,
             'email' => $this->email,
+            'phone' => $this->phone,
             'company' => $this->company,
             'message' => $this->message,
         ]);
 
-        Log::info("Nuevo Lead de la Landing: {$this->name} - {$this->email} - {$this->company}");
+        Log::info("Nuevo Lead de la Landing: {$this->name} - {$this->email} - {$this->phone} - {$this->company}");
 
-        $this->reset(['name', 'email', 'company', 'message']);
+        $this->reset(['name', 'email', 'phone', 'company', 'message']);
         $this->successMessage = '¡Gracias! Hemos recibido tu solicitud. Un experto te contactará pronto.';
     }
 

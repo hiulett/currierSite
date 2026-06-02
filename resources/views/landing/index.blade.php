@@ -352,8 +352,9 @@
                 <div class="pricing-card p-10 rounded-[2.5rem] border border-slate-200 bg-white flex flex-col transition-all hover:border-blue-200 hover:shadow-xl">
                     <h3 class="text-xl font-bold text-slate-900 mb-2">Enterprise</h3>
                     <p class="text-slate-500 text-sm mb-6">Para redes multi-país y flujos complejos.</p>
-                    <div class="mb-6">
-                        <span class="text-5xl font-extrabold tracking-tighter text-slate-900">Custom</span>
+                    <div class="mb-6 h-16 flex flex-col justify-center">
+                        <h4 class="text-3xl font-black text-blue-600">Contáctanos</h4>
+                        <p class="text-slate-400 text-xs uppercase font-bold tracking-widest">Cotización a medida</p>
                     </div>
                     <ul class="space-y-4 mb-8 flex-grow">
                         <li class="flex items-center text-sm text-slate-600 font-medium">

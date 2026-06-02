@@ -7,7 +7,7 @@
     @endif
 
     <form wire:submit.prevent="submit" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
+        <div class="md:col-span-2">
             <label class="block text-sm font-bold text-slate-700 mb-2">Nombre Completo</label>
             <input wire:model="name" type="text" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all @error('name') border-red-500 @enderror" placeholder="Juan Pérez">
             @error('name') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
@@ -16,6 +16,11 @@
             <label class="block text-sm font-bold text-slate-700 mb-2">Correo Corporativo</label>
             <input wire:model="email" type="email" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all @error('email') border-red-500 @enderror" placeholder="juan@tuempresa.com">
             @error('email') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+        </div>
+        <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2">Teléfono / WhatsApp</label>
+            <input wire:model="phone" type="text" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all @error('phone') border-red-500 @enderror" placeholder="+507 6000-0000">
+            @error('phone') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
         </div>
         <div class="md:col-span-2">
             <label class="block text-sm font-bold text-slate-700 mb-2">Nombre de la Empresa</label>
