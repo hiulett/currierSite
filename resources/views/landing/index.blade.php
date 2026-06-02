@@ -1,8 +1,7 @@
 <x-layouts.landing>
-    <!-- Version: 1.0.2 - Force Sync -->
     <!-- GLOBAL PARALLAX BACKGROUND -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-        <!-- Main World Map (Increased visibility) -->
+        <!-- Main World Map -->
         <div class="absolute inset-0 opacity-20 scale-125" id="global-parallax-bg">
             <img src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80&w=2400" alt="World Map Background" class="w-full h-full object-cover">
         </div>
@@ -12,6 +11,41 @@
         <div class="parallax-element absolute top-[40%] right-[-10%] w-[600px] h-[600px] bg-indigo-100/30 rounded-full blur-[120px]" data-speed="0.06"></div>
         <div class="parallax-element absolute bottom-[-10%] left-[10%] w-[700px] h-[700px] bg-purple-50/50 rounded-full blur-[120px]" data-speed="0.04"></div>
     </div>
+
+    @php
+        $coreFeatures = [
+            'Recepción Inteligente con OCR',
+            'Gestión de Bodegas y Racks',
+            'Consolidación y Reempaque',
+            'Portal de Clientes Premium',
+            'Facturación Automática',
+            'Billetera Digital (Wallet)',
+            'Sistema de Casilleros (ID)',
+            'Fotos de Carga al Recibir',
+            'Tracking en Tiempo Real',
+            'Firma Digital de Entrega',
+            'Gestión Multi-sucursal',
+            'Panel Financiero (ROI)',
+            'Sistema de Pre-Alertas',
+            'Cupones y Promociones',
+            'Sistema de Puntos y Niveles',
+            'Constructor de Sitios (CMS)'
+        ];
+
+        $businessExtras = [
+            'Notificaciones automáticas por WhatsApp',
+            'Alertas de Saldo vía WhatsApp',
+            'ChatBot de Tracking vía WhatsApp',
+            'Marca Blanca Total (CNAME)'
+        ];
+
+        $enterpriseExtras = [
+            'Aplicación Móvil Nativa (iOS & Android)',
+            'API Access & Webhooks',
+            'Soporte Prioritario 24/7',
+            'Consultoría de Implementación'
+        ];
+    @endphp
 
     <div class="relative z-10">
         <!-- Hero Section -->
@@ -29,7 +63,7 @@
                         Una plataforma SaaS integral diseñada para transformar operaciones logísticas locales en potencias internacionales. White-label, automatización y escalabilidad en un solo lugar.
                     </p>
                     <div class="hero-buttons flex flex-col sm:flex-row justify-center gap-6">
-                        <a href="#pricing" class="inline-flex items-center justify-center px-10 py-4 border border-transparent text-lg font-bold rounded-full text-white bg-blue-600 hover:bg-blue-700 shadow-2xl shadow-blue-300 transition-all transform hover:-translate-y-1">
+                        <a href="#pricing" class="inline-flex items-center justify-center px-10 py-4 border border-transparent text-lg font-bold rounded-full text-white bg-blue-600 hover:bg-blue-700 shadow-2xl shadow-blue-300 transition-all transform hover:-translate-y-1 hover:scale-105">
                             Ver Planes
                         </a>
                         <a href="#contact" class="inline-flex items-center justify-center px-10 py-4 border-2 border-slate-200 text-lg font-bold rounded-full text-slate-700 bg-white/80 backdrop-blur hover:bg-slate-50 shadow-sm transition-all transform hover:-translate-y-1">
@@ -156,32 +190,12 @@
                     <!-- Startup Plan -->
                     <div class="pricing-card p-10 rounded-[3rem] border border-slate-200 bg-white flex flex-col transition-all hover:border-blue-600 group reveal">
                         <h3 class="text-2xl font-black text-slate-900 mb-2">Startup</h3>
-                        <p class="text-slate-500 text-sm mb-8 italic">Ideal para iniciar con todo el poder operativo.</p>
+                        <p class="text-slate-500 text-sm mb-8 italic">Poder operativo completo para iniciar.</p>
                         <div class="mb-10 flex flex-col justify-center h-20">
                             <h4 class="text-3xl font-black text-slate-900">Consultar Precio</h4>
-                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Incluye todas las funciones core</p>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Incluye funciones core</p>
                         </div>
                         <ul class="space-y-3 mb-10 flex-grow">
-                            @php
-                                $coreFeatures = [
-                                    'Recepción Inteligente con OCR',
-                                    'Gestión de Bodegas y Racks',
-                                    'Consolidación y Reempaque',
-                                    'Portal de Clientes Premium',
-                                    'Facturación Automática',
-                                    'Billetera Digital (Wallet)',
-                                    'Sistema de Casilleros (ID)',
-                                    'Fotos de Carga al Recibir',
-                                    'Tracking en Tiempo Real',
-                                    'Firma Digital de Entrega',
-                                    'Gestión Multi-sucursal',
-                                    'Panel Financiero (ROI)',
-                                    'Sistema de Pre-Alertas',
-                                    'Cupones y Promociones',
-                                    'Sistema de Puntos y Niveles',
-                                    'Constructor de Sitios (CMS)'
-                                ];
-                            @endphp
                             @foreach($coreFeatures as $feature)
                             <li class="flex items-start text-slate-600 font-bold text-[0.75rem]">
                                 <svg class="w-3.5 h-3.5 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -199,29 +213,21 @@
                         <p class="text-slate-400 text-sm mb-8 italic">Automatización y comunicación avanzada.</p>
                         <div class="mb-10 flex flex-col justify-center h-20">
                             <h4 class="text-3xl font-black text-white">Consultar Precio</h4>
-                            <p class="text-blue-400 text-xs font-bold uppercase tracking-widest">El plan más potente</p>
+                            <p class="text-blue-400 text-xs font-bold uppercase tracking-widest">Comunicación Total</p>
                         </div>
                         <ul class="space-y-3 mb-10 flex-grow">
-                            <li class="flex items-start text-blue-400 font-black text-sm mb-4">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                                TODO LO DEL PLAN STARTUP +
+                            @foreach($coreFeatures as $feature)
+                            <li class="flex items-start text-slate-400 font-bold text-[0.75rem]">
+                                <svg class="w-3.5 h-3.5 text-blue-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                {{ $feature }}
                             </li>
-                            <li class="flex items-start text-white font-bold text-sm">
-                                <svg class="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Notificaciones por WhatsApp
+                            @endforeach
+                            @foreach($businessExtras as $extra)
+                            <li class="flex items-start text-white font-black text-[0.75rem]">
+                                <svg class="w-4 h-4 text-green-400 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                {{ $extra }}
                             </li>
-                            <li class="flex items-start text-white font-bold text-sm">
-                                <svg class="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Alertas de Saldo vía WhatsApp
-                            </li>
-                            <li class="flex items-start text-white font-bold text-sm">
-                                <svg class="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                ChatBot de Tracking Básico
-                            </li>
-                            <li class="flex items-start text-white font-bold text-sm">
-                                <svg class="w-5 h-5 text-green-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                Marca Blanca Total (CNAME)
-                            </li>
+                            @endforeach
                         </ul>
                         <a href="#contact" class="block text-center py-4 px-8 rounded-full bg-blue-600 text-white font-black hover:bg-blue-700 shadow-xl shadow-blue-600/30 transition-all">Solicitar Cotización</a>
                     </div>
@@ -232,25 +238,27 @@
                         <p class="text-slate-500 text-sm mb-8 italic">Para corporaciones multi-país.</p>
                         <div class="mb-10 flex flex-col justify-center h-20">
                             <h4 class="text-3xl font-black text-blue-600">Personalizado</h4>
-                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Hecho a tu medida</p>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Ecosistema Completo</p>
                         </div>
                         <ul class="space-y-3 mb-10 flex-grow">
-                            <li class="flex items-start text-blue-600 font-black text-sm mb-4">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
-                                TODO LO DEL PLAN BUSINESS +
+                            @foreach($coreFeatures as $feature)
+                            <li class="flex items-start text-slate-600 font-bold text-[0.75rem]">
+                                <svg class="w-3.5 h-3.5 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                {{ $feature }}
                             </li>
-                            <li class="flex items-start text-slate-900 font-black text-sm">
-                                <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
-                                App Móvil (iOS & Android)
+                            @endforeach
+                            @foreach($businessExtras as $extra)
+                            <li class="flex items-start text-slate-600 font-bold text-[0.75rem]">
+                                <svg class="w-3.5 h-3.5 text-green-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                {{ $extra }}
                             </li>
-                            <li class="flex items-start text-slate-900 font-black text-sm">
-                                <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 7.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                                API Access & Webhooks
+                            @endforeach
+                            @foreach($enterpriseExtras as $extra)
+                            <li class="flex items-start text-slate-900 font-black text-[0.75rem]">
+                                <svg class="w-4 h-4 text-blue-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                {{ $extra }}
                             </li>
-                            <li class="flex items-start text-slate-900 font-black text-sm">
-                                <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                                Soporte Prioritario 24/7
-                            </li>
+                            @endforeach
                         </ul>
                         <a href="#contact" class="block text-center py-4 px-8 rounded-full border-2 border-slate-900 font-black text-slate-900 group-hover:bg-slate-900 group-hover:text-white transition-all">Hablar con Ventas</a>
                     </div>
