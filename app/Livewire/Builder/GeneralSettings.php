@@ -40,9 +40,9 @@ class GeneralSettings extends Component
 
     public function mount()
     {
-        $tenant = Tenant::find(session('tenant_id')) ?? Tenant::first();
+        $tenant = Tenant::current();
         if (!$tenant) {
-             return; // Or handle empty DB
+             return;
         }
         $settings = $tenant->settings_json ?? [];
 
@@ -77,7 +77,7 @@ class GeneralSettings extends Component
 
     public function updatedForcePasswordChange($value)
     {
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::current();
         $settings = $tenant->settings_json ?? [];
         $settings['force_password_change'] = (bool) $value;
         $tenant->update(['settings_json' => $settings]);
@@ -85,7 +85,7 @@ class GeneralSettings extends Component
 
     public function updatedServiceAirEnabled($value)
     {
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::current();
         $settings = $tenant->settings_json ?? [];
         $settings['service_air_enabled'] = (bool) $value;
         $tenant->update(['settings_json' => $settings]);
@@ -93,7 +93,7 @@ class GeneralSettings extends Component
 
     public function updatedServiceMaritimeEnabled($value)
     {
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::current();
         $settings = $tenant->settings_json ?? [];
         $settings['service_maritime_enabled'] = (bool) $value;
         $tenant->update(['settings_json' => $settings]);
@@ -108,7 +108,7 @@ class GeneralSettings extends Component
             'locale' => 'required|in:es,en',
         ]);
 
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::current();
         $settings = $tenant->settings_json ?? [];
 
         $settings['currency'] = strtoupper($this->currency);
@@ -141,7 +141,7 @@ class GeneralSettings extends Component
             'air_phone' => 'required|string',
         ]);
 
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::current();
         $settings = $tenant->settings_json ?? [];
 
         $settings['box_number_prefix_air'] = strtoupper($this->box_number_prefix_air);
@@ -169,7 +169,7 @@ class GeneralSettings extends Component
             'maritime_phone' => 'required|string',
         ]);
 
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::current();
         $settings = $tenant->settings_json ?? [];
 
         $settings['box_number_prefix_maritime'] = strtoupper($this->box_number_prefix_maritime);
@@ -191,7 +191,7 @@ class GeneralSettings extends Component
             'box_number_counter' => 'required|integer|min:0',
         ]);
 
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::current();
         $settings = $tenant->settings_json ?? [];
 
         $settings['box_number_counter'] = (int) $this->box_number_counter;

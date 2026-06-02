@@ -18,7 +18,9 @@ class MailSettings extends Component
 
     public function mount()
     {
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::current();
+        if (!$tenant) return;
+
         $settings = $tenant->settings_json ?? [];
 
         $this->mail_host = $settings['mail_host'] ?? '';
@@ -33,7 +35,7 @@ class MailSettings extends Component
 
     public function save()
     {
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::current();
         $settings = $tenant->settings_json ?? [];
 
         $settings['mail_host'] = trim($this->mail_host);

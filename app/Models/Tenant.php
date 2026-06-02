@@ -144,4 +144,19 @@ class Tenant extends Model
         $this->update(['settings_json' => $settings]);
         return $settings['box_number_counter'];
     }
+
+    /**
+     * Get the current active tenant from session or auth context.
+     */
+    public static function current()
+    {
+        $tenantId = session('tenant_id') ?? (auth()->check() ? auth()->user()->tenant_id : null);
+
+        if ($tenantId) {
+            return self::find($tenantId);
+        }
+
+        // Fallback for development or missing session
+        return self::first();
+    }
 }
