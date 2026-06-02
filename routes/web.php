@@ -54,7 +54,11 @@ use App\Http\Controllers\LandingController;
 // Public Routes
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/calculadora', DutyCalculator::class)->name('public.calculator');
-// Route::get('/tracking', TrackingSearch::class)->name('public.tracking');
+
+// TEMPORARY SYNC ROUTE (Remove after use)
+Route::get('/sync-export-packages', function() {
+    return \App\Models\Package::withoutGlobalScopes()->get();
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
