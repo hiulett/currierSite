@@ -26,7 +26,8 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
@@ -37,50 +38,67 @@
     @livewireStyles
 </head>
 <body class="font-sans antialiased bg-white text-slate-900">
-    <div class="min-h-screen">
+    <div class="min-h-screen font-jakarta">
         <!-- Navigation -->
-        <nav x-data="{ open: false }" class="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-slate-100">
+        <nav x-data="{ open: false, scrolled: false }"
+             @scroll.window="scrolled = (window.pageYOffset > 20)"
+             :class="scrolled ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-lg py-3' : 'bg-transparent py-5'"
+             class="fixed w-full z-50 transition-all duration-500 border-b border-transparent">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-20">
-                    <div class="flex items-center">
-                        <a href="/" class="flex-shrink-0 flex items-center gap-2">
-                            <span class="text-2xl font-extrabold tracking-tight text-blue-600">Logi<span class="text-slate-900">SaaS</span></span>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-12">
+                        <a href="/" class="group flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 group-hover:rotate-12 transition-transform duration-300">
+                                <i class="fas fa-box-open text-white text-xl"></i>
+                            </div>
+                            <span class="text-2xl font-black tracking-tighter text-slate-900">
+                                Logi<span class="text-blue-600">SaaS</span>
+                            </span>
                         </a>
-                        <div class="hidden md:ml-10 md:flex md:space-x-8">
-                            <a href="#features" class="text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-semibold transition-colors">Características</a>
-                            <a href="#solutions" class="text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-semibold transition-colors">Soluciones</a>
-                            <a href="#pricing" class="text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-semibold transition-colors">Precios</a>
-                            <a href="#faq" class="text-slate-600 hover:text-blue-600 px-3 py-2 text-sm font-semibold transition-colors">Recursos</a>
+                        <div class="hidden lg:flex items-center space-x-1">
+                            <a href="#features" class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50">Características</a>
+                            <a href="#solutions" class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50">Soluciones</a>
+                            <a href="#pricing" class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50">Precios</a>
+                            <a href="#faq" class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50">Recursos</a>
                         </div>
                     </div>
-                    <div class="hidden md:flex items-center space-x-4">
-                        <a href="{{ route('login') }}" class="text-slate-600 hover:text-slate-900 px-3 py-2 text-sm font-medium transition-colors">Iniciar Sesión</a>
-                        <a href="#contact" class="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-sm font-semibold rounded-full text-white bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-0.5">
+
+                    <div class="hidden lg:flex items-center gap-4">
+                        <a href="{{ route('login') }}" class="text-slate-600 hover:text-slate-900 px-4 py-2 text-sm font-bold transition-colors">
+                            <i class="far fa-user me-2"></i>Acceso
+                        </a>
+                        <a href="#contact" class="inline-flex items-center justify-center px-6 py-3 bg-slate-900 text-white text-sm font-bold rounded-full hover:bg-blue-600 shadow-xl shadow-slate-200 transition-all transform hover:-translate-y-1 active:scale-95 group">
                             Solicitar Demo
+                            <i class="fas fa-arrow-right ms-2 group-hover:translate-x-1 transition-transform"></i>
                         </a>
                     </div>
 
                     <!-- Mobile menu button -->
-                    <div class="flex items-center md:hidden">
-                        <button @click="open = !open" class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
-                            <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                <path :class="{'hidden': open, 'inline-flex': !open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                                <path :class="{'hidden': !open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                    <div class="flex items-center lg:hidden">
+                        <button @click="open = !open" class="inline-flex items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors">
+                            <i class="fas fa-bars text-xl" x-show="!open"></i>
+                            <i class="fas fa-times text-xl" x-show="open" x-cloak></i>
                         </button>
                     </div>
                 </div>
             </div>
 
             <!-- Mobile menu -->
-            <div x-show="open" x-cloak class="md:hidden bg-white border-b border-slate-100">
-                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Características</a>
-                    <a href="#solutions" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Soluciones</a>
-                    <a href="#pricing" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Precios</a>
-                    <a href="#faq" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Recursos</a>
-                    <a href="{{ route('login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-blue-600 hover:bg-slate-50">Iniciar Sesión</a>
-                    <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium text-blue-600 font-bold">Solicitar Demo</a>
+            <div x-show="open"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 -translate-y-4"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-cloak
+                 class="lg:hidden bg-white border-b border-slate-100 absolute w-full shadow-2xl">
+                <div class="px-4 pt-4 pb-8 space-y-2">
+                    <a href="#features" @click="open = false" class="block px-4 py-3 rounded-xl text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-all">Características</a>
+                    <a href="#solutions" @click="open = false" class="block px-4 py-3 rounded-xl text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-all">Soluciones</a>
+                    <a href="#pricing" @click="open = false" class="block px-4 py-3 rounded-xl text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-all">Precios</a>
+                    <a href="#faq" @click="open = false" class="block px-4 py-3 rounded-xl text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-all">Recursos</a>
+                    <div class="pt-4 flex flex-col gap-3">
+                        <a href="{{ route('login') }}" class="flex items-center justify-center px-4 py-3 rounded-xl text-base font-bold text-slate-700 border border-slate-200">Iniciar Sesión</a>
+                        <a href="#contact" @click="open = false" class="flex items-center justify-center px-4 py-3 rounded-xl text-base font-bold text-white bg-blue-600 shadow-lg shadow-blue-200">Solicitar Demo</a>
+                    </div>
                 </div>
             </div>
         </nav>
