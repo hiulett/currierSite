@@ -395,7 +395,12 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('load', () => {
+            if (typeof gsap === 'undefined') {
+                console.error('GSAP not loaded');
+                return;
+            }
+
             gsap.registerPlugin(ScrollTrigger);
 
             // Hero Entrance
