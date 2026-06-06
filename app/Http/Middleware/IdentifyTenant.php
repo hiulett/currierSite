@@ -26,7 +26,7 @@ class IdentifyTenant
         }
 
         // 2. [SUBDOMAIN] Extraction (Production Wildcard)
-        if (!$tenant && !in_array($subdomain, ['localhost', '127', '127.0.0.1', 'www'])) {
+        if (!$tenant && !in_array($subdomain, ['localhost', '127', '127.0.0.1', 'www', 'logysaas'])) {
             $tenant = Tenant::where('subdomain', $subdomain)->orWhere('domain', $host)->first();
         }
 
