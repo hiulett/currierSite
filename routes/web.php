@@ -57,16 +57,39 @@ Route::get('/calculadora', DutyCalculator::class)->name('public.calculator');
 
 // Tenant Gateways (Entry points for agency websites)
 Route::get('/join/{slug}', function ($slug) {
-    $tenant = \App\Models\Tenant::where('subdomain', $slug)->orWhere('login_url_slug', $slug)->firstOrFail();
+    $slug = strtolower(trim($slug));
+    $tenant = \App\Models\Tenant::where('subdomain', $slug)
+        ->orWhere('login_url_slug', $slug)
+        ->orWhere('uuid', $slug)
+        ->firstOrFail();
+
     session(['tenant_id' => $tenant->id]);
-    return redirect()->route('register')->cookie('tenant_branding_id', $tenant->id, 43200); // 30 days
+    session()->save();
+
+    return redirect()->route('register')
+        ->withCookie(cookie('tenant_branding_id', $tenant->id, 43200, null, null, true, true, false, 'Lax'));
 })->name('tenant.join');
 
 Route::get('/access/{slug}', function ($slug) {
-    $tenant = \App\Models\Tenant::where('subdomain', $slug)->orWhere('login_url_slug', $slug)->firstOrFail();
+    $slug = strtolower(trim($slug));
+    $tenant = \App\Models\Tenant::where('subdomain', $slug)
+        ->orWhere('login_url_slug', $slug)
+        ->orWhere('uuid', $slug)
+        ->firstOrFail();
+
     session(['tenant_id' => $tenant->id]);
-    return redirect()->route('login')->cookie('tenant_branding_id', $tenant->id, 43200);
+    session()->save();
+
+    return redirect()->route('login')
+        ->withCookie(cookie('tenant_branding_id', $tenant->id, 43200, null, null, true, true, false, 'Lax'));
 })->name('tenant.access');
+
+// Helper para verificar nombres de agencias en producción
+Route::get('/check-tenants', function() {
+    if (!app()->environment('production')) return abort(404);
+    $tenants = \App\Models\Tenant::all(['name', 'subdomain', 'login_url_slug']);
+    return $tenants;
+});
 
 Route::get('/debug-inventory', function() {
     $packages = \App\Models\Package::withoutGlobalScopes()->get();
