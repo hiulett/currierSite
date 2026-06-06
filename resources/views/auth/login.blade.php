@@ -95,7 +95,6 @@
             @endif
         </div>
     </div>
-    @endif
 
 </body>
 </html>
