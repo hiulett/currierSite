@@ -115,6 +115,53 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Login & Registration Customization -->
+            <div class="card shadow-sm mb-4 border-primary" style="border-left-width: 4px;">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Personalización de Pantallas de Acceso</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label font-bold small text-uppercase">Slug de URL personalizada</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light xsmall text-muted">/access/</span>
+                            <input type="text" wire:model="login_url_slug" class="form-control" placeholder="nombre-agencia">
+                        </div>
+                        <div class="form-text xsmall">Define una URL única para tus clientes (ej: /access/tu-marca).</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-bold small text-uppercase">Título de Bienvenida</label>
+                        <input type="text" wire:model="login_welcome_title" class="form-control" placeholder="Bienvenido a...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-bold small text-uppercase">Subtítulo o Instrucción</label>
+                        <input type="text" wire:model="login_welcome_subtitle" class="form-control" placeholder="Acceso al Portal">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-bold small text-uppercase">Color de Fondo (Pantalla)</label>
+                            <input type="color" wire:model="login_bg_color" class="form-control form-control-color w-100">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-bold small text-uppercase">Mostrar Enlace de Registro</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" wire:model="show_register_link">
+                                <span class="form-check-label xsmall text-muted">Habilitar creación de cuentas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-bold small text-uppercase">CSS Personalizado</label>
+                        <textarea wire:model="custom_css" class="form-control font-monospace xsmall" rows="4" placeholder=".btn-primary { border-radius: 0; }"></textarea>
+                        <div class="form-text xsmall">Añade estilos adicionales a tu portal.</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="col-12 col-lg-6">
@@ -184,6 +231,53 @@
                 </div>
                 <div class="card-footer bg-transparent border-0 pb-4 px-4 text-center">
                     <p class="text-white-50 small mb-0">Los cambios se aplican globalmente al guardar.</p>
+                </div>
+            </div>
+
+            <!-- Login & Registration Customization -->
+            <div class="card shadow-sm mb-4 border-primary" style="border-left-width: 4px;">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Personalización de Pantallas de Acceso</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label font-bold small text-uppercase">Slug de URL personalizada</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light xsmall text-muted">/access/</span>
+                            <input type="text" wire:model="login_url_slug" class="form-control" placeholder="nombre-agencia">
+                        </div>
+                        <div class="form-text xsmall">Define una URL única para tus clientes (ej: /access/tu-marca).</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-bold small text-uppercase">Título de Bienvenida</label>
+                        <input type="text" wire:model="login_welcome_title" class="form-control" placeholder="Bienvenido a...">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-bold small text-uppercase">Subtítulo o Instrucción</label>
+                        <input type="text" wire:model="login_welcome_subtitle" class="form-control" placeholder="Acceso al Portal">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-bold small text-uppercase">Color de Fondo (Pantalla)</label>
+                            <input type="color" wire:model="login_bg_color" class="form-control form-control-color w-100">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label font-bold small text-uppercase">Mostrar Enlace de Registro</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" wire:model="show_register_link">
+                                <span class="form-check-label xsmall text-muted">Habilitar creación de cuentas</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label font-bold small text-uppercase">CSS Personalizado</label>
+                        <textarea wire:model="custom_css" class="form-control font-monospace xsmall" rows="4" placeholder=".btn-primary { border-radius: 0; }"></textarea>
+                        <div class="form-text xsmall">Añade estilos adicionales a tu portal.</div>
+                    </div>
                 </div>
             </div>
         </div>

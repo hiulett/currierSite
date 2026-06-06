@@ -159,4 +159,59 @@ class Tenant extends Model
         // Fallback for development or missing session
         return self::first();
     }
+
+    /**
+     * URL de acceso (login) para este tenant.
+     */
+    public function getLoginUrl(): string
+    {
+        $slug = $this->login_url_slug ?? ($this->subdomain ?? $this->uuid);
+        return route('tenant.access', $slug);
+    }
+
+    /**
+     * URL de registro para este tenant.
+     */
+    public function getRegisterUrl(): string
+    {
+        $slug = $this->login_url_slug ?? ($this->subdomain ?? $this->uuid);
+        return route('tenant.join', $slug);
+    }
+
+    /**
+     * Genera la URL del logo de forma dinámica.
+     */
+    public function getLogoUrl(): ?string
+    {
+        $subdomain = $this->subdomain;
+        $extensions = ['png', 'jpg', 'jpeg', 'svg', 'webp'];
+
+        // 1. Prioridad: Archivo manual nombrado como el subdominio en public/logos/
+        foreach ($extensions as $ext) {
+            $filename = "{$subdomain}.{$ext}";
+            if (file_exists(public_path("logos/{$filename}"))) {
+                return asset("logos/{$filename}");
+            }
+        }
+
+        // 2. Fallback: Archivo específico guardado en theme_config_json
+        $logo = $this->theme_config_json['logo_url'] ?? null;
+        if ($logo) {
+            if (filter_var($logo, FILTER_VALIDATE_URL)) {
+                return $logo;
+            }
+            // Asegurar que siempre se busque dentro de 'logos/'
+            $cleanPath = ltrim(str_replace('logos/', '', $logo), '/');
+            if (file_exists(public_path('logos/' . $cleanPath))) {
+                return asset('logos/' . $cleanPath);
+            }
+        }
+
+        // 3. Fallback: Cloudflare R2 o S3 si está configurado
+        if (env('AWS_URL') && $logo) {
+            return rtrim(env('AWS_URL'), '/') . '/' . ltrim($logo, '/');
+        }
+
+        return null;
+    }
 }

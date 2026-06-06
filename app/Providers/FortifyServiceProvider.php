@@ -36,10 +36,38 @@ class FortifyServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Fortify::loginView(function () {
+            // Si no hay tenant en sesión y no es superadmin, mostrar pantalla de error
+            if (!session()->has('tenant_id')) {
+                // Intentar resolver tenant por subdominio (para setups con subdominio propio)
+                $host = request()->getHost();
+                $subdomain = explode('.', $host)[0];
+                $tenant = null;
+                if (!in_array($subdomain, ['curriersite-production', 'localhost', '127', 'www'])) {
+                    $tenant = \App\Models\Tenant::where('domain', $host)
+                        ->orWhere('subdomain', $subdomain)
+                        ->first();
+                    if ($tenant) {
+                        session(['tenant_id' => $tenant->id]);
+                    }
+                }
+            }
             return view('auth.login');
         });
 
         Fortify::registerView(function () {
+            // Si no hay tenant en sesión, no se puede registrar
+            if (!session()->has('tenant_id')) {
+                $host = request()->getHost();
+                $subdomain = explode('.', $host)[0];
+                if (!in_array($subdomain, ['curriersite-production', 'localhost', '127', 'www'])) {
+                    $tenant = \App\Models\Tenant::where('domain', $host)
+                        ->orWhere('subdomain', $subdomain)
+                        ->first();
+                    if ($tenant) {
+                        session(['tenant_id' => $tenant->id]);
+                    }
+                }
+            }
             return view('auth.register');
         });
 
@@ -65,16 +93,31 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::authenticateUsing(function (Request $request) {
             $email = trim($request->email);
-            $user = \App\Models\User::withoutGlobalScope('tenant')
-                ->where('email', $email)
-                ->first();
+            $tenantId = session('tenant_id');
+
+            $query = \App\Models\User::withoutGlobalScope('tenant')
+                ->where('email', $email);
+
+            // Si hay un tenant_id en sesión, filtrar por él obligatoriamente
+            // Esto previene que el mismo email de dos tenants distintos colisione
+            if ($tenantId) {
+                $query->where('tenant_id', $tenantId);
+            }
+
+            $user = $query->first();
 
             if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
-                // If the user belongs to a tenant, ensure the session matches
+                // Verificación de integridad: el usuario debe pertenecer al tenant de la sesión
+                if ($tenantId && $user->tenant_id && (int)$user->tenant_id !== (int)$tenantId) {
+                    // Mismatch de tenant — rechazar login silenciosamente
+                    return null;
+                }
+
+                // Establecer tenant_id del usuario autenticado en sesión
                 if ($user->tenant_id) {
                     session()->put('tenant_id', $user->tenant_id);
                 } else {
-                    session()->forget('tenant_id');
+                    session()->forget('tenant_id'); // SuperAdmin: sin tenant
                 }
                 return $user;
             }

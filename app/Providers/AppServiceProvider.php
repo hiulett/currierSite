@@ -34,6 +34,35 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
+        // ---------------------------------------------------------------
+        // View Composer: Inyecta variables de tema del tenant en vistas auth
+        // ---------------------------------------------------------------
+        View::composer(['auth.login', 'auth.register', 'auth.forgot-password', 'auth.reset-password'], function ($view) {
+            $tenantId = session('tenant_id');
+            $tenant = null;
+
+            if (auth()->check() && auth()->user()->tenant_id) {
+                $tenant = \App\Models\Tenant::find(auth()->user()->tenant_id);
+            } elseif ($tenantId) {
+                $tenant = \App\Models\Tenant::find($tenantId);
+            }
+
+            $theme = $tenant?->theme_config_json ?? [];
+
+            $view->with([
+                'tenant'          => $tenant,
+                'tenantName'      => $tenant?->name ?? 'LogiSaaS',
+                'logoUrl'         => $tenant?->getLogoUrl(),
+                'primaryColor'    => $theme['primary_color'] ?? '#3B82F6',
+                'primaryDark'     => $theme['primary_dark_color'] ?? '#1D4ED8',
+                'bgColor'         => $theme['login_bg_color'] ?? '#F8FAFC',
+                'bgImageUrl'      => $theme['login_bg_image_url'] ?? null,
+                'welcomeSubtitle' => $theme['login_welcome_subtitle'] ?? 'Acceso al Portal',
+                'showRegisterLink'=> $theme['show_register_link'] ?? true,
+                'customCss'       => $theme['custom_css'] ?? '',
+            ]);
+        });
+
         // Implicitly grant "Super Admin" role all permissions
         // This works even if permissions table is empty
         Gate::before(function (User $user, $ability) {

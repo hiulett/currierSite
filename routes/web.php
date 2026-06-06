@@ -55,6 +55,19 @@ use App\Http\Controllers\LandingController;
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/calculadora', DutyCalculator::class)->name('public.calculator');
 
+// Tenant Gateways (Entry points for agency websites)
+Route::get('/join/{slug}', function ($slug) {
+    $tenant = \App\Models\Tenant::where('subdomain', $slug)->orWhere('login_url_slug', $slug)->firstOrFail();
+    session(['tenant_id' => $tenant->id]);
+    return redirect()->route('register')->cookie('tenant_branding_id', $tenant->id, 43200); // 30 days
+})->name('tenant.join');
+
+Route::get('/access/{slug}', function ($slug) {
+    $tenant = \App\Models\Tenant::where('subdomain', $slug)->orWhere('login_url_slug', $slug)->firstOrFail();
+    session(['tenant_id' => $tenant->id]);
+    return redirect()->route('login')->cookie('tenant_branding_id', $tenant->id, 43200);
+})->name('tenant.access');
+
 Route::get('/debug-inventory', function() {
     $packages = \App\Models\Package::withoutGlobalScopes()->get();
     echo "<h1>Diagnóstico de Inventario</h1>";

@@ -20,6 +20,15 @@ class BrandSettings extends Component
     public $logo;
     public $current_logo_url;
 
+    // Campos de personalización de pantalla Login/Registro
+    public $login_url_slug;
+    public $login_bg_color;
+    public $login_bg_image_url;
+    public $login_welcome_title;
+    public $login_welcome_subtitle;
+    public $show_register_link = true;
+    public $custom_css;
+
     public function mount()
     {
         $tenant = $this->getTenant();
@@ -28,9 +37,15 @@ class BrandSettings extends Component
 
     protected function getTenant()
     {
-        // Prioritize session then user relation then first record
-        $id = session('tenant_id') ?? auth()->user()->tenant_id ?? Tenant::first()->id;
-        return Tenant::findOrFail($id);
+        // Usar el usuario autenticado como fuente prioritaria (más seguro que sesión)
+        if (auth()->check() && auth()->user()->tenant_id) {
+            return Tenant::findOrFail(auth()->user()->tenant_id);
+        }
+        $id = session('tenant_id');
+        if ($id) {
+            return Tenant::findOrFail($id);
+        }
+        abort(403, 'No hay contexto de tenant.');
     }
 
     protected function loadData($tenant)
@@ -38,18 +53,32 @@ class BrandSettings extends Component
         $this->company_name = $tenant->name;
         $config = $tenant->theme_config_json ?? [];
 
-        $this->primary_color = $config['primary_color'] ?? ($config['primary'] ?? '#2563eb');
-        $this->secondary_color = $config['secondary_color'] ?? '#0b5ed7';
-        $this->font_family = $config['font_family'] ?? 'figtree';
-        $this->theme_mode = $config['theme_mode'] ?? 'light';
-        $this->current_logo_url = $config['logo_url'] ?? null;
+        $this->primary_color     = $config['primary_color'] ?? ($config['primary'] ?? '#2563eb');
+        $this->secondary_color   = $config['secondary_color'] ?? '#0b5ed7';
+        $this->font_family       = $config['font_family'] ?? 'figtree';
+        $this->theme_mode        = $config['theme_mode'] ?? 'light';
+        $this->current_logo_url  = $tenant->getLogoUrl(); // Usar el método dinámico aquí
+
+        // Campos de la pantalla Login/Registro
+        $this->login_url_slug        = $tenant->login_url_slug ?? ($tenant->subdomain ?? $tenant->uuid);
+        $this->login_bg_color        = $config['login_bg_color'] ?? '#F8FAFC';
+        $this->login_bg_image_url    = $config['login_bg_image_url'] ?? null;
+        $this->login_welcome_title   = $config['login_welcome_title'] ?? $tenant->name;
+        $this->login_welcome_subtitle= $config['login_welcome_subtitle'] ?? 'Acceso al Portal';
+        $this->show_register_link    = $config['show_register_link'] ?? true;
+        $this->custom_css            = $config['custom_css'] ?? '';
     }
 
     public function save()
     {
         $this->validate([
-            'company_name' => 'required|min:3',
-            'logo' => 'nullable|image|max:2048',
+            'company_name'       => 'required|min:3',
+            'logo'               => 'nullable|image|max:2048',
+            'login_url_slug'     => 'nullable|alpha_dash|max:80|unique:tenants,login_url_slug,' . $this->getTenant()->id,
+            'login_bg_color'     => 'nullable|max:20',
+            'login_bg_image_url' => 'nullable|url|max:500',
+            'login_welcome_title'=> 'nullable|max:100',
+            'custom_css'         => 'nullable|max:5000',
         ]);
 
         $tenant = $this->getTenant();
@@ -97,15 +126,28 @@ class BrandSettings extends Component
         }
 
         // 2. Actualizar el resto de la configuración
-        $config['primary'] = $this->primary_color;
-        $config['primary_color'] = $this->primary_color;
-        $config['secondary_color'] = $this->secondary_color;
-        $config['font_family'] = $this->font_family;
-        $config['theme_mode'] = $this->theme_mode;
+        $config['primary']            = $this->primary_color;
+        $config['primary_color']      = $this->primary_color;
+        $config['secondary_color']    = $this->secondary_color;
+        $config['font_family']        = $this->font_family;
+        $config['theme_mode']         = $this->theme_mode;
+
+        // Campos de personalización de la pantalla Login/Registro
+        $config['login_bg_color']         = $this->login_bg_color;
+        $config['login_bg_image_url']     = $this->login_bg_image_url;
+        $config['login_welcome_title']    = $this->login_welcome_title;
+        $config['login_welcome_subtitle'] = $this->login_welcome_subtitle;
+        $config['show_register_link']     = (bool) $this->show_register_link;
+        $config['custom_css']             = $this->custom_css;
 
         // 3. Persistencia en Base de Datos
-        $tenant->name = $this->company_name;
+        $tenant->name            = $this->company_name;
         $tenant->theme_config_json = $config;
+
+        // Guardar login_url_slug si se proporcionó (validado como único arriba)
+        if (!empty($this->login_url_slug)) {
+            $tenant->login_url_slug = strtolower(trim($this->login_url_slug));
+        }
 
         if ($tenant->save()) {
             session()->flash('message', 'Configuración guardada exitosamente.');

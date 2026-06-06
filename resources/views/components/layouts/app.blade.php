@@ -110,9 +110,8 @@
 			<div class="sidebar-content js-simplebar">
 				<a class='sidebar-brand d-flex flex-column align-items-center py-4' href='{{ route('dashboard') }}'>
                     @php
-                        $tenantId = session('tenant_id') ?? (Auth::check() ? Auth::user()->tenant_id : null);
-                        $tenant = $tenantId ? \App\Models\Tenant::find($tenantId) : \App\Models\Tenant::first();
-                        $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
+                        $tenant = \App\Models\Tenant::current() ?? \App\Models\Tenant::first();
+                        $logoUrl = $tenant?->getLogoUrl();
                     @endphp
 
                     @if($logoUrl)
