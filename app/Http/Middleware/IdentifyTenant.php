@@ -59,8 +59,10 @@ class IdentifyTenant
             app()->setLocale($tenant->locale ?? config('app.locale'));
 
             // Set SuperAdmin flag for scope bypass
-            if (Auth::check() && !session()->has('is_superadmin')) {
-                session(['is_superadmin' => Auth::user()->role === 'superadmin']);
+            if (Auth::check()) {
+                if (!session()->has('is_superadmin')) {
+                    session(['is_superadmin' => Auth::user()->role === 'superadmin']);
+                }
             }
 
             // Dynamic Config Overrides (Mail, Payments, etc)

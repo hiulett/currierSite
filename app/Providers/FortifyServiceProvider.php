@@ -93,33 +93,34 @@ class FortifyServiceProvider extends ServiceProvider
 
         Fortify::authenticateUsing(function (Request $request) {
             $email = trim($request->email);
-            $tenantId = session('tenant_id');
+            $sessionTenantId = session('tenant_id');
 
-            $query = \App\Models\User::withoutGlobalScope('tenant')
-                ->where('email', $email);
+            // 1. Obtener todos los usuarios con ese email (sin importar el tenant)
+            $users = \App\Models\User::withoutGlobalScope('tenant')
+                ->where('email', $email)
+                ->get();
 
-            // Si hay un tenant_id en sesión, filtrar por él obligatoriamente
-            // Esto previene que el mismo email de dos tenants distintos colisione
-            if ($tenantId) {
-                $query->where('tenant_id', $tenantId);
-            }
+            foreach ($users as $user) {
+                // 2. Verificar contraseña
+                if (\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
 
-            $user = $query->first();
+                    // 3. Si entramos por un link de agencia específico, validar integridad
+                    if ($sessionTenantId && $user->tenant_id && (int)$user->tenant_id !== (int)$sessionTenantId) {
+                        continue; // Podría haber otro usuario con el mismo email en esta agencia
+                    }
 
-            if ($user && \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
-                // Verificación de integridad: el usuario debe pertenecer al tenant de la sesión
-                if ($tenantId && $user->tenant_id && (int)$user->tenant_id !== (int)$tenantId) {
-                    // Mismatch de tenant — rechazar login silenciosamente
-                    return null;
+                    // 4. Login exitoso: Inyectar el Tenant en la sesión para activar los filtros
+                    if ($user->tenant_id) {
+                        session(['tenant_id' => $user->tenant_id]);
+                    } else {
+                        session()->forget('tenant_id'); // Es SuperAdmin
+                    }
+
+                    // Bandera de superadmin para optimizar Global Scopes
+                    session(['is_superadmin' => ($user->role === 'superadmin')]);
+
+                    return $user;
                 }
-
-                // Establecer tenant_id del usuario autenticado en sesión
-                if ($user->tenant_id) {
-                    session()->put('tenant_id', $user->tenant_id);
-                } else {
-                    session()->forget('tenant_id'); // SuperAdmin: sin tenant
-                }
-                return $user;
             }
 
             return null;
