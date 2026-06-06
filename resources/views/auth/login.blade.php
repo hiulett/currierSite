@@ -30,17 +30,6 @@
 </head>
 <body class="auth-bg min-h-screen flex items-center justify-center p-4">
 
-    @if(!$tenant && !app()->environment('local'))
-        {{-- Sin tenant: mostrar error --}}
-        <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 text-center">
-            <div class="text-5xl mb-4">🔒</div>
-            <h1 class="text-xl font-black text-slate-700 mb-2">Acceso no autorizado</h1>
-            <p class="text-slate-500 text-sm">
-                Debes acceder a través del enlace de tu agencia logística.
-                <br>Contacta a tu empresa para obtener el enlace correcto.
-            </p>
-        </div>
-    @else
     <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
         <div class="p-8 md:p-12">
             <div class="text-center mb-10">
