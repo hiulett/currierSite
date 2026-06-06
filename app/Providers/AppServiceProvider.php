@@ -29,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
     {
         if (env('RAILWAY_ENVIRONMENT')) {
             config(['app.env' => 'production']);
+            config(['session.secure' => true]); // Crítico para evitar error 419 en Railway
+            config(['session.same_site' => 'lax']);
             \Illuminate\Support\Facades\URL::forceScheme('https');
         } elseif (config('app.env') === 'production') {
             \Illuminate\Support\Facades\URL::forceScheme('https');
