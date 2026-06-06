@@ -183,10 +183,11 @@ class Tenant extends Model
      */
     public function getLogoUrl(): ?string
     {
-        $subdomain = $this->subdomain;
-        $extensions = ['png', 'jpg', 'jpeg', 'svg', 'webp'];
+        $subdomain = strtolower($this->subdomain);
+        // Intentar extensiones comunes en minúsculas y mayúsculas para Linux
+        $extensions = ['png', 'jpg', 'jpeg', 'svg', 'webp', 'PNG', 'JPG', 'JPEG'];
 
-        // 1. Prioridad: Archivo manual nombrado como el subdominio en public/logos/
+        // 1. Prioridad: Archivo manual en public/logos/
         foreach ($extensions as $ext) {
             $filename = "{$subdomain}.{$ext}";
             if (file_exists(public_path("logos/{$filename}"))) {

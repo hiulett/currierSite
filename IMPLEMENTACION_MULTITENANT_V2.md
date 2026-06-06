@@ -71,4 +71,26 @@ Reescribir `BelongsToTenant.php` usando un flag estático `isResolving` para gar
 
 ---
 
-**¿Confirmas este análisis para proceder con la implementación técnica del Paso 1?**
+## 6. Guía de Rutas para Agencias (Puntos de Entrada)
+
+Para que cada agencia pueda integrar el sistema en su propio sitio web, se han habilitado rutas "Gateway" que capturan automáticamente la identidad de la marca.
+
+### URLs para Botones en Sitios Externos
+Estas son las URLs que las agencias deben usar en sus sitios oficiales (ej: `logyexpress.com`):
+
+*   **Acceso (Login):**
+    *   Estructura: `https://app.logisaas.com/access/{slug_o_subdominio}`
+    *   Ejemplo: `https://app.logisaas.com/access/logyexpress`
+*   **Registro (Crear Casillero):**
+    *   Estructura: `https://app.logisaas.com/join/{slug_o_subdominio}`
+    *   Ejemplo: `https://app.logisaas.com/join/logyexpress`
+
+### Comportamiento del Sistema
+1.  **Identificación:** Al entrar a estas rutas, el sistema busca al Tenant en la base de datos por su `subdomain` o `login_url_slug`.
+2.  **Persistencia:** Se guarda el `tenant_id` en la sesión y se genera una cookie `tenant_branding_id` válida por 30 días.
+3.  **Branding:** El usuario es redirigido a las pantallas estándar (`/login` o `/register`), las cuales cargan dinámicamente el logo de la agencia (desde Cloudflare R2 o local) y sus colores corporativos.
+4.  **Vinculación:** Cualquier usuario creado a través de estas rutas queda automáticamente asignado a la agencia correspondiente.
+
+---
+
+**Nota:** En entorno local, sustituir `https://app.logisaas.com` por `http://127.0.0.1:8001`.
