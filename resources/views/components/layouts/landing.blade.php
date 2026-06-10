@@ -67,37 +67,37 @@
     <!-- Alpine.js is included in Livewire 3 -->
     @livewireStyles
 </head>
-<body class="font-sans antialiased bg-white text-slate-900">
-    <div class="min-h-screen" style="font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;">
+<body class="font-sans antialiased bg-white text-slate-900 selection:bg-blue-100 selection:text-blue-900">
+    <div class="min-h-screen" style="font-family: 'Plus Jakarta Sans', sans-serif;">
         <!-- Navigation -->
         <nav x-data="{ open: false, scrolled: false }"
              x-on:scroll.window="scrolled = (window.pageYOffset > 20)"
-             :class="scrolled ? 'bg-slate-900/80 backdrop-blur-2xl border-white/5 py-3 shadow-2xl' : 'bg-transparent py-6'"
-             class="fixed w-full z-50 transition-all duration-500 border-b border-transparent">
+             :class="scrolled ? 'bg-white/80 backdrop-blur-xl border-slate-200 shadow-sm py-3' : 'bg-transparent py-6'"
+             class="fixed w-full z-50 transition-all duration-300 border-b">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-16">
-                        <a href="/" class="group flex items-center gap-3">
-                            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform duration-300">
-                                <i class="fas fa-box-open text-white text-lg"></i>
+                    <div class="flex items-center gap-12">
+                        <a href="/" class="flex items-center gap-2.5">
+                            <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-200">
+                                <i class="fas fa-box-open text-white text-sm"></i>
                             </div>
-                            <span class="text-2xl font-black tracking-tighter text-white uppercase italic">
-                                Logi<span class="text-blue-500">SaaS</span>
+                            <span class="text-xl font-extrabold tracking-tight text-slate-900">
+                                Logi<span class="text-blue-600">SaaS</span>
                             </span>
                         </a>
-                        <div class="hidden lg:flex items-center space-x-2">
-                            <a href="#features" class="text-[#94a3b8] hover:text-white px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all rounded-full hover:bg-white/5">Características</a>
-                            <a href="#roi" class="text-[#94a3b8] hover:text-white px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all rounded-full hover:bg-white/5">ROI</a>
-                            <a href="#pricing" class="text-[#94a3b8] hover:text-white px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all rounded-full hover:bg-white/5">Precios</a>
+                        <div class="hidden lg:flex items-center space-x-1">
+                            <a href="#features" class="text-slate-500 hover:text-blue-600 px-4 py-2 text-sm font-semibold transition-all rounded-full hover:bg-slate-50">Producto</a>
+                            <a href="#roi" class="text-slate-500 hover:text-blue-600 px-4 py-2 text-sm font-semibold transition-all rounded-full hover:bg-slate-50">Impacto</a>
+                            <a href="#pricing" class="text-slate-500 hover:text-blue-600 px-4 py-2 text-sm font-semibold transition-all rounded-full hover:bg-slate-50">Precios</a>
                         </div>
                     </div>
 
                     <div class="hidden lg:flex items-center gap-6">
-                        <a href="{{ route('login') }}" class="text-[#94a3b8] hover:text-white text-[11px] font-black uppercase tracking-widest transition-colors">
-                            ACCESO
+                        <a href="{{ route('login') }}" class="text-slate-600 hover:text-slate-900 text-sm font-bold transition-colors">
+                            Acceso
                         </a>
-                        <a href="#contact" class="inline-flex items-center justify-center px-8 py-3 bg-white text-slate-900 text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-[#3b7ddd] hover:text-white transition-all transform hover:-translate-y-0.5 active:scale-95 shadow-xl">
-                            COMENZAR
+                        <a href="#contact" class="inline-flex items-center justify-center px-6 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-full hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 active:scale-95">
+                            Empezar ahora
                         </a>
                     </div>
 
