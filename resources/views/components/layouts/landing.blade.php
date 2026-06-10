@@ -58,6 +58,10 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Alpine Plugins -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Alpine.js is included in Livewire 3 -->
@@ -77,21 +81,21 @@
                             <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 group-hover:rotate-12 transition-transform duration-300">
                                 <i class="fas fa-box-open text-white text-xl"></i>
                             </div>
-                            <span class="text-2xl font-black tracking-tighter text-slate-900">
+                            <span class="text-2xl font-black tracking-tighter" :class="scrolled ? 'text-slate-900' : 'text-white'">
                                 Logi<span class="text-blue-600">SaaS</span>
                             </span>
                         </a>
                         <div class="hidden lg:flex items-center space-x-1">
-                            <a href="#features" class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50">Características</a>
-                            <a href="#solutions" class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50">Soluciones</a>
-                            <a href="#roi" class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50">Calculadora</a>
-                            <a href="#pricing" class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50">Precios</a>
-                            <a href="#faq" class="text-slate-600 hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50">FAQ</a>
+                            <a href="#features" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50/10">Características</a>
+                            <a href="#solutions" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50/10">Soluciones</a>
+                            <a href="#roi" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50/10">Calculadora</a>
+                            <a href="#pricing" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50/10">Precios</a>
+                            <a href="#faq" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50/10">FAQ</a>
                         </div>
                     </div>
 
                     <div class="hidden lg:flex items-center gap-4">
-                        <a href="{{ route('login') }}" class="text-slate-600 hover:text-slate-900 px-4 py-2 text-sm font-bold transition-colors">
+                        <a href="{{ route('login') }}" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-white px-4 py-2 text-sm font-bold transition-colors">
                             <i class="far fa-user me-2"></i>Acceso
                         </a>
                         <a href="#contact" class="cta-shine inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-95 group">
@@ -102,7 +106,7 @@
 
                     <!-- Mobile menu button -->
                     <div class="flex items-center lg:hidden">
-                        <button x-on:click="open = !open" class="inline-flex items-center justify-center p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors">
+                        <button x-on:click="open = !open" :class="scrolled ? 'text-slate-600' : 'text-white'" class="inline-flex items-center justify-center p-2 rounded-xl hover:bg-white/10 transition-colors">
                             <i class="fas fa-bars text-xl" x-show="!open"></i>
                             <i class="fas fa-times text-xl" x-show="open" x-cloak></i>
                         </button>
