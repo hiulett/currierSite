@@ -7,6 +7,7 @@ import 'screens/home_screen.dart';
 import 'providers/warehouse_provider.dart';
 
 import 'providers/customer_provider.dart';
+import 'screens/customer_home_screen.dart';
 
 void main() {
   runApp(
@@ -20,8 +21,6 @@ void main() {
     ),
   );
 }
-
-import 'screens/customer_home_screen.dart';
 
 class LogySaaSApp extends StatelessWidget {
   const LogySaaSApp({super.key});

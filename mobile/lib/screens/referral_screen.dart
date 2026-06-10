@@ -45,7 +45,7 @@ class ReferralScreen extends StatelessWidget {
                 children: [
                   const Text("TU CÓDIGO", style: TextStyle(letterSpacing: 1.5, fontSize: 12, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text(referralCode, style: const TextStyle(fontSize: 32, fontWeight: FontWeight.black, color: Colors.blue)),
+                  Text(referralCode, style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, color: Colors.blue)),
                 ],
               ),
             ),

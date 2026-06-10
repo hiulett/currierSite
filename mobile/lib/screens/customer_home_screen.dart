@@ -107,7 +107,7 @@ class CustomerDashboard extends StatelessWidget {
                   children: [
                     const Text("Saldo Pendiente", style: TextStyle(color: Colors.white70, fontSize: 16)),
                     const SizedBox(height: 8),
-                    Text("$${customerProvider.balance?['balance'] ?? '0.00'}",
+                    Text("\$${customerProvider.balance?['balance'] ?? '0.00'}",
                       style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 20),
                     Row(
