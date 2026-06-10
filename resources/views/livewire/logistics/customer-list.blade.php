@@ -1,4 +1,25 @@
 <div>
+    <!-- Flash Messages -->
+    @if (session()->has('message'))
+        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 mb-4 rounded-xl" role="alert">
+            <div class="d-flex align-items-center">
+                <i data-feather="check-circle" class="me-2"></i>
+                <div>{{ session('message') }}</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if (session()->has('error'))
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 mb-4 rounded-xl" role="alert">
+            <div class="d-flex align-items-center">
+                <i data-feather="alert-octagon" class="me-2"></i>
+                <div>{{ session('error') }}</div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="row mb-4">
         <div class="col-12 col-sm-6 col-xxl-3 d-flex">
             <div wire:click="$set('filter', '')" class="card flex-fill border-0 shadow-sm cursor-pointer transform transition hover:scale-102 bg-primary text-white">
@@ -357,7 +378,10 @@
                 </div>
                 <div class="modal-footer bg-light p-2 gap-2 border-0">
                     <button type="button" class="btn btn-light border fw-bold flex-grow-1" data-bs-dismiss="modal">CANCELAR</button>
-                    <button type="button" wire:click="sendPasswordEmail" class="btn btn-warning fw-black flex-grow-1">ENVIAR</button>
+                    <button type="button" wire:click="sendPasswordEmail" wire:loading.attr="disabled" class="btn btn-warning fw-black flex-grow-1">
+                        <span wire:loading.remove wire:target="sendPasswordEmail">ENVIAR</span>
+                        <span wire:loading wire:target="sendPasswordEmail" class="spinner-border spinner-border-sm" role="status"></span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -384,8 +408,12 @@
         });
 
         // Re-initialize icons after every Livewire update in this component
-        document.addEventListener('livewire:load', () => {
+        document.addEventListener('livewire:init', () => {
             Livewire.on('customer-updated', () => {
+                if(typeof initFeather === 'function') initFeather();
+            });
+            // Also re-init on standard Livewire navigation/refresh
+            Livewire.on('customer-saved', () => {
                 if(typeof initFeather === 'function') initFeather();
             });
         });

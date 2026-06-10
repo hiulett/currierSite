@@ -10,7 +10,16 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<AuthProvider>(context).user;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
+
+    // Redirección automática si es un cliente
+    if (user != null && user['role'] == 'customer') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushReplacementNamed(context, '/customer_home');
+      });
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +54,7 @@ class HomeScreen extends StatelessWidget {
 
               _buildMenuCard(
                 context,
-                Icons.batch_prediction,
+                Icons.inventory,
                 "Recepción Masiva",
                 "Escaneo continuo por lotes (BETA)",
                 () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BulkReceptionScreen()))

@@ -9,8 +9,13 @@ Esta aplicación está desarrollada en **Flutter** y permite a los operadores de
 
 ## 🛠️ Configuración de la API
 Edita el archivo `mobile/lib/services/api_service.dart`:
-*   Si usas el **Emulador Android**: Usa `http://10.0.2.2/api/v1`.
-*   Si usas un **Celular Real**: Usa `http://TU_IP_LOCAL/api/v1` (ej. `http://192.168.1.15/api/v1`).
+*   Tu IP local detectada es: `192.168.50.195`
+*   Usa: `http://192.168.50.195:8001/api/v1`
+
+**IMPORTANTE:** Para que la app (o el navegador) pueda conectarse, debes iniciar el servidor de Laravel permitiendo conexiones externas:
+```bash
+php artisan serve --host=0.0.0.0 --port=8001
+```
 
 ## 📦 Funcionalidades Implementadas
 1.  **Autenticación**: Login con correo corporativo (Staff/Admin/Operador).

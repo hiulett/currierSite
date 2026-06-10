@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  final String baseUrl = "http://10.0.2.2/api/v1"; // Emulator default for localhost
+  final String baseUrl = "http://192.168.50.195:8001/api/v1";
   final storage = const Flutter_secure_storage();
 
   Future<Map<String, dynamic>?> login(String email, String password) async {
@@ -97,6 +97,87 @@ class ApiService {
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     }
+    return null;
+  }
+
+  // --- Customer Methods ---
+
+  Future<Map<String, dynamic>?> getCustomerProfile() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse("$baseUrl/customer/profile"),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    return null;
+  }
+
+  Future<List<dynamic>> getCustomerPackages() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse("$baseUrl/customer/packages"),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    return [];
+  }
+
+  Future<Map<String, dynamic>?> getPackageDetail(int id) async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse("$baseUrl/customer/packages/$id"),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    return null;
+  }
+
+  Future<List<dynamic>> getCustomerInvoices() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse("$baseUrl/customer/invoices"),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    return [];
+  }
+
+  Future<Map<String, dynamic>?> getCustomerBalance() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse("$baseUrl/customer/balance"),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    return null;
+  }
+
+  Future<List<dynamic>> getAssistedPurchases() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse("$baseUrl/customer/assisted-purchases"),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+    if (response.statusCode == 200) return jsonDecode(response.body);
+    return [];
+  }
+
+  Future<Map<String, dynamic>?> createAssistedPurchase(String url, String description, double? price) async {
+    final token = await getToken();
+    final response = await http.post(
+      Uri.parse("$baseUrl/customer/assisted-purchases"),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode({
+        'url': url,
+        'description': description,
+        'estimated_price': price,
+      }),
+    );
+    if (response.statusCode == 201) return jsonDecode(response.body);
     return null;
   }
 }

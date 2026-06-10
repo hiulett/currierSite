@@ -18,7 +18,7 @@ class MobileAuthController extends Controller
             'device_name' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::withoutGlobalScope('tenant')->where('email', $request->email)->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -26,9 +26,15 @@ class MobileAuthController extends Controller
             ]);
         }
 
-        // Check if user is allowed to use mobile (optional: check role)
-        if (!in_array($user->role, ['superadmin', 'admin', 'staff', 'operator'])) {
+        // Check if user is allowed to use mobile
+        $allowedRoles = ['superadmin', 'admin', 'staff', 'operator', 'customer'];
+        if (!in_array($user->role, $allowedRoles)) {
              return response()->json(['message' => 'Unauthorized for mobile access'], 403);
+        }
+
+        // Set tenant context for the current request
+        if ($user->tenant_id) {
+            session(['tenant_id' => $user->tenant_id]);
         }
 
         return response()->json([

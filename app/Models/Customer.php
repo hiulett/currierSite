@@ -14,6 +14,7 @@ class Customer extends Model
         'tenant_id',
         'user_id',
         'locker_id',
+        'referral_code',
         'referrer_id',
         'loyalty_level_id',
         'box_number',

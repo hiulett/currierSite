@@ -37,6 +37,10 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   mobile_scanner: ^3.5.2
   google_fonts: ^6.1.0
+  intl: ^0.18.1
+  url_launcher: ^6.2.1
+  signature: ^5.4.0
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:

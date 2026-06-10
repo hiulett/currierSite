@@ -9,6 +9,8 @@ use App\Models\Locker;
 use Livewire\WithPagination;
 use App\Traits\WithSorting;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class CustomerList extends Component
 {
@@ -136,32 +138,34 @@ class CustomerList extends Component
             return;
         }
 
-        $customer = Customer::findOrFail($this->selected_customer_id);
+        try {
+            $customer = Customer::findOrFail($this->selected_customer_id);
 
-        // If no temporary password exists, generate one now
-        if (!$customer->temporary_password) {
-            $newPass = \Illuminate\Support\Str::random(8);
-            $tenant = \App\Models\Tenant::find(session('tenant_id'));
-            $mustChange = $tenant->settings_json['force_password_change'] ?? false;
+            // If no temporary password exists, generate one now
+            if (!$customer->temporary_password) {
+                $newPass = Str::random(8);
+                $tenant = \App\Models\Tenant::find(session('tenant_id'));
+                $mustChange = $tenant->settings_json['force_password_change'] ?? false;
 
-            $customer->update(['temporary_password' => $newPass]);
-            if ($customer->user) {
-                $customer->user->update([
-                    'password' => Hash::make($newPass),
-                    'must_change_password' => $mustChange
-                ]);
+                $customer->update(['temporary_password' => $newPass]);
+                if ($customer->user) {
+                    $customer->user->update([
+                        'password' => Hash::make($newPass),
+                        'must_change_password' => $mustChange
+                    ]);
+                }
             }
-        }
 
-        if ($customer->user) {
-            try {
+            if ($customer->user) {
                 $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($customer->temporary_password, $customer->user->name));
                 $customer->update(['password_sent_at' => now()]);
                 session()->flash('message', 'Credenciales enviadas correctamente a: ' . $customer->user->email);
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Error enviando correo de contraseña: ' . $e->getMessage());
-                session()->flash('message', 'La contraseña se actualizó en el sistema, pero no se pudo enviar el correo. Por favor, proporcione la clave manualmente: ' . $customer->temporary_password);
+            } else {
+                session()->flash('error', 'El cliente no tiene un usuario asociado.');
             }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error enviando correo de contraseña: ' . $e->getMessage());
+            session()->flash('error', 'No se pudo enviar el correo: ' . $e->getMessage());
         }
 
         $this->dispatch('close-confirm-password-modal');

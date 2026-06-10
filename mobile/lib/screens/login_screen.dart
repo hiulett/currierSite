@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.package_2, size: 80, color: Colors.blue),
+            const Icon(Icons.inventory_2, size: 80, color: Colors.blue),
             const SizedBox(height: 24),
             const Text(
               "LogySaaS Mobile",
@@ -58,10 +58,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     _passwordController.text,
                   );
                   if (success) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const HomeScreen()),
-                    );
+                    final user = authProvider.user;
+                    final role = user?['role']?.toString().toLowerCase();
+                    if (role == 'customer') {
+                      Navigator.pushReplacementNamed(context, '/customer_home');
+                    } else {
+                      Navigator.pushReplacementNamed(context, '/home');
+                    }
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Login failed")),
