@@ -62,6 +62,43 @@ class ApiService {
     }
     return null;
   }
+
+  Future<List<dynamic>> getWarehouses() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse("$baseUrl/warehouse/list"),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    return [];
+  }
+
+  Future<Map<String, dynamic>?> submitBulkReception(int warehouseId, List<Map<String, dynamic>> items) async {
+    final token = await getToken();
+    final response = await http.post(
+      Uri.parse("$baseUrl/warehouse/bulk-receive"),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode({
+        'warehouse_id': warehouseId,
+        'items': items,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
+    return null;
+  }
 }
 
 class Flutter_secure_storage extends FlutterSecureStorage {

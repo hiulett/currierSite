@@ -30,6 +30,11 @@ class IdentifyTenant
             $tenant = Tenant::where('subdomain', $subdomain)->orWhere('domain', $host)->first();
         }
 
+        // 2.5 [HEADER] Mobile support (X-Tenant: slug)
+        if (!$tenant && $request->hasHeader('X-Tenant')) {
+            $tenant = Tenant::where('subdomain', $request->header('X-Tenant'))->first();
+        }
+
         // 3. [AUTHENTICATED] User identity
         if (!$tenant && Auth::check() && Auth::user()->tenant_id) {
             $tenant = Tenant::find(Auth::user()->tenant_id);

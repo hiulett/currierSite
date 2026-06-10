@@ -4,11 +4,14 @@ import 'providers/auth_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 
+import 'providers/warehouse_provider.dart';
+
 void main() {
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => WarehouseProvider()),
       ],
       child: const LogySaaSApp(),
     ),

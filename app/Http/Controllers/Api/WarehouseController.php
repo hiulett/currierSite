@@ -45,33 +45,42 @@ class WarehouseController extends Controller
         ]);
     }
 
-    public function receive(Request $request)
+    public function warehouses()
+    {
+        return response()->json(\App\Models\Warehouse::all(['id', 'name', 'code']));
+    }
+
+    public function bulkReceive(Request $request)
     {
         $request->validate([
-            'tracking_number' => 'required|string',
-            'weight' => 'required|numeric',
-            'description' => 'nullable|string',
-            'customer_id' => 'nullable|exists:customers,id',
+            'items' => 'required|array',
+            'items.*.tracking_number' => 'required|string',
+            'items.*.weight' => 'required|numeric',
             'warehouse_id' => 'required|exists:warehouses,id',
         ]);
 
-        // Logic to create or update package
-        // This should probably reuse logic from SmartReception service if available
+        $results = [];
+        $warehouseId = $request->warehouse_id;
+        $tenantId = auth()->user()->tenant_id;
 
-        $package = Package::create([
-            'tenant_id' => auth()->user()->tenant_id,
-            'tracking_number' => $request->tracking_number,
-            'weight' => $request->weight,
-            'description' => $request->description,
-            'customer_id' => $request->customer_id,
-            'warehouse_id' => $request->warehouse_id,
-            'status' => 'received_miami', // Or based on warehouse location
-        ]);
+        foreach ($request->items as $item) {
+            // Check if already exists to avoid duplicates in this batch
+            $package = Package::updateOrCreate(
+                ['tracking_number' => $item['tracking_number'], 'tenant_id' => $tenantId],
+                [
+                    'weight' => $item['weight'],
+                    'warehouse_id' => $warehouseId,
+                    'status' => 'received_miami', // Logic could be more dynamic
+                ]
+            );
+
+            $results[] = $package;
+        }
 
         return response()->json([
             'success' => true,
-            'package' => $package,
-            'message' => 'Package received successfully'
+            'processed_count' => count($results),
+            'items' => $results
         ]);
     }
 }

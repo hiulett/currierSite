@@ -22,8 +22,9 @@ Route::prefix('v1')->group(function () {
 
         // Warehouse Operations
         Route::prefix('warehouse')->group(function () {
+            Route::get('/list', [WarehouseController::class, 'warehouses']);
             Route::post('/scan', [WarehouseController::class, 'scan']);
-            Route::post('/receive', [WarehouseController::class, 'receive']);
+            Route::post('/bulk-receive', [WarehouseController::class, 'bulkReceive']);
         });
     });
 });
