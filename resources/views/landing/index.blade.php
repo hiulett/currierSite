@@ -1,289 +1,253 @@
 <x-layouts.landing>
-    <div class="bg-[#0f172a] text-slate-200 overflow-x-hidden">
-        <!-- GLOBAL BACKGROUND DECORATIONS -->
-        <div class="fixed inset-0 pointer-events-none z-0">
-            <!-- Subtle Grid -->
-            <div class="absolute inset-0 opacity-[0.03]" style="background-image: linear-gradient(#3b7ddd 1px, transparent 1px), linear-gradient(90deg, #3b7ddd 1px, transparent 1px); background-size: 50px 50px;"></div>
-            <!-- Glows -->
-            <div class="absolute top-[-10%] left-[-10%] w-[800px] h-[800px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse"></div>
-            <div class="absolute bottom-[20%] right-[-5%] w-[600px] h-[600px] bg-indigo-600/10 rounded-full blur-[100px]"></div>
+    <div class="bg-[#0f172a] text-[#f1f5f9] selection:bg-[#3b7ddd]/30">
+        <!-- PREMIUM DECORATIONS -->
+        <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+            <!-- Animated Background Grid -->
+            <div class="absolute inset-0 opacity-[0.05]"
+                 style="background-image: linear-gradient(#3b7ddd 1px, transparent 1px), linear-gradient(90deg, #3b7ddd 1px, transparent 1px); background-size: 60px 60px;"></div>
+
+            <!-- Strategic Glows (Stitch Aesthetic) -->
+            <div class="absolute top-[-20%] left-[-10%] w-[1000px] h-[1000px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[800px] h-[800px] bg-indigo-500/10 rounded-full blur-[100px]"></div>
+
+            <!-- Center Ray -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-px h-full bg-gradient-to-b from-transparent via-blue-500/20 to-transparent"></div>
         </div>
 
-        @php
-            $features = [
-                [
-                    'title' => 'Recepción Inteligente',
-                    'desc' => 'Motor OCR avanzado que procesa guías de Amazon y USPS en milisegundos.',
-                    'icon' => 'fa-qrcode',
-                    'color' => 'blue'
-                ],
-                [
-                    'title' => 'Fidelización 2.0',
-                    'desc' => 'Gamifica tu logística con puntos por peso que tus clientes aman.',
-                    'icon' => 'fa-star',
-                    'color' => 'indigo'
-                ],
-                [
-                    'title' => 'Gobernanza Total',
-                    'desc' => 'Control de inventario por racks y auditoría financiera en tiempo real.',
-                    'icon' => 'fa-shield-halved',
-                    'color' => 'purple'
-                ],
-                [
-                    'title' => 'Pagos Automatizados',
-                    'desc' => 'Conciliación instantánea de Yappy y ACH sin intervención manual.',
-                    'icon' => 'fa-bolt',
-                    'color' => 'amber'
-                ]
-            ];
-        @endphp
-
         <div class="relative z-10">
-            <!-- Hero Section -->
-            <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
-                <div class="text-center">
-                    <div class="hero-reveal inline-flex items-center px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] mb-8">
-                        <span class="flex h-2 w-2 rounded-full bg-blue-500 mr-2 animate-ping"></span>
-                        Infraestructura Logística de Próxima Generación
-                    </div>
+            <!-- HERO SECTION (Split Distribution) -->
+            <section class="relative pt-32 pb-24 lg:pt-56 lg:pb-40 overflow-hidden">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        <div class="hero-text-area">
+                            <div class="inline-flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 animate-fade-in">
+                                <span class="flex h-2 w-2 rounded-full bg-[#3b7ddd] mr-2 shadow-[0_0_10px_#3b7ddd]"></span>
+                                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[#94a3b8]">Infraestructura Logística v2.0</span>
+                            </div>
 
-                    <h1 class="hero-reveal text-5xl md:text-8xl font-black tracking-tighter text-white mb-8 leading-[0.9] uppercase italic">
-                        La infraestructura digital <br>
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">para tu Courier del futuro</span>
-                    </h1>
+                            <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.85] uppercase italic">
+                                Domina tu <br>
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#3b7ddd] to-blue-400">OPERACIÓN</span> <br>
+                                <span class="text-white">COURIER</span>
+                            </h1>
 
-                    <p class="hero-reveal max-w-2xl mx-auto text-lg md:text-xl text-slate-400 mb-12 font-medium leading-relaxed">
-                        Elimina el caos operativo. LogySaaS es el sistema operativo integral diseñado para escalar agencias de carga con IA y automatización financiera.
-                    </p>
+                            <p class="max-w-lg text-lg md:text-xl text-[#94a3b8] mb-12 font-medium leading-relaxed">
+                                El sistema operativo B2B que automatiza recepciones, fideliza clientes y asegura tu rentabilidad neta en Panamá.
+                            </p>
 
-                    <div class="hero-reveal flex flex-col sm:flex-row justify-center items-center gap-6">
-                        <a href="#pricing" class="group relative px-10 py-5 bg-blue-600 text-white text-lg font-black rounded-2xl shadow-2xl shadow-blue-500/30 transition-all hover:-translate-y-1 hover:shadow-blue-500/50">
-                            VER PLANES
-                            <i class="fas fa-chevron-right ms-2 group-hover:translate-x-1 transition-transform text-sm"></i>
-                        </a>
-                        <a href="#contact" class="px-10 py-5 bg-white/5 backdrop-blur-md border border-white/10 text-white text-lg font-black rounded-2xl hover:bg-white/10 transition-all">
-                            SOLICITAR DEMO
-                        </a>
-                    </div>
+                            <div class="flex flex-col sm:flex-row gap-5">
+                                <a href="#pricing" class="cta-shine flex items-center justify-center px-10 py-5 bg-[#3b7ddd] text-white text-sm font-black rounded-xl shadow-2xl shadow-blue-500/20 hover:-translate-y-1 transition-all uppercase tracking-widest">
+                                    Lanzar mi Agencia
+                                    <i class="fas fa-arrow-right ms-3"></i>
+                                </a>
+                                <a href="#contact" class="flex items-center justify-center px-10 py-5 bg-white/5 border border-white/10 backdrop-blur-md text-white text-sm font-black rounded-xl hover:bg-white/10 transition-all uppercase tracking-widest">
+                                    Demo Técnica
+                                </a>
+                            </div>
 
-                    <!-- Metrics bar -->
-                    <div class="hero-reveal mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 py-10 border-y border-white/5 max-w-4xl mx-auto">
-                        <div>
-                            <p class="text-3xl font-black text-white">5x</p>
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Más rápido</p>
+                            <!-- Trust Badges -->
+                            <div class="mt-16 flex items-center gap-8 opacity-40 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-700">
+                                <span class="text-xs font-black tracking-tighter uppercase italic">LOGY EXPRESS</span>
+                                <span class="text-xs font-black tracking-tighter uppercase italic">FASTBOX.PA</span>
+                                <span class="text-xs font-black tracking-tighter uppercase italic">PANAMA COURIER</span>
+                            </div>
                         </div>
-                        <div class="md:border-l border-white/5">
-                            <p class="text-3xl font-black text-white">0%</p>
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Errores</p>
-                        </div>
-                        <div class="md:border-l border-white/5">
-                            <p class="text-3xl font-black text-white">100%</p>
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Seguro</p>
-                        </div>
-                        <div class="md:border-l border-white/5">
-                            <p class="text-3xl font-black text-white">24h</p>
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Setup</p>
+
+                        <!-- Hero Mockup (Floating Card Aesthetic) -->
+                        <div class="relative lg:h-[600px] flex items-center justify-center">
+                            <div class="absolute -inset-4 bg-[#3b7ddd]/20 rounded-[3rem] blur-3xl opacity-30"></div>
+                            <div class="relative w-full aspect-square md:aspect-video lg:aspect-square bg-[#1e293b] rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden group">
+                                <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+                                <div class="h-10 bg-slate-900/90 border-b border-white/5 flex items-center px-8 gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-red-500/20"></div>
+                                    <div class="w-3 h-3 rounded-full bg-yellow-500/20"></div>
+                                    <div class="w-3 h-3 rounded-full bg-green-500/20"></div>
+                                </div>
+                                <div class="p-8">
+                                    <div class="grid grid-cols-3 gap-4 mb-8">
+                                        <div class="h-24 bg-white/5 rounded-2xl border border-white/5 animate-pulse"></div>
+                                        <div class="h-24 bg-white/5 rounded-2xl border border-white/5 animate-pulse"></div>
+                                        <div class="h-24 bg-[#3b7ddd]/10 rounded-2xl border border-[#3b7ddd]/20"></div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div class="h-4 bg-white/5 rounded-full w-3/4"></div>
+                                        <div class="h-4 bg-white/5 rounded-full w-1/2"></div>
+                                        <div class="h-4 bg-white/5 rounded-full w-2/3"></div>
+                                        <div class="h-40 bg-white/5 rounded-3xl border border-white/5 mt-8"></div>
+                                    </div>
+                                </div>
+                                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000"
+                                     alt="Dashboard Preview"
+                                     class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-50 group-hover:opacity-100 transition-opacity duration-1000">
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Feature Bento Grid -->
-            <section id="features" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    @foreach($features as $f)
-                    <div class="reveal p-10 bg-slate-900/50 backdrop-blur-sm rounded-[2.5rem] border border-white/5 hover:border-{{ $f['color'] }}-500/50 transition-all group">
-                        <div class="w-14 h-14 bg-{{ $f['color'] }}-500/10 text-{{ $f['color'] }}-400 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">
-                            <i class="fas {{ $f['icon'] }} text-2xl"></i>
+            <!-- BENTO GRID FEATURES -->
+            <section id="features" class="py-32 bg-slate-900/30 backdrop-blur-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="mb-20">
+                        <h2 class="text-4xl md:text-6xl font-black tracking-tighter uppercase italic leading-none">
+                            Ingeniería <br>
+                            <span class="text-[#3b7ddd]">Sin Compromisos</span>
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Smart OCR Card (Large) -->
+                        <div class="md:col-span-2 p-12 bg-[#1e293b] rounded-[3rem] border border-white/5 relative overflow-hidden group reveal">
+                            <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-[#3b7ddd]/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000"></div>
+                            <div class="relative z-10">
+                                <div class="w-14 h-14 bg-[#3b7ddd] rounded-2xl flex items-center justify-center mb-10 shadow-xl shadow-blue-500/20">
+                                    <i class="fas fa-microchip text-2xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-black mb-6 uppercase tracking-tighter italic">Recepción IA & OCR</h3>
+                                <p class="text-[#94a3b8] text-lg leading-relaxed max-w-md">
+                                    Extrae trackings, pesos y datos de clientes desde facturas de Amazon, eBay y USPS automáticamente. Sin errores manuales.
+                                </p>
+                            </div>
                         </div>
-                        <h3 class="text-xl font-black text-white mb-4 uppercase tracking-tighter">{{ $f['title'] }}</h3>
-                        <p class="text-slate-400 text-sm leading-relaxed font-medium">
-                            {{ $f['desc'] }}
-                        </p>
+
+                        <!-- Loyalty Card -->
+                        <div class="p-12 bg-[#1e293b] rounded-[3rem] border border-white/5 relative overflow-hidden group reveal">
+                            <div class="w-14 h-14 bg-indigo-500/20 text-indigo-400 rounded-2xl flex items-center justify-center mb-10 border border-indigo-500/20">
+                                <i class="fas fa-award text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-black mb-6 uppercase tracking-tighter italic">Fidelización 2.0</h3>
+                            <p class="text-[#94a3b8] leading-relaxed">
+                                Sistema de puntos por peso embarcado. Convierte a tus clientes ocasionales en fans recurrentes.
+                            </p>
+                        </div>
+
+                        <!-- Data Governance -->
+                        <div class="p-12 bg-[#1e293b] rounded-[3rem] border border-white/5 relative overflow-hidden group reveal">
+                            <div class="w-14 h-14 bg-purple-500/20 text-purple-400 rounded-2xl flex items-center justify-center mb-10 border border-purple-500/20">
+                                <i class="fas fa-lock text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-black mb-6 uppercase tracking-tighter italic">Privacidad Total</h3>
+                            <p class="text-[#94a3b8] leading-relaxed">
+                                Aislamiento de datos de grado bancario para cada Tenant. Tu información es solo tuya.
+                            </p>
+                        </div>
+
+                        <!-- Yappy Bridge (Large) -->
+                        <div class="md:col-span-2 p-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[3rem] text-white relative overflow-hidden group reveal shadow-3xl shadow-blue-500/10">
+                            <div class="absolute right-12 top-12 opacity-10">
+                                <i class="fas fa-bolt text-9xl"></i>
+                            </div>
+                            <div class="relative z-10">
+                                <div class="w-14 h-14 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center mb-10 border border-white/20">
+                                    <span class="font-black text-2xl italic">Y</span>
+                                </div>
+                                <h3 class="text-4xl font-black mb-6 uppercase tracking-tighter italic leading-none">Bridge Yappy & ACH</h3>
+                                <p class="text-blue-100 text-xl leading-relaxed max-w-lg">
+                                    Conciliación automática para el mercado de Panamá. Valida capturas y abona saldos al instante sin intervención manual.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ROI DYNAMIC CALCULATOR -->
+            <section id="roi" class="py-32 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto" x-data="{
+                    paquetes: 2500,
+                    manualCost: 1.80,
+                    get saved() { return Math.round(this.paquetes * (this.manualCost - 0.35)) }
+                }">
+                    <div class="bg-white text-[#0f172a] rounded-[4rem] p-12 md:p-24 overflow-hidden relative shadow-3xl">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                            <div>
+                                <span class="text-[#3b7ddd] font-black uppercase tracking-[0.3em] text-[10px]">Financial Impact</span>
+                                <h2 class="text-5xl md:text-8xl font-black tracking-tighter mt-8 mb-12 leading-[0.85] uppercase italic">
+                                    Deja de <br>
+                                    <span class="text-red-500">QUEMAR</span> <br>
+                                    capital.
+                                </h2>
+                                <div class="space-y-12 max-w-sm">
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between text-xs font-black uppercase tracking-widest text-slate-400">
+                                            <span>Paquetes Mensuales</span>
+                                            <span class="text-[#0f172a] text-lg" x-text="paquetes.toLocaleString()"></span>
+                                        </div>
+                                        <input type="range" min="500" max="20000" step="100" x-model="paquetes" class="w-full h-1.5 bg-slate-100 rounded-full appearance-none cursor-pointer accent-[#3b7ddd]">
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div class="flex justify-between text-xs font-black uppercase tracking-widest text-slate-400">
+                                            <span>Costo por digitación ($)</span>
+                                            <span class="text-[#0f172a] text-lg" x-text="'$' + parseFloat(manualCost).toFixed(2)"></span>
+                                        </div>
+                                        <input type="range" min="0.50" max="5.00" step="0.10" x-model="manualCost" class="w-full h-1.5 bg-slate-100 rounded-full appearance-none cursor-pointer accent-[#3b7ddd]">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-[#0f172a] rounded-[3.5rem] p-16 text-white text-center shadow-2xl transform lg:rotate-3 hover:rotate-0 transition-transform duration-500">
+                                <p class="text-[#94a3b8] font-black uppercase tracking-widest text-[10px] mb-6">Tu ahorro potencial mensual</p>
+                                <p class="text-7xl md:text-9xl font-black tracking-tight text-[#3b7ddd] mb-12" x-text="'$' + saved.toLocaleString()"></p>
+                                <div class="h-px w-24 bg-white/10 mx-auto mb-12"></div>
+                                <a href="#contact" class="inline-flex items-center text-sm font-black uppercase tracking-[0.2em] border-b-2 border-[#3b7ddd] pb-2 hover:text-[#3b7ddd] transition-colors">
+                                    RECUPERAR MI DINERO AHORA
+                                    <i class="fas fa-chevron-right ms-4 text-xs"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PRICING TIERS -->
+            <section id="pricing" class="py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div class="text-center mb-24 reveal">
+                    <h2 class="text-5xl md:text-8xl font-black tracking-tighter text-white uppercase italic leading-none mb-6">Planes Elite</h2>
+                    <p class="text-[#94a3b8] font-medium text-lg">Sin comisiones por paquete. Escala sin límites.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    @php
+                        $plans = [
+                            ['name' => 'Startup', 'price' => '30', 'feat' => ['Recepción OCR', 'Portal Clientes', 'Inventario Racks']],
+                            ['name' => 'Business', 'price' => '45', 'feat' => ['Bot WhatsApp AI', 'Loyalty System', 'Marca Blanca Full'], 'main' => true],
+                            ['name' => 'Enterprise', 'price' => '55', 'feat' => ['App Móvil Nativa', 'Multi-supervisores', 'Soporte VIP 24/7']]
+                        ];
+                    @endphp
+
+                    @foreach($plans as $plan)
+                    <div class="reveal flex flex-col p-12 rounded-[3.5rem] {{ isset($plan['main']) ? 'bg-[#3b7ddd] shadow-3xl shadow-blue-500/20 md:scale-110 z-20' : 'bg-[#1e293b] border border-white/5' }}">
+                        @if(isset($plan['main']))
+                            <span class="inline-block bg-white text-[#3b7ddd] text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest mb-10 w-fit">Recomendado</span>
+                        @endif
+                        <h3 class="text-2xl font-black uppercase tracking-tighter italic mb-2 text-white">{{ $plan['name'] }}</h3>
+                        <div class="flex items-baseline mb-12">
+                            <span class="text-6xl font-black text-white">${{ $plan['price'] }}</span>
+                            <span class="{{ isset($plan['main']) ? 'text-white/70' : 'text-[#94a3b8]' }} text-sm font-bold ms-3">/mes</span>
+                        </div>
+                        <ul class="space-y-6 mb-16 flex-grow">
+                            @foreach($plan['feat'] as $f)
+                            <li class="flex items-center text-sm font-bold {{ isset($plan['main']) ? 'text-white' : 'text-slate-400' }}">
+                                <i class="fas fa-check {{ isset($plan['main']) ? 'text-blue-200' : 'text-[#3b7ddd]' }} me-4"></i>
+                                {{ $f }}
+                            </li>
+                            @endforeach
+                        </ul>
+                        <a href="#contact" class="block text-center py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] transition-all {{ isset($plan['main']) ? 'bg-white text-[#3b7ddd] hover:bg-slate-100 shadow-xl' : 'bg-white/5 border border-white/10 text-white hover:bg-white/10' }}">
+                            {{ isset($plan['main']) ? 'Solicitar Demo' : 'Empezar Ahora' }}
+                        </a>
                     </div>
                     @endforeach
                 </div>
             </section>
 
-            <!-- Dashboard Preview -->
-            <section class="py-24 px-4 sm:px-6 lg:px-8">
-                <div class="max-w-6xl mx-auto">
-                    <div class="text-center mb-16 reveal">
-                        <h2 class="text-4xl md:text-6xl font-black tracking-tighter text-white uppercase italic leading-none">
-                            Control Total <br>
-                            <span class="text-blue-500">en una sola pantalla</span>
-                        </h2>
-                    </div>
-
-                    <div class="reveal relative p-4 bg-slate-800 rounded-[3rem] border border-white/10 shadow-2xl shadow-blue-500/10">
-                        <div class="bg-[#0f172a] rounded-[2.5rem] overflow-hidden border border-white/5">
-                            <div class="h-10 bg-slate-900/80 border-b border-white/5 flex items-center px-8 gap-2">
-                                <div class="w-3 h-3 rounded-full bg-red-500/20"></div>
-                                <div class="w-3 h-3 rounded-full bg-yellow-500/20"></div>
-                                <div class="w-3 h-3 rounded-full bg-green-500/20"></div>
-                                <div class="ml-6 h-4 w-64 bg-white/5 rounded-full"></div>
-                            </div>
-                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000" alt="Dashboard" class="w-full opacity-100 transition-opacity duration-700">
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ROI Calculator -->
-            <section id="roi" class="py-24 bg-blue-600 text-white relative overflow-hidden">
-                <div class="absolute inset-0 opacity-10">
-                    <div class="absolute inset-0" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 30px 30px;"></div>
-                </div>
-
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" x-data="{
-                    paquetes: 2000,
-                    costoManual: 1.50,
-                    get ahorro() { return Math.round(this.paquetes * (this.costoManual - 0.35)) }
-                }">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                        <div class="reveal">
-                            <span class="bg-white/20 px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest">Calculadora ROI</span>
-                            <h2 class="text-5xl md:text-7xl font-black tracking-tighter mt-6 mb-8 leading-[0.9] uppercase italic">
-                                Deja de <span class="text-slate-900 underline decoration-white/30">perder dinero</span> en cada paquete.
-                            </h2>
-                            <p class="text-blue-100 text-xl font-medium mb-12 leading-relaxed">
-                                Automatizar tu recepción y cobranza no es un gasto, es la inversión más rentable de tu agencia este año.
-                            </p>
-
-                            <div class="space-y-10">
-                                <div>
-                                    <div class="flex justify-between mb-4">
-                                        <span class="text-xs font-black uppercase tracking-widest">Paquetes por Mes</span>
-                                        <span class="text-2xl font-black" x-text="paquetes.toLocaleString()"></span>
-                                    </div>
-                                    <input type="range" min="500" max="15000" step="100" x-model="paquetes" class="w-full h-1.5 bg-white/20 rounded-full appearance-none cursor-pointer accent-white">
-                                </div>
-                                <div>
-                                    <div class="flex justify-between mb-4">
-                                        <span class="text-xs font-black uppercase tracking-widest">Costo Operativo Actual</span>
-                                        <span class="text-2xl font-black" x-text="'$' + parseFloat(costoManual).toFixed(2)"></span>
-                                    </div>
-                                    <input type="range" min="0.50" max="5.00" step="0.10" x-model="costoManual" class="w-full h-1.5 bg-white/20 rounded-full appearance-none cursor-pointer accent-white">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="reveal bg-slate-900 p-12 rounded-[3.5rem] shadow-3xl transform lg:rotate-2 group transition-transform hover:rotate-0">
-                            <p class="text-blue-400 font-black uppercase tracking-widest text-[10px] mb-4">Ahorro Mensual Estimado</p>
-                            <p class="text-7xl md:text-9xl font-black tracking-tight text-white mb-6" x-text="'$' + ahorro.toLocaleString()"></p>
-                            <div class="h-1 w-20 bg-blue-500 mb-8"></div>
-                            <p class="text-slate-400 font-medium text-lg leading-relaxed mb-12">
-                                Este es el capital que hoy estás desperdiciando en procesos manuales y errores humanos. LogySaaS te lo devuelve.
-                            </p>
-                            <a href="#contact" class="inline-flex items-center px-10 py-5 bg-blue-600 text-white font-black rounded-2xl shadow-xl hover:bg-blue-700 transition-all uppercase tracking-widest text-sm">
-                                Reclamar mi ahorro <i class="fas fa-arrow-right ms-3"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Yappy / Local -->
-            <section class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-                <div class="flex flex-col lg:flex-row items-center gap-20">
-                    <div class="flex-1 reveal">
-                        <div class="w-24 h-24 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white text-5xl shadow-2xl shadow-blue-500/20 mb-10">
-                            <span class="font-black italic">Y</span>
-                        </div>
-                        <h2 class="text-5xl font-black tracking-tighter text-white mb-8 uppercase italic leading-none">Integración <span class="text-blue-500">Yappy</span> Nativa</h2>
-                        <p class="text-slate-400 text-lg leading-relaxed font-medium max-w-xl">
-                            La primera plataforma SaaS en Panamá con validación automática de pagos. Tus clientes pagan, el sistema confirma y el paquete se libera para entrega sin que tú muevas un dedo.
-                        </p>
-                    </div>
-                    <div class="flex-1 grid grid-cols-2 gap-6 reveal">
-                        <div class="p-10 bg-slate-900 rounded-[2.5rem] border border-white/5 text-center">
-                            <i class="fas fa-university text-3xl text-blue-400 mb-6"></i>
-                            <p class="text-2xl font-black text-white mb-1">ACH</p>
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Multi-banco</p>
-                        </div>
-                        <div class="p-10 bg-slate-900 rounded-[2.5rem] border border-white/5 text-center">
-                            <i class="fas fa-credit-card text-3xl text-blue-400 mb-6"></i>
-                            <p class="text-2xl font-black text-white mb-1">Cards</p>
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Global</p>
-                        </div>
-                        <div class="p-10 bg-blue-600/10 rounded-[2.5rem] border border-blue-600/20 text-center col-span-2">
-                            <i class="fab fa-whatsapp text-3xl text-green-400 mb-6"></i>
-                            <p class="text-2xl font-black text-white mb-1">WhatsApp Business</p>
-                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Notificaciones 24/7</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Pricing -->
-            <section id="pricing" class="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-                <div class="text-center mb-20 reveal">
-                    <h2 class="text-4xl md:text-7xl font-black tracking-tighter text-white uppercase italic leading-none mb-6">Planes Simples</h2>
-                    <p class="text-slate-400 font-medium">Inversión transparente para agencias ambiciosas.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- Startup -->
-                    <div class="reveal p-12 bg-slate-900 rounded-[3rem] border border-white/5 flex flex-col hover:border-blue-500/30 transition-all">
-                        <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tighter italic">Startup</h3>
-                        <div class="flex items-baseline mb-10">
-                            <span class="text-5xl font-black text-white">$30</span>
-                            <span class="text-slate-500 text-sm font-bold ms-2">/mes</span>
-                        </div>
-                        <ul class="space-y-5 mb-12 flex-grow">
-                            @foreach(['Recepción OCR', 'Portal Clientes', 'Inventario Racks', 'Facturación Auto'] as $item)
-                            <li class="flex items-center text-sm font-bold text-slate-400">
-                                <i class="fas fa-check text-blue-500 me-4"></i> {{ $item }}
-                            </li>
-                            @endforeach
-                        </ul>
-                        <a href="#contact" class="block text-center py-5 bg-white/5 border border-white/10 rounded-2xl font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest text-[10px]">Empezar Ahora</a>
-                    </div>
-
-                    <!-- Business -->
-                    <div class="reveal p-12 bg-blue-600 rounded-[3rem] flex flex-col shadow-3xl shadow-blue-500/20 transform md:scale-110 relative z-20">
-                        <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-blue-600 text-[10px] font-black px-8 py-2.5 rounded-full uppercase tracking-[0.3em] shadow-xl">Más Elegido</div>
-                        <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tighter italic">Business</h3>
-                        <div class="flex items-baseline mb-10">
-                            <span class="text-5xl font-black text-white">$45</span>
-                            <span class="text-white/70 text-sm font-bold ms-2">/mes</span>
-                        </div>
-                        <ul class="space-y-5 mb-12 flex-grow">
-                            @foreach(['Todo en Startup', 'Bot WhatsApp AI', 'Loyalty System', 'Marca Blanca Full'] as $item)
-                            <li class="flex items-center text-sm font-black text-white">
-                                <i class="fas fa-check text-white me-4"></i> {{ $item }}
-                            </li>
-                            @endforeach
-                        </ul>
-                        <a href="#contact" class="block text-center py-5 bg-white text-blue-600 rounded-2xl font-black hover:bg-slate-100 transition-all uppercase tracking-widest text-[10px]">Solicitar Demo</a>
-                    </div>
-
-                    <!-- Enterprise -->
-                    <div class="reveal p-12 bg-slate-900 rounded-[3rem] border border-white/5 flex flex-col hover:border-blue-500/30 transition-all">
-                        <h3 class="text-2xl font-black text-white mb-2 uppercase tracking-tighter italic">Enterprise</h3>
-                        <div class="flex items-baseline mb-10">
-                            <span class="text-5xl font-black text-white">$55</span>
-                            <span class="text-slate-500 text-sm font-bold ms-2">/mes</span>
-                        </div>
-                        <ul class="space-y-5 mb-12 flex-grow">
-                            @foreach(['Todo en Business', 'App Móvil Nativa', 'Multi-supervisores', 'Soporte VIP 24/7'] as $item)
-                            <li class="flex items-center text-sm font-bold text-slate-400">
-                                <i class="fas fa-check text-blue-500 me-4"></i> {{ $item }}
-                            </li>
-                            @endforeach
-                        </ul>
-                        <a href="#contact" class="block text-center py-5 bg-white/5 border border-white/10 rounded-2xl font-black text-white hover:bg-white/10 transition-all uppercase tracking-widest text-[10px]">Hablar con Ventas</a>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Final CTA -->
-            <section id="contact" class="py-32 relative overflow-hidden">
-                <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 class="reveal text-5xl md:text-9xl font-black tracking-tighter text-white uppercase italic leading-none mb-12">Escala hoy</h2>
-                    <div class="reveal bg-white/5 backdrop-blur-xl p-10 md:p-20 rounded-[4rem] border border-white/10 shadow-3xl">
-                        <h3 class="text-3xl font-black text-white mb-4">¿Dudas? Habla con un experto</h3>
-                        <p class="text-slate-400 text-lg mb-12">Estamos listos para implementar tu courier en tiempo récord.</p>
+            <!-- CONTACT FORM -->
+            <section id="contact" class="py-40 relative">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <h2 class="reveal text-6xl md:text-9xl font-black tracking-tighter text-white uppercase italic leading-none mb-20 opacity-20">CONTACTO</h2>
+                    <div class="reveal bg-[#1e293b] border border-white/5 p-12 md:p-24 rounded-[4rem] shadow-3xl">
+                        <h3 class="text-4xl font-black mb-4 uppercase tracking-tighter italic leading-none text-white">¿Hablamos de negocios?</h3>
+                        <p class="text-[#94a3b8] text-lg mb-16 font-medium">Un consultor técnico te contactará en menos de 2 horas.</p>
                         <livewire:public.contact-form />
                     </div>
                 </div>
@@ -296,23 +260,21 @@
             if (typeof gsap === 'undefined') return;
             gsap.registerPlugin(ScrollTrigger);
 
-            // Staggered reveal for Hero
-            gsap.from(".hero-reveal", {
-                duration: 1.2,
-                y: 60,
+            gsap.from(".hero-text-area > *", {
+                duration: 1.5,
+                y: 80,
                 opacity: 0,
-                stagger: 0.2,
+                stagger: 0.15,
                 ease: "power4.out"
             });
 
-            // Reveal Sections
             gsap.utils.toArray('.reveal').forEach(elem => {
                 gsap.from(elem, {
                     scrollTrigger: {
                         trigger: elem,
-                        start: "top 90%",
+                        start: "top 95%",
                     },
-                    duration: 1,
+                    duration: 1.2,
                     y: 40,
                     opacity: 0,
                     ease: "power3.out"

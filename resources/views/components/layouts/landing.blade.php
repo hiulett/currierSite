@@ -72,35 +72,32 @@
         <!-- Navigation -->
         <nav x-data="{ open: false, scrolled: false }"
              x-on:scroll.window="scrolled = (window.pageYOffset > 20)"
-             :class="scrolled ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-lg py-3' : 'bg-transparent py-5'"
+             :class="scrolled ? 'bg-slate-900/80 backdrop-blur-2xl border-white/5 py-3 shadow-2xl' : 'bg-transparent py-6'"
              class="fixed w-full z-50 transition-all duration-500 border-b border-transparent">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-12">
+                    <div class="flex items-center gap-16">
                         <a href="/" class="group flex items-center gap-3">
-                            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200 group-hover:rotate-12 transition-transform duration-300">
-                                <i class="fas fa-box-open text-white text-xl"></i>
+                            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:rotate-12 transition-transform duration-300">
+                                <i class="fas fa-box-open text-white text-lg"></i>
                             </div>
-                            <span class="text-2xl font-black tracking-tighter" :class="scrolled ? 'text-slate-900' : 'text-white'">
-                                Logi<span class="text-blue-600">SaaS</span>
+                            <span class="text-2xl font-black tracking-tighter text-white uppercase italic">
+                                Logi<span class="text-blue-500">SaaS</span>
                             </span>
                         </a>
-                        <div class="hidden lg:flex items-center space-x-1">
-                            <a href="#features" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50/10">Características</a>
-                            <a href="#solutions" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50/10">Soluciones</a>
-                            <a href="#roi" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50/10">Calculadora</a>
-                            <a href="#pricing" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50/10">Precios</a>
-                            <a href="#faq" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-blue-600 px-4 py-2 text-sm font-bold transition-all rounded-full hover:bg-blue-50/10">FAQ</a>
+                        <div class="hidden lg:flex items-center space-x-2">
+                            <a href="#features" class="text-[#94a3b8] hover:text-white px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all rounded-full hover:bg-white/5">Características</a>
+                            <a href="#roi" class="text-[#94a3b8] hover:text-white px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all rounded-full hover:bg-white/5">ROI</a>
+                            <a href="#pricing" class="text-[#94a3b8] hover:text-white px-4 py-2 text-[11px] font-black uppercase tracking-widest transition-all rounded-full hover:bg-white/5">Precios</a>
                         </div>
                     </div>
 
-                    <div class="hidden lg:flex items-center gap-4">
-                        <a href="{{ route('login') }}" :class="scrolled ? 'text-slate-600' : 'text-slate-300'" class="hover:text-white px-4 py-2 text-sm font-bold transition-colors">
-                            <i class="far fa-user me-2"></i>Acceso
+                    <div class="hidden lg:flex items-center gap-6">
+                        <a href="{{ route('login') }}" class="text-[#94a3b8] hover:text-white text-[11px] font-black uppercase tracking-widest transition-colors">
+                            ACCESO
                         </a>
-                        <a href="#contact" class="cta-shine inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all transform hover:-translate-y-1 active:scale-95 group">
-                            Prueba 30 Días Gratis
-                            <i class="fas fa-arrow-right ms-2 group-hover:translate-x-1 transition-transform"></i>
+                        <a href="#contact" class="inline-flex items-center justify-center px-8 py-3 bg-white text-slate-900 text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-[#3b7ddd] hover:text-white transition-all transform hover:-translate-y-0.5 active:scale-95 shadow-xl">
+                            COMENZAR
                         </a>
                     </div>
 
