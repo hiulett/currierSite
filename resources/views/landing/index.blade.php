@@ -1,11 +1,23 @@
 <x-layouts.landing>
-    <div class="bg-white text-slate-900">
-        <!-- REFINED GLOBAL BACKGROUND -->
-        <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-            <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#2563eb 0.5px, transparent 0.5px); background-size: 30px 30px;"></div>
-            <!-- Subtler blobs -->
-            <div class="absolute top-[-10%] right-[-10%] w-[800px] h-[800px] bg-blue-50/50 rounded-full blur-[120px]"></div>
-            <div class="absolute bottom-[20%] left-[-10%] w-[600px] h-[600px] bg-slate-50/80 rounded-full blur-[100px]"></div>
+    <div class="bg-white text-slate-900 selection:bg-blue-100 selection:text-blue-900">
+        <!-- GLOBAL PARALLAX BACKGROUND -->
+        <div class="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+            <!-- Subtle World Map or Connectivity Pattern -->
+            <div id="global-parallax-bg" class="absolute inset-0 opacity-[0.03] scale-110"
+                 style="background-image: url('https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80&w=2400'); background-size: cover; background-position: center;"></div>
+
+            <!-- Interactive Technical Shapes -->
+            <div class="parallax-element absolute top-[15%] left-[5%] w-[400px] h-[400px] bg-blue-50/50 rounded-full blur-[100px]" data-speed="0.02"></div>
+            <div class="parallax-element absolute bottom-[10%] right-[5%] w-[500px] h-[500px] bg-indigo-50/40 rounded-full blur-[120px]" data-speed="0.04"></div>
+
+            <!-- Floating Abstract Logistics Elements (SVG Pattern) -->
+            <div class="parallax-element absolute top-[40%] right-[15%] opacity-[0.05]" data-speed="0.08">
+                <svg width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+            </div>
         </div>
 
         <div class="relative z-10">
@@ -203,15 +215,47 @@
             if (typeof gsap === 'undefined') return;
             gsap.registerPlugin(ScrollTrigger);
 
+            // Global Scroll Parallax (Background pattern movement)
+            gsap.to("#global-parallax-bg", {
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1.5
+                },
+                y: 300,
+                ease: "none"
+            });
+
+            // Mouse Move Parallax (Interactive shapes and glows)
+            document.addEventListener("mousemove", (e) => {
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                gsap.to(".parallax-element", {
+                    duration: 2,
+                    x: (i, target) => (mouseX - window.innerWidth / 2) * (target.getAttribute("data-speed") || 0.05),
+                    y: (i, target) => (mouseY - window.innerHeight / 2) * (target.getAttribute("data-speed") || 0.05),
+                    ease: "power2.out"
+                });
+            });
+
+            // Hero Animation: Smooth entry
+            const tl = gsap.timeline();
+            tl.from("h1", { duration: 1.2, y: 50, opacity: 0, ease: "power4.out" })
+              .from("h1 + p", { duration: 1, y: 30, opacity: 0, ease: "power4.out" }, "-=0.8")
+              .from(".flex.flex-col.sm\\:flex-row.gap-4", { duration: 1, y: 20, opacity: 0, ease: "power4.out" }, "-=0.7");
+
             // Subtle Fade In Sections
             gsap.utils.toArray('section').forEach(section => {
+                if (section.classList.contains('pt-32')) return; // Skip hero as it has its own timeline
+
                 gsap.from(section, {
                     scrollTrigger: {
                         trigger: section,
-                        start: "top 90%",
+                        start: "top 85%",
                     },
                     duration: 1,
-                    y: 20,
+                    y: 40,
                     opacity: 0,
                     ease: "power2.out"
                 });
