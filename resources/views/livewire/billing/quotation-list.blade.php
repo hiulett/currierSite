@@ -365,6 +365,35 @@
                                     borderColor: '#ffffff'
                                 }]
                             },
+                            plugins: [{
+                                id: 'centerText',
+                                beforeDraw(chart) {
+                                    const { ctx } = chart;
+                                    const meta = chart.getDatasetMeta(0);
+                                    if (meta.data && meta.data.length > 0) {
+                                        const center = meta.data[0];
+                                        const centerX = center.x;
+                                        const centerY = center.y;
+
+                                        ctx.save();
+                                        ctx.textAlign = 'center';
+                                        ctx.textBaseline = 'middle';
+
+                                        // Top label
+                                        ctx.font = '500 11px Inter, system-ui';
+                                        ctx.fillStyle = '#64748b';
+                                        ctx.fillText('TOTAL', centerX, centerY - 10);
+
+                                        // Bottom value
+                                        ctx.font = 'bold 20px Inter, system-ui';
+                                        ctx.fillStyle = '#1e293b';
+                                        const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        ctx.fillText(total, centerX, centerY + 12);
+
+                                        ctx.restore();
+                                    }
+                                }
+                            }],
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
