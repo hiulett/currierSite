@@ -55,15 +55,27 @@ class InvoiceSent extends Notification
             'logoBase64' => $logoBase64,
         ]);
 
-        return (new MailMessage)
-                    ->subject("Nueva Factura Generada: #{$this->invoice->number}")
-                    ->greeting("Hola, {$notifiable->name}")
-                    ->line("Se ha generado una nueva factura por tus servicios de logística.")
-                    ->line("Número de Factura: #{$this->invoice->number}")
-                    ->line("Monto Total: {$this->invoice->currency} " . number_format($this->invoice->total, 2))
-                    ->line("Fecha de Vencimiento: " . ($this->invoice->due_date ? $this->invoice->due_date->format('d/m/Y') : 'N/A'))
-                    ->action('Ver Factura Online', url("/customer/invoices")) // Assuming this route exists
-                    ->line('Gracias por confiar en nosotros.')
+        $template = $tenant->settings_json['invoice_email_template'] ?? "Hola {nombre_cliente},\n\nSe ha generado una nueva factura por tus servicios de logística.\n\nNúmero de Factura: #{numero_documento}\nMonto Total: {monto_total}\nFecha de Vencimiento: {fecha_vencimiento}\n\nGracias por confiar en nosotros.\n\nSaludos,\n{nombre_empresa}";
+        
+        $replacements = [
+            '{nombre_cliente}' => $notifiable->name ?? 'Cliente',
+            '{numero_documento}' => $this->invoice->number,
+            '{monto_total}' => $this->invoice->currency . ' ' . number_format($this->invoice->total, 2),
+            '{fecha_vencimiento}' => $this->invoice->due_date ? $this->invoice->due_date->format('d/m/Y') : 'N/A',
+            '{nombre_empresa}' => $tenant->name ?? config('app.name'),
+        ];
+        
+        $body = str_replace(array_keys($replacements), array_values($replacements), $template);
+
+        $mailMessage = (new MailMessage)
+                    ->subject("Factura #{$this->invoice->number}");
+                    
+        $lines = explode("\n", $body);
+        foreach ($lines as $line) {
+            $mailMessage->line(trim($line));
+        }
+
+        return $mailMessage->action('Ver Factura Online', url("/customer/invoices"))
                     ->attachData($pdf->output(), 'Factura_' . $this->invoice->number . '.pdf', [
                         'mime' => 'application/pdf',
                     ]);

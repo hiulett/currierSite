@@ -126,6 +126,36 @@
             </div>
         </div>
 
+        <div class="col-12 mt-2">
+            <!-- Email Templates -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="file-text"></i> Plantillas de Correo (Mensajes)</h5>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <div class="alert alert-soft-primary small mb-4">
+                        <i data-feather="info" class="me-1"></i>
+                        <strong>Variables disponibles:</strong> Puedes usar estos comodines en tus textos y el sistema los reemplazará por los datos reales al enviar el correo.
+                        <div class="mt-2 text-dark font-monospace">
+                            <code>{nombre_cliente}</code>, <code>{numero_documento}</code>, <code>{monto_total}</code>, <code>{fecha_vencimiento}</code>, <code>{nombre_empresa}</code>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">Plantilla Facturas</label>
+                            <textarea wire:model="invoice_email_template" class="form-control border-2" rows="10"></textarea>
+                            <div class="form-text xsmall mt-1">Este texto se enviará en el cuerpo del correo al enviar una factura.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">Plantilla Cotizaciones</label>
+                            <textarea wire:model="quotation_email_template" class="form-control border-2" rows="10"></textarea>
+                            <div class="form-text xsmall mt-1">Este texto se enviará en el cuerpo del correo al enviar una cotización.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="col-12 col-lg-4">
             <div class="card bg-dark text-white border-0 shadow-lg mb-4" style="border-radius: 1rem;">
                 <div class="card-body p-4">

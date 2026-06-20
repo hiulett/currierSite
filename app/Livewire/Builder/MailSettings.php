@@ -11,11 +11,14 @@ class MailSettings extends Component
     public $mail_port;
     public $mail_username;
     public $mail_password;
-    public $mail_encryption;
+    public $mail_encryption = 'tls';
     public $mail_from_address;
     public $mail_from_name;
     public $mail_driver = 'smtp'; // smtp or sendgrid_api
     public $test_email_address;
+    
+    public $invoice_email_template;
+    public $quotation_email_template;
 
     public function mount()
     {
@@ -33,6 +36,9 @@ class MailSettings extends Component
         $this->mail_from_name = $settings['mail_from_name'] ?? $tenant->name;
         $this->mail_driver = $settings['mail_driver'] ?? 'smtp';
         
+        $this->invoice_email_template = $settings['invoice_email_template'] ?? "Hola {nombre_cliente},\n\nSe ha generado una nueva factura por tus servicios de logística.\n\nNúmero de Factura: #{numero_documento}\nMonto Total: {monto_total}\nFecha de Vencimiento: {fecha_vencimiento}\n\nGracias por confiar en nosotros.\n\nSaludos,\n{nombre_empresa}";
+        $this->quotation_email_template = $settings['quotation_email_template'] ?? "Hola {nombre_cliente},\n\nLe hemos generado la cotización #{numero_documento}.\n\nAdjunto a este correo encontrará el documento en formato PDF con todos los detalles y condiciones de los servicios cotizados.\n\nMonto Total: {monto_total}\n\nSi tiene alguna duda o requiere asistencia adicional, no dude en contactarnos.\n\nGracias por su preferencia,\n{nombre_empresa}";
+
         if (empty($this->test_email_address)) {
             $this->test_email_address = auth()->user()->email ?? '';
         }
@@ -51,6 +57,9 @@ class MailSettings extends Component
         $settings['mail_from_address'] = trim($this->mail_from_address);
         $settings['mail_from_name'] = trim($this->mail_from_name);
         $settings['mail_driver'] = $this->mail_driver;
+        
+        $settings['invoice_email_template'] = trim($this->invoice_email_template);
+        $settings['quotation_email_template'] = trim($this->quotation_email_template);
 
         $tenant->update(['settings_json' => $settings]);
         
