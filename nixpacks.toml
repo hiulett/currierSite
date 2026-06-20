@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ['php82', 'nodejs', 'npm', 'composer', 'libpng', 'libjpeg', 'freetype', 'zlib', 'libzip', 'tesseract', 'ghostscript']
+nixPkgs = ['php82', 'nodejs', 'npm', 'php82Packages.composer', 'libpng', 'libjpeg', 'freetype', 'zlib', 'libzip', 'tesseract', 'ghostscript']
 
 [phases.build]
 cmds = [
