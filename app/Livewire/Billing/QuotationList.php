@@ -46,12 +46,19 @@ class QuotationList extends Component
     public function sendEmail($quotationId)
     {
         $quotation = Quotation::with('customer.user', 'tenant')->find($quotationId);
-        if ($quotation && $quotation->customer && $quotation->customer->user) {
+        if (!$quotation) {
+            session()->flash('error', 'Cotización no encontrada.');
+            return;
+        }
+
+        $email = $quotation->customer?->user?->email ?? $quotation->client_email;
+
+        if ($email) {
             try {
-                \Illuminate\Support\Facades\Mail::to($quotation->customer->user->email)
+                \Illuminate\Support\Facades\Mail::to($email)
                     ->queue(new \App\Mail\QuotationSent($quotation));
                 $quotation->update(['status' => 'email_sent']);
-                session()->flash('message', '✉️ Correo de cotización encolado para ' . $quotation->customer->user->email . '. El mensaje se enviará en breve.');
+                session()->flash('message', '✉️ Correo de cotización encolado para ' . $email . '. El mensaje se enviará en breve.');
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Error dispatching quotation email: ' . $e->getMessage());
                 session()->flash('error', 'Error al encolar el correo. Verifique la configuración SMTP. Detalle: ' . $e->getMessage());
@@ -66,6 +73,8 @@ class QuotationList extends Component
         $query = Quotation::with('customer.user')
             ->where(function($query) {
                 $query->where('number', 'like', '%' . $this->search . '%')
+                      ->orWhere('client_name', 'like', '%' . $this->search . '%')
+                      ->orWhere('client_email', 'like', '%' . $this->search . '%')
                       ->orWhereHas('customer', function($q) {
                           $q->whereHas('user', function($u) {
                               $u->where('name', 'like', '%' . $this->search . '%');

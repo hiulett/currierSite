@@ -41,9 +41,11 @@
 
     <div class="customer-details">
         <strong>COTIZADO A:</strong><br>
-        {{ $quotation->customer->user->name ?? 'S/D' }}<br>
-        Casillero: {{ $quotation->customer->box_number ?? 'S/D' }}<br>
-        Email: {{ $quotation->customer->user->email ?? '' }}
+        {{ $quotation->customer?->user?->name ?? $quotation->client_name ?? 'S/D' }}<br>
+        @if($quotation->customer)
+            Casillero: {{ $quotation->customer->box_number ?? 'S/D' }}<br>
+        @endif
+        Email: {{ $quotation->customer?->user?->email ?? $quotation->client_email ?? '' }}
     </div>
 
     <table>

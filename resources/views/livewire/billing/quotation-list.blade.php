@@ -164,8 +164,16 @@
                                 <div class="text-muted xsmall font-bold uppercase">{{ $quotation->created_at->format('d M, Y') }}</div>
                             </td>
                             <td>
-                                <div class="fw-bold text-dark">{{ $quotation->customer?->user?->name ?? 'S/D' }}</div>
-                                <div class="text-primary small font-black uppercase tracking-tighter">{{ $quotation->customer?->user?->email }}</div>
+                                <div class="fw-bold text-dark">
+                                    @if($quotation->customer?->user)
+                                        {{ $quotation->customer->user->name }}
+                                    @else
+                                        {{ $quotation->client_name ?? 'S/D' }} <span class="badge bg-light text-secondary border font-normal ms-1" style="font-size: 0.65rem; font-weight: normal;">No Registrado</span>
+                                    @endif
+                                </div>
+                                <div class="text-primary small font-black uppercase tracking-tighter">
+                                    {{ $quotation->customer?->user?->email ?? $quotation->client_email }}
+                                </div>
                             </td>
                             <td>
                                 <div class="fw-black text-dark">{{ $currency }} {{ number_format($quotation->total, 2) }}</div>

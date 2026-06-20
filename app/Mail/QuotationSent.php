@@ -50,7 +50,7 @@ class QuotationSent extends Mailable implements ShouldQueue
         $template = $tenant->settings_json['quotation_email_template'] ?? "Hola {nombre_cliente},\n\nLe hemos generado la cotización #{numero_documento}.\n\nAdjunto a este correo encontrará el documento en formato PDF con todos los detalles y condiciones de los servicios cotizados.\n\nMonto Total: {monto_total}\n\nSi tiene alguna duda o requiere asistencia adicional, no dude en contactarnos.\n\nGracias por su preferencia,\n{nombre_empresa}";
         
         $replacements = [
-            '{nombre_cliente}' => $this->quotation->customer->user->name ?? 'Cliente',
+            '{nombre_cliente}' => $this->quotation->customer?->user?->name ?? $this->quotation->client_name ?? 'Cliente',
             '{numero_documento}' => $this->quotation->number,
             '{monto_total}' => ($tenant->settings_json['currency'] ?? 'USD') . ' ' . number_format($this->quotation->total, 2),
             '{fecha_vencimiento}' => '',

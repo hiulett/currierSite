@@ -1,28 +1,60 @@
 <div>
     <div class="p-4">
         <form wire:submit.prevent="save">
-            <!-- Customer Selection -->
+            <!-- Client Type Toggle -->
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <label class="form-label font-black text-uppercase small text-muted">Seleccionar Cliente</label>
-                    <div class="position-relative">
-                        <input type="text" class="form-control" wire:model.live="search_customer" placeholder="Buscar por nombre, email o número de casillero...">
-                        
-                        @if(!empty($search_customer) && empty($customer_id))
-                            <div class="position-absolute w-100 mt-1 shadow bg-white border rounded z-3" style="max-height: 200px; overflow-y: auto;">
-                                @forelse($customers as $c)
-                                    <div class="p-2 border-bottom cursor-pointer hover-bg-light" wire:click="selectCustomer({{ $c->id }}, '{{ $c->user->name }} - {{ $c->box_number }}')">
-                                        <div class="fw-bold">{{ $c->user->name }}</div>
-                                        <div class="small text-muted">{{ $c->user->email }} | PTY: {{ $c->box_number }}</div>
-                                    </div>
-                                @empty
-                                    <div class="p-2 text-muted small">No se encontraron clientes.</div>
-                                @endforelse
-                            </div>
-                        @endif
+                    <label class="form-label font-black text-uppercase small text-muted d-block">Tipo de Cliente</label>
+                    <div class="btn-group" role="group" aria-label="Tipo de Cliente">
+                        <input type="radio" class="btn-check" name="is_registered" id="reg_client" value="1" wire:model.live="is_registered" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary text-uppercase font-bold small px-3" for="reg_client">Cliente Registrado</label>
+
+                        <input type="radio" class="btn-check" name="is_registered" id="unreg_client" value="0" wire:model.live="is_registered" autocomplete="off">
+                        <label class="btn btn-outline-primary text-uppercase font-bold small px-3" for="unreg_client">No Registrado</label>
                     </div>
-                    @error('customer_id') <span class="text-danger small">{{ $message }}</span> @enderror
                 </div>
+            </div>
+
+            <!-- Customer Selection or Unregistered Fields -->
+            <div class="row mb-4">
+                @if($is_registered)
+                    <div class="col-md-6">
+                        <label class="form-label font-black text-uppercase small text-muted">Seleccionar Cliente</label>
+                        <div class="position-relative">
+                            <input type="text" class="form-control" wire:model.live="search_customer" placeholder="Buscar por nombre, email o número de casillero...">
+                            
+                            @if(!empty($search_customer) && empty($customer_id))
+                                <div class="position-absolute w-100 mt-1 shadow bg-white border rounded z-3" style="max-height: 200px; overflow-y: auto;">
+                                    @forelse($customers as $c)
+                                        <div class="p-2 border-bottom cursor-pointer hover-bg-light" wire:click="selectCustomer({{ $c->id }}, '{{ $c->user->name }} - {{ $c->box_number }}')">
+                                            <div class="fw-bold">{{ $c->user->name }}</div>
+                                            <div class="small text-muted">{{ $c->user->email }} | PTY: {{ $c->box_number }}</div>
+                                        </div>
+                                    @empty
+                                        <div class="p-2 text-muted small">No se encontraron clientes.</div>
+                                    @endforelse
+                                </div>
+                            @endif
+                        </div>
+                        @error('customer_id') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+                @else
+                    <div class="col-md-4">
+                        <label class="form-label font-black text-uppercase small text-muted">Nombre / Empresa</label>
+                        <input type="text" class="form-control" wire:model="client_name" placeholder="A quién va dirigida la cotización">
+                        @error('client_name') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label font-black text-uppercase small text-muted">Apellido</label>
+                        <input type="text" class="form-control" wire:model="client_lastname" placeholder="Apellido (opcional)">
+                        @error('client_lastname') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label font-black text-uppercase small text-muted">Correo Electrónico</label>
+                        <input type="email" class="form-control" wire:model="client_email" placeholder="correo@ejemplo.com">
+                        @error('client_email') <span class="text-danger small">{{ $message }}</span> @enderror
+                    </div>
+                @endif
             </div>
 
             <!-- Items -->

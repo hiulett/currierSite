@@ -10,9 +10,13 @@ use Illuminate\Support\Facades\DB;
 
 class CreateQuotation extends Component
 {
+    public $is_registered = true;
     public $customer_id;
     public $search_customer = '';
     public $customers = [];
+    public $client_name = '';
+    public $client_lastname = '';
+    public $client_email = '';
     public $notes = '';
 
     public $items = [];
@@ -26,7 +30,8 @@ class CreateQuotation extends Component
 
     public function initForm()
     {
-        $this->reset(['customer_id', 'search_customer', 'notes', 'customers']);
+        $this->reset(['customer_id', 'search_customer', 'notes', 'customers', 'client_name', 'client_lastname', 'client_email']);
+        $this->is_registered = true;
         $this->items = [
             ['item_number' => '', 'description' => '', 'quantity' => 1, 'price' => 0, 'handling_price' => 0, 'total' => 0]
         ];
@@ -105,14 +110,22 @@ class CreateQuotation extends Component
 
     public function save()
     {
-        $this->validate([
-            'customer_id' => 'required|exists:customers,id',
+        $rules = [
             'items' => 'required|array|min:1',
             'items.*.description' => 'required|string|max:255',
             'items.*.quantity' => 'required|numeric|min:0.1',
             'items.*.price' => 'required|numeric|min:0',
             'items.*.handling_price' => 'required|numeric|min:0',
-        ]);
+        ];
+
+        if ($this->is_registered) {
+            $rules['customer_id'] = 'required|exists:customers,id';
+        } else {
+            $rules['client_name'] = 'required|string|max:255';
+            $rules['client_email'] = 'required|email|max:255';
+        }
+
+        $this->validate($rules);
 
         DB::transaction(function () {
             $tenantId = session('tenant_id');
@@ -121,9 +134,13 @@ class CreateQuotation extends Component
             $nextNumber = $lastQuotation ? intval(str_replace($prefix, '', $lastQuotation->number)) + 1 : 1;
             $number = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
+            $fullName = $this->is_registered ? null : trim($this->client_name . ' ' . $this->client_lastname);
+
             $quotation = Quotation::create([
                 'tenant_id' => $tenantId,
-                'customer_id' => $this->customer_id,
+                'customer_id' => $this->is_registered ? $this->customer_id : null,
+                'client_name' => $fullName,
+                'client_email' => $this->is_registered ? null : $this->client_email,
                 'number' => $number,
                 'subtotal' => $this->getSubtotalProperty(),
                 'handling_total' => $this->getHandlingTotalProperty(),
