@@ -245,11 +245,10 @@
     </div>
 
     <!-- Scripts and Styles for Charts -->
-    @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            function openQuotationModal() {
-                var el = document.getElementById('modalCreateQuotation');
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        window.openQuotationModal = function() {
+            var el = document.getElementById('modalCreateQuotation');
                 var myModal = bootstrap.Modal.getOrCreateInstance(el);
                 Livewire.dispatch('openCreateQuotationModal');
                 myModal.show();
@@ -322,6 +321,5 @@
                     setTimeout(initCharts, 100);
                 });
             });
-        </script>
-    @endpush
+    </script>
 </div>
