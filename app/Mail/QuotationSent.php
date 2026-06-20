@@ -60,7 +60,7 @@ class QuotationSent extends Mailable implements ShouldQueue
         $body = str_replace(array_keys($replacements), array_values($replacements), $template);
 
         return new Content(
-            view: 'emails.quotation',
+            markdown: 'emails.quotation',
             with: [
                 'body' => $body,
             ]
