@@ -1,4 +1,6 @@
 <div class="container-fluid p-0">
+
+    {{-- ===== PAGE HEADER ===== --}}
     <div class="row mb-4 align-items-center">
         <div class="col-12 col-md-6">
             <h2 class="h3 mb-0 uppercase font-black tracking-tight text-dark">Configuración de Correo</h2>
@@ -12,30 +14,32 @@
         </div>
     </div>
 
+    {{-- ===== ALERTS ===== --}}
     @if (session()->has('message'))
         <div class="alert alert-success alert-dismissible shadow-sm mb-4" role="alert">
-            <div class="alert-message">
-                <strong>¡Éxito!</strong> {{ session('message') }}
-            </div>
+            <div class="alert-message"><strong>¡Éxito!</strong> {{ session('message') }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if (session()->has('error'))
+        <div class="alert alert-danger alert-dismissible shadow-sm mb-4" role="alert">
+            <div class="alert-message"><strong>¡Error!</strong> {{ session('error') }}</div>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
-    <div class="row">
-        <div class="col-12 col-lg-8">
-            @if (session()->has('error'))
-                <div class="alert alert-danger alert-dismissible shadow-sm mb-4" role="alert">
-                    <div class="alert-message">
-                        <strong>¡Error!</strong> {{ session('error') }}
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
+    {{-- ===== ROW 1: SERVER CONFIG (col-8) + SIDEBAR (col-4) ===== --}}
+    <div class="row g-4 mb-0">
 
-            <!-- Driver Selection -->
+        {{-- LEFT: Driver + SMTP/API config --}}
+        <div class="col-12 col-lg-8">
+
+            {{-- Driver Selection --}}
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="settings"></i> Método de Envío</h5>
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary">
+                        <i class="align-middle me-2" data-feather="settings"></i> Método de Envío
+                    </h5>
                 </div>
                 <div class="card-body p-4">
                     <div class="row">
@@ -50,11 +54,13 @@
                 </div>
             </div>
 
-            <!-- SMTP Server Settings -->
+            {{-- SMTP Settings --}}
             @if($mail_driver === 'smtp')
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="server"></i> Configuración SMTP</h5>
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary">
+                        <i class="align-middle me-2" data-feather="server"></i> Configuración SMTP
+                    </h5>
                 </div>
                 <div class="card-body p-4 p-md-5">
                     <div class="row g-4">
@@ -66,7 +72,6 @@
                             <label class="form-label xsmall font-black text-uppercase text-muted">Puerto</label>
                             <input type="text" wire:model="mail_port" class="form-control border-2 fw-bold" placeholder="587">
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label xsmall font-black text-uppercase text-muted">Usuario / Email</label>
                             <input type="text" wire:model="mail_username" class="form-control border-2 fw-bold">
@@ -75,7 +80,6 @@
                             <label class="form-label xsmall font-black text-uppercase text-muted">Contraseña</label>
                             <input type="password" wire:model="mail_password" class="form-control border-2 fw-bold">
                         </div>
-
                         <div class="col-md-6">
                             <label class="form-label xsmall font-black text-uppercase text-muted">Encriptación</label>
                             <select wire:model="mail_encryption" class="form-select border-2 fw-bold">
@@ -88,10 +92,12 @@
                 </div>
             </div>
             @else
-            <!-- SendGrid API Settings -->
+            {{-- SendGrid API Settings --}}
             <div class="card border-0 shadow-sm mb-4 border-start border-primary border-4">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="zap"></i> Configuración SendGrid API</h5>
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary">
+                        <i class="align-middle me-2" data-feather="zap"></i> Configuración SendGrid API
+                    </h5>
                 </div>
                 <div class="card-body p-4 p-md-5">
                     <div class="row g-4">
@@ -105,10 +111,12 @@
             </div>
             @endif
 
-            <!-- Sender Identity -->
+            {{-- Sender Identity --}}
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="user"></i> Identidad del Remitente</h5>
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary">
+                        <i class="align-middle me-2" data-feather="user"></i> Identidad del Remitente
+                    </h5>
                 </div>
                 <div class="card-body p-4 p-md-5">
                     <div class="row g-4">
@@ -124,39 +132,13 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
-        <div class="col-12 mt-2">
-            <!-- Email Templates -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="card-title mb-0 uppercase font-black small text-primary"><i class="align-middle me-2" data-feather="file-text"></i> Plantillas de Correo (Mensajes)</h5>
-                </div>
-                <div class="card-body p-4 p-md-5">
-                    <div class="alert alert-soft-primary small mb-4">
-                        <i data-feather="info" class="me-1"></i>
-                        <strong>Variables disponibles:</strong> Puedes usar estos comodines en tus textos y el sistema los reemplazará por los datos reales al enviar el correo.
-                        <div class="mt-2 text-dark font-monospace">
-                            <code>{nombre_cliente}</code>, <code>{numero_documento}</code>, <code>{monto_total}</code>, <code>{fecha_vencimiento}</code>, <code>{nombre_empresa}</code>
-                        </div>
-                    </div>
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <label class="form-label xsmall font-black text-uppercase text-muted">Plantilla Facturas</label>
-                            <textarea wire:model="invoice_email_template" class="form-control border-2" rows="10"></textarea>
-                            <div class="form-text xsmall mt-1">Este texto se enviará en el cuerpo del correo al enviar una factura.</div>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label xsmall font-black text-uppercase text-muted">Plantilla Cotizaciones</label>
-                            <textarea wire:model="quotation_email_template" class="form-control border-2" rows="10"></textarea>
-                            <div class="form-text xsmall mt-1">Este texto se enviará en el cuerpo del correo al enviar una cotización.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
+        {{-- RIGHT SIDEBAR: Info + Test Email --}}
         <div class="col-12 col-lg-4">
+
+            {{-- ¿Por qué API? info card --}}
             <div class="card bg-dark text-white border-0 shadow-lg mb-4" style="border-radius: 1rem;">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-4">
@@ -176,27 +158,72 @@
                 </div>
             </div>
 
+            {{-- Test Email card --}}
             <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary">
+                        <i class="align-middle me-2" data-feather="send"></i> Prueba de Conexión
+                    </h5>
+                </div>
                 <div class="card-body p-4 text-center">
                     <div class="mb-3 text-warning">
-                        <i data-feather="alert-triangle" style="width: 48px; height: 48px; opacity: 0.5;"></i>
+                        <i data-feather="alert-triangle" style="width: 40px; height: 40px; opacity: 0.5;"></i>
                     </div>
-                    <h6 class="fw-black text-dark uppercase small">Prueba de Conexión</h6>
-                    <p class="text-muted xsmall mb-3">Una vez guardes, te recomendamos enviar un correo de prueba.</p>
-                    
+                    <p class="text-muted xsmall mb-3">Guarda primero tu configuración y luego envíate un correo de prueba para verificar que todo funciona.</p>
                     <div class="mb-3 text-start">
                         <label class="form-label xsmall font-black text-uppercase text-muted">Enviar prueba a:</label>
-                        <input type="email" wire:model="test_email_address" class="form-control form-control-sm border-2 fw-bold text-center" placeholder="tu@correo.com">
+                        <input type="email" wire:model="test_email_address" class="form-control form-control-sm border-2 fw-bold" placeholder="tu@correo.com">
                     </div>
-
                     <button wire:click="sendTestMail" wire:loading.attr="disabled" class="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold w-100">
-                        <span wire:loading.remove wire:target="sendTestMail">ENVIAR TEST</span>
+                        <span wire:loading.remove wire:target="sendTestMail"><i class="align-middle me-1" data-feather="send"></i> ENVIAR TEST</span>
                         <span wire:loading wire:target="sendTestMail">
                             <span class="spinner-border spinner-border-sm me-1"></span> ENVIANDO...
                         </span>
                     </button>
                 </div>
             </div>
+
         </div>
     </div>
+
+    {{-- ===== ROW 2: EMAIL TEMPLATES (full width) ===== --}}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary">
+                        <i class="align-middle me-2" data-feather="file-text"></i> Plantillas de Correo (Mensajes)
+                    </h5>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <div class="alert alert-info small mb-4 d-flex align-items-start gap-2">
+                        <i data-feather="info" style="width:18px; height:18px; flex-shrink:0; margin-top:2px;"></i>
+                        <div>
+                            <strong>Variables disponibles:</strong> Puedes usar estos comodines en tus textos y el sistema los reemplazará por los datos reales al enviar el correo.
+                            <div class="mt-2 font-monospace">
+                                <code>{nombre_cliente}</code>&nbsp; <code>{numero_documento}</code>&nbsp; <code>{monto_total}</code>&nbsp; <code>{fecha_vencimiento}</code>&nbsp; <code>{nombre_empresa}</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">
+                                <i class="align-middle me-1" data-feather="file-minus" style="width:14px; height:14px;"></i> Plantilla — Facturas
+                            </label>
+                            <textarea wire:model="invoice_email_template" class="form-control border-2" rows="12"></textarea>
+                            <div class="form-text xsmall mt-1">Este mensaje se enviará en el cuerpo del correo al enviar una factura al cliente.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label xsmall font-black text-uppercase text-muted">
+                                <i class="align-middle me-1" data-feather="file-plus" style="width:14px; height:14px;"></i> Plantilla — Cotizaciones
+                            </label>
+                            <textarea wire:model="quotation_email_template" class="form-control border-2" rows="12"></textarea>
+                            <div class="form-text xsmall mt-1">Este mensaje se enviará en el cuerpo del correo al enviar una cotización al cliente.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
