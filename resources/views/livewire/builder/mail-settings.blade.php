@@ -5,8 +5,9 @@
             <p class="text-muted small mb-0">Personaliza el método y servidor desde el cual se envían las notificaciones.</p>
         </div>
         <div class="col-12 col-md-6 text-md-end mt-3 mt-md-0">
-            <button wire:click="save" class="btn btn-primary fw-black shadow-lg px-4">
-                <i class="align-middle me-1" data-feather="save"></i> GUARDAR CONFIGURACIÓN
+            <button wire:click="save" wire:loading.attr="disabled" class="btn btn-primary fw-black shadow-lg px-4">
+                <span wire:loading.remove wire:target="save"><i class="align-middle me-1" data-feather="save"></i> GUARDAR CONFIGURACIÓN</span>
+                <span wire:loading wire:target="save"><span class="spinner-border spinner-border-sm me-1"></span> GUARDANDO...</span>
             </button>
         </div>
     </div>
@@ -152,9 +153,17 @@
                     </div>
                     <h6 class="fw-black text-dark uppercase small">Prueba de Conexión</h6>
                     <p class="text-muted xsmall mb-3">Una vez guardes, te recomendamos enviar un correo de prueba.</p>
-                    <button wire:click="sendTestMail" wire:loading.attr="disabled" class="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold">
-                        <span wire:loading.remove>ENVIAR TEST</span>
-                        <span wire:loading class="spinner-border spinner-border-sm"></span>
+                    
+                    <div class="mb-3 text-start">
+                        <label class="form-label xsmall font-black text-uppercase text-muted">Enviar prueba a:</label>
+                        <input type="email" wire:model="test_email_address" class="form-control form-control-sm border-2 fw-bold text-center" placeholder="tu@correo.com">
+                    </div>
+
+                    <button wire:click="sendTestMail" wire:loading.attr="disabled" class="btn btn-outline-dark btn-sm rounded-pill px-4 fw-bold w-100">
+                        <span wire:loading.remove wire:target="sendTestMail">ENVIAR TEST</span>
+                        <span wire:loading wire:target="sendTestMail">
+                            <span class="spinner-border spinner-border-sm me-1"></span> ENVIANDO...
+                        </span>
                     </button>
                 </div>
             </div>

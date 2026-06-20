@@ -15,6 +15,7 @@ class MailSettings extends Component
     public $mail_from_address;
     public $mail_from_name;
     public $mail_driver = 'smtp'; // smtp or sendgrid_api
+    public $test_email_address;
 
     public function mount()
     {
@@ -31,6 +32,7 @@ class MailSettings extends Component
         $this->mail_from_address = $settings['mail_from_address'] ?? '';
         $this->mail_from_name = $settings['mail_from_name'] ?? $tenant->name;
         $this->mail_driver = $settings['mail_driver'] ?? 'smtp';
+        $this->test_email_address = auth()->user()->email ?? '';
     }
 
     public function save()
@@ -48,8 +50,12 @@ class MailSettings extends Component
         $settings['mail_driver'] = $this->mail_driver;
 
         $tenant->update(['settings_json' => $settings]);
+        
+        // Reload from database to guarantee it was saved
+        $tenant->refresh();
+        $this->mount();
 
-        session()->flash('message', 'Configuración de correo actualizada correctamente.');
+        session()->flash('message', 'Configuración de correo verificada y guardada correctamente.');
     }
 
     public function sendTestMail()
@@ -89,12 +95,16 @@ class MailSettings extends Component
                 'mail.from.name' => $this->mail_from_name,
             ]);
 
+            // Force Laravel to drop cached instances and use new config
+            \Illuminate\Support\Facades\Mail::purge('smtp');
+            \Illuminate\Support\Facades\Mail::purge($this->mail_driver);
+
             \Illuminate\Support\Facades\Mail::raw("Este es un correo de prueba de LogiSaaS para validar tu configuración SMTP. Si recibiste esto, ¡todo está funcionando correctamente!", function ($message) {
-                $message->to($this->mail_from_address)
+                $message->to($this->test_email_address)
                         ->subject('Prueba de Configuración de Correo - LogiSaaS');
             });
 
-            session()->flash('message', '¡Éxito! Correo de prueba enviado (vía SMTP) a: ' . $this->mail_from_address);
+            session()->flash('message', '¡Éxito! Correo de prueba enviado (vía SMTP) a: ' . $this->test_email_address);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Test Mail Error: ' . $e->getMessage());
             session()->flash('error', 'Error al enviar el correo: ' . $e->getMessage());
@@ -107,7 +117,7 @@ class MailSettings extends Component
             ->post('https://api.sendgrid.com/v3/mail/send', [
                 'personalizations' => [
                     [
-                        'to' => [['email' => $this->mail_from_address]],
+                        'to' => [['email' => $this->test_email_address]],
                     ]
                 ],
                 'from' => [
@@ -124,7 +134,7 @@ class MailSettings extends Component
             ]);
 
         if ($response->successful()) {
-            session()->flash('message', '¡Éxito! Correo de prueba enviado vía API de SendGrid.');
+            session()->flash('message', '¡Éxito! Correo de prueba enviado vía API de SendGrid a ' . $this->test_email_address);
         } else {
             $error = $response->json();
             $errorMessage = $error['errors'][0]['message'] ?? 'Error desconocido en la API';

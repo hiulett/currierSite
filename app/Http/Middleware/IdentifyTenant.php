@@ -115,6 +115,14 @@ class IdentifyTenant
                 'mail.from.address' => trim($settings['mail_from_address'] ?? 'no-reply@logisaas.com'),
                 'mail.from.name' => trim($settings['mail_from_name'] ?? $tenant->name),
             ]);
+
+            // Force Laravel to drop cached instances and use new config
+            try {
+                \Illuminate\Support\Facades\Mail::purge('smtp');
+                \Illuminate\Support\Facades\Mail::purge($driver);
+            } catch (\Exception $e) {
+                // Ignore if Mail facade is not fully loaded yet
+            }
         }
     }
 }
