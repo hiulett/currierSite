@@ -104,6 +104,7 @@
                         <option value="paid">Pagadas</option>
                         <option value="overdue">Vencidas</option>
                         <option value="cancelled">Anuladas</option>
+                        <option value="email_sent">✉ Correo Enviado</option>
                     </select>
                 </div>
                 <div class="col-md-4">
@@ -160,14 +161,24 @@
                                 @php
                                     $isOverdue = $invoice->status === 'unpaid' && $invoice->due_date && $invoice->due_date < now()->today();
                                     $statusColor = [
-                                        'paid' => '#1cbb8c',
-                                        'unpaid' => ($isOverdue ? '#dc3545' : '#fcb92c'),
+                                        'paid'      => '#1cbb8c',
+                                        'unpaid'    => ($isOverdue ? '#dc3545' : '#fcb92c'),
                                         'cancelled' => '#6c757d',
                                     ][$invoice->status] ?? '#6c757d';
+                                    $statusLabel = [
+                                        'paid'      => 'Pagada',
+                                        'unpaid'    => ($isOverdue ? 'Vencida' : 'Pendiente'),
+                                        'cancelled' => 'Anulada',
+                                    ][$invoice->status] ?? ucfirst($invoice->status);
                                 @endphp
-                                <span class="badge text-uppercase" style="font-size: 0.65rem; background-color: {{ $statusColor }}">
-                                    {{ $isOverdue ? 'VENCIDA' : (__($invoice->status)) }}
-                                </span>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="badge text-uppercase" style="font-size: 0.65rem; background-color: {{ $statusColor }}">
+                                        {{ $statusLabel }}
+                                    </span>
+                                    @if($invoice->email_sent_at)
+                                        <span title="Correo enviado el {{ $invoice->email_sent_at->format('d/m/Y H:i') }}" class="badge" style="font-size: 0.65rem; background-color: #0d9488;">✉ Enviado</span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="pe-4 text-end">
                                 <div class="btn-group shadow-none">

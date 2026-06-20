@@ -25,11 +25,13 @@ class Invoice extends Model
         'payment_method',
         'payment_reference',
         'notes',
+        'email_sent_at',
     ];
 
     protected $casts = [
-        'due_date' => 'date',
-        'paid_at' => 'datetime',
+        'due_date'       => 'date',
+        'paid_at'        => 'datetime',
+        'email_sent_at'  => 'datetime',
     ];
 
     public function customer()

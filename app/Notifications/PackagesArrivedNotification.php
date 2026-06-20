@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Collection;
 use Barryvdh\DomPDF\Facade\Pdf;
 
-class PackagesArrivedNotification extends Notification
+class PackagesArrivedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 

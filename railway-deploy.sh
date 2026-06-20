@@ -15,9 +15,10 @@ php artisan view:cache
 echo "🗄️ Ejecutando migraciones..."
 php artisan migrate --force
 
+# Start the queue worker in background
+echo "📬 Iniciando worker de colas de correo..."
+php artisan queue:work --sleep=3 --tries=3 --max-time=3600 &
+
 # Start the application
 echo "⚡ Iniciando servidor..."
-# Usamos el servidor interno de PHP para este entorno,
-# pero en producción real se recomienda Nginx + PHP-FPM.
-# Railway detecta el puerto automáticamente si usamos 8000.
 php artisan serve --host=0.0.0.0 --port=${PORT:-8000}

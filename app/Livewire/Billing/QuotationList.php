@@ -37,7 +37,7 @@ class QuotationList extends Component
     public function markAsStatus($quotationId, $status)
     {
         $quotation = Quotation::find($quotationId);
-        if ($quotation && in_array($status, ['accepted', 'rejected', 'sent', 'invoiced', 'draft'])) {
+        if ($quotation && in_array($status, ['accepted', 'rejected', 'sent', 'email_sent', 'invoiced', 'draft'])) {
             $quotation->update(['status' => $status]);
             session()->flash('message', 'Estado de la cotización actualizado a ' . $status . '.');
         }
@@ -45,16 +45,16 @@ class QuotationList extends Component
 
     public function sendEmail($quotationId)
     {
-        $quotation = Quotation::with('customer.user')->find($quotationId);
+        $quotation = Quotation::with('customer.user', 'tenant')->find($quotationId);
         if ($quotation && $quotation->customer && $quotation->customer->user) {
             try {
                 \Illuminate\Support\Facades\Mail::to($quotation->customer->user->email)
-                    ->send(new \App\Mail\QuotationSent($quotation));
-                $quotation->update(['status' => 'sent']);
-                session()->flash('message', 'Cotización enviada por correo a ' . $quotation->customer->user->email);
+                    ->queue(new \App\Mail\QuotationSent($quotation));
+                $quotation->update(['status' => 'email_sent']);
+                session()->flash('message', '✉️ Correo de cotización encolado para ' . $quotation->customer->user->email . '. El mensaje se enviará en breve.');
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Error sending quotation email: ' . $e->getMessage());
-                session()->flash('error', 'Error al enviar el correo. Por favor, verifique la configuración SMTP en Ajustes de Correo. Detalle: ' . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error('Error dispatching quotation email: ' . $e->getMessage());
+                session()->flash('error', 'Error al encolar el correo. Verifique la configuración SMTP. Detalle: ' . $e->getMessage());
             }
         } else {
             session()->flash('error', 'El cliente no tiene un correo electrónico asociado.');

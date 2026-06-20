@@ -126,6 +126,7 @@
                         <option value="">Todos los Estados</option>
                         <option value="draft">Borrador</option>
                         <option value="sent">Enviada</option>
+                        <option value="email_sent">✉ Correo Enviado</option>
                         <option value="accepted">Aceptada</option>
                         <option value="rejected">Rechazada</option>
                         <option value="invoiced">Facturada</option>
@@ -171,19 +172,21 @@
                             <td>
                                 @php
                                     $statusColor = [
-                                        'draft' => '#6c757d',
-                                        'sent' => '#17a2b8',
-                                        'accepted' => '#28a745',
-                                        'rejected' => '#dc3545',
-                                        'invoiced' => '#6f42c1',
+                                        'draft'      => '#6c757d',
+                                        'sent'       => '#17a2b8',
+                                        'email_sent' => '#0d9488',
+                                        'accepted'   => '#28a745',
+                                        'rejected'   => '#dc3545',
+                                        'invoiced'   => '#6f42c1',
                                     ][$quotation->status] ?? '#6c757d';
                                     
                                     $statusLabel = [
-                                        'draft' => 'Borrador',
-                                        'sent' => 'Enviada',
-                                        'accepted' => 'Aceptada',
-                                        'rejected' => 'Rechazada',
-                                        'invoiced' => 'Facturada',
+                                        'draft'      => 'Borrador',
+                                        'sent'       => 'Enviada',
+                                        'email_sent' => '✉ Correo Enviado',
+                                        'accepted'   => 'Aceptada',
+                                        'rejected'   => 'Rechazada',
+                                        'invoiced'   => 'Facturada',
                                     ][$quotation->status] ?? $quotation->status;
                                 @endphp
                                 <div class="dropdown">
@@ -197,6 +200,8 @@
                                         <li><a class="dropdown-item" href="#" wire:click.prevent="markAsStatus({{ $quotation->id }}, 'accepted')"><i class="align-middle me-1 text-success" data-feather="check-circle" style="width: 14px;"></i> Aceptada</a></li>
                                         <li><a class="dropdown-item" href="#" wire:click.prevent="markAsStatus({{ $quotation->id }}, 'rejected')"><i class="align-middle me-1 text-danger" data-feather="x-circle" style="width: 14px;"></i> Rechazada</a></li>
                                         <li><a class="dropdown-item" href="#" wire:click.prevent="markAsStatus({{ $quotation->id }}, 'invoiced')"><i class="align-middle me-1" data-feather="file-text" style="color: #6f42c1; width: 14px;"></i> Facturada</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="#" wire:click.prevent="markAsStatus({{ $quotation->id }}, 'email_sent')"><i class="align-middle me-1" data-feather="mail" style="color: #0d9488; width: 14px;"></i> ✉ Correo Enviado</a></li>
                                     </ul>
                                 </div>
                             </td>
@@ -313,12 +318,14 @@
                 initCharts();
 
                 // Re-init when livewire component is updated
-                Livewire.hook('message.processed', (message, component) => {
-                    if (window.quotationBarChart) window.quotationBarChart.destroy();
-                    if (window.quotationPieChart) window.quotationPieChart.destroy();
-                    window.quotationBarChart = null;
-                    window.quotationPieChart = null;
-                    setTimeout(initCharts, 100);
+                Livewire.hook('request', ({ respond }) => {
+                    respond(() => {
+                        if (window.quotationBarChart) window.quotationBarChart.destroy();
+                        if (window.quotationPieChart) window.quotationPieChart.destroy();
+                        window.quotationBarChart = null;
+                        window.quotationPieChart = null;
+                        setTimeout(initCharts, 100);
+                    });
                 });
             });
     </script>

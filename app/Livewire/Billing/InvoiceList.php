@@ -108,14 +108,15 @@ class InvoiceList extends Component
 
     public function sendEmail($invoiceId)
     {
-        $invoice = Invoice::with('customer.user')->find($invoiceId);
+        $invoice = Invoice::with('customer.user', 'tenant')->find($invoiceId);
         if ($invoice && $invoice->customer && $invoice->customer->user) {
             try {
                 $invoice->customer->user->notify(new \App\Notifications\InvoiceSent($invoice));
-                session()->flash('message', 'Factura enviada por correo a ' . $invoice->customer->user->email);
+                $invoice->update(['email_sent_at' => now()]);
+                session()->flash('message', '✉️ Correo de factura encolado para ' . $invoice->customer->user->email . '. El mensaje se enviará en breve.');
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Error sending invoice email: ' . $e->getMessage());
-                session()->flash('error', 'Error al enviar el correo. Configure el SMTP en Ajustes de Correo. Detalle: ' . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error('Error dispatching invoice email: ' . $e->getMessage());
+                session()->flash('error', 'Error al encolar el correo. Configure el SMTP en Ajustes de Correo. Detalle: ' . $e->getMessage());
             }
         }
     }
@@ -162,6 +163,8 @@ class InvoiceList extends Component
         if ($this->filter_status === 'overdue') {
             $query->where('status', 'unpaid')
                   ->where('due_date', '<', now()->today());
+        } elseif ($this->filter_status === 'email_sent') {
+            $query->whereNotNull('email_sent_at');
         } elseif ($this->filter_status) {
             $query->where('status', $this->filter_status);
         }

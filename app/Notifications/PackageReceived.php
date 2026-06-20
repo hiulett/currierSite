@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notification;
 
 use App\Models\Package;
 
-class PackageReceived extends Notification
+class PackageReceived extends Notification implements ShouldQueue
 {
     use Queueable;
 
