@@ -37,6 +37,24 @@ class InvoiceSent extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $tenant = $this->invoice->tenant;
+        $logoBase64 = null;
+        try {
+            $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
+            if ($logoUrl) {
+                $logoData = file_get_contents($logoUrl);
+                if ($logoData) {
+                    $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
+                    $logoBase64 = 'data:image/' . ($type ?: 'png') . ';base64,' . base64_encode($logoData);
+                }
+            }
+        } catch (\Exception $e) {}
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('billing.invoice-pdf', [
+            'invoice' => $this->invoice,
+            'logoBase64' => $logoBase64,
+        ]);
+
         return (new MailMessage)
                     ->subject("Nueva Factura Generada: #{$this->invoice->number}")
                     ->greeting("Hola, {$notifiable->name}")
@@ -45,7 +63,10 @@ class InvoiceSent extends Notification
                     ->line("Monto Total: {$this->invoice->currency} " . number_format($this->invoice->total, 2))
                     ->line("Fecha de Vencimiento: " . ($this->invoice->due_date ? $this->invoice->due_date->format('d/m/Y') : 'N/A'))
                     ->action('Ver Factura Online', url("/customer/invoices")) // Assuming this route exists
-                    ->line('Gracias por confiar en nosotros.');
+                    ->line('Gracias por confiar en nosotros.')
+                    ->attachData($pdf->output(), 'Factura_' . $this->invoice->number . '.pdf', [
+                        'mime' => 'application/pdf',
+                    ]);
     }
 
     /**
