@@ -110,8 +110,13 @@ class InvoiceList extends Component
     {
         $invoice = Invoice::with('customer.user')->find($invoiceId);
         if ($invoice && $invoice->customer && $invoice->customer->user) {
-            $invoice->customer->user->notify(new \App\Notifications\InvoiceSent($invoice));
-            session()->flash('message', 'Factura enviada por correo a ' . $invoice->customer->user->email);
+            try {
+                $invoice->customer->user->notify(new \App\Notifications\InvoiceSent($invoice));
+                session()->flash('message', 'Factura enviada por correo a ' . $invoice->customer->user->email);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error sending invoice email: ' . $e->getMessage());
+                session()->flash('error', 'Error al enviar el correo. Configure el SMTP en Ajustes de Correo. Detalle: ' . $e->getMessage());
+            }
         }
     }
 

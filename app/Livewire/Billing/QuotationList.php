@@ -47,10 +47,15 @@ class QuotationList extends Component
     {
         $quotation = Quotation::with('customer.user')->find($quotationId);
         if ($quotation && $quotation->customer && $quotation->customer->user) {
-            \Illuminate\Support\Facades\Mail::to($quotation->customer->user->email)
-                ->send(new \App\Mail\QuotationSent($quotation));
-            $quotation->update(['status' => 'sent']);
-            session()->flash('message', 'Cotización enviada por correo a ' . $quotation->customer->user->email);
+            try {
+                \Illuminate\Support\Facades\Mail::to($quotation->customer->user->email)
+                    ->send(new \App\Mail\QuotationSent($quotation));
+                $quotation->update(['status' => 'sent']);
+                session()->flash('message', 'Cotización enviada por correo a ' . $quotation->customer->user->email);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error sending quotation email: ' . $e->getMessage());
+                session()->flash('error', 'Error al enviar el correo. Por favor, verifique la configuración SMTP en Ajustes de Correo. Detalle: ' . $e->getMessage());
+            }
         } else {
             session()->flash('error', 'El cliente no tiene un correo electrónico asociado.');
         }
