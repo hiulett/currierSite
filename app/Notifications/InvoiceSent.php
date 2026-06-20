@@ -75,8 +75,7 @@ class InvoiceSent extends Notification
             $mailMessage->line(trim($line));
         }
 
-        return $mailMessage->action('Ver Factura Online', url("/customer/invoices"))
-                    ->attachData($pdf->output(), 'Factura_' . $this->invoice->number . '.pdf', [
+        return $mailMessage->attachData($pdf->output(), 'Factura_' . $this->invoice->number . '.pdf', [
                         'mime' => 'application/pdf',
                     ]);
     }
