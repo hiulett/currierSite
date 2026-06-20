@@ -274,6 +274,12 @@
 						</a>
 					</li>
 
+                    <li class="sidebar-item {{ request()->routeIs('billing.quotations.index') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('billing.quotations.index') }}'>
+							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">Cotizaciones</span>
+						</a>
+					</li>
+
                     <li class="sidebar-item {{ request()->routeIs('billing.statement') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('billing.statement') }}'>
 							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">Estados de Cuenta</span>

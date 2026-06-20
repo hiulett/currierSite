@@ -1,0 +1,163 @@
+<?php
+
+namespace App\Livewire\Billing;
+
+use Livewire\Component;
+use App\Models\Quotation;
+use App\Models\QuotationItem;
+use App\Models\Customer;
+use Illuminate\Support\Facades\DB;
+
+class CreateQuotation extends Component
+{
+    public $customer_id;
+    public $search_customer = '';
+    public $customers = [];
+    public $notes = '';
+
+    public $items = [];
+
+    protected $listeners = ['openCreateQuotationModal' => 'initForm'];
+
+    public function mount()
+    {
+        $this->initForm();
+    }
+
+    public function initForm()
+    {
+        $this->reset(['customer_id', 'search_customer', 'notes', 'customers']);
+        $this->items = [
+            ['item_number' => '', 'description' => '', 'quantity' => 1, 'price' => 0, 'handling_price' => 0, 'total' => 0]
+        ];
+        $this->searchCustomers();
+    }
+
+    public function updatedSearchCustomer()
+    {
+        $this->searchCustomers();
+    }
+
+    public function searchCustomers()
+    {
+        $query = Customer::with('user');
+        if (!empty($this->search_customer)) {
+            $query->whereHas('user', function ($q) {
+                $q->where('name', 'like', '%' . $this->search_customer . '%')
+                  ->orWhere('email', 'like', '%' . $this->search_customer . '%');
+            })->orWhere('box_number', 'like', '%' . $this->search_customer . '%');
+        }
+        $this->customers = $query->take(10)->get();
+    }
+
+    public function selectCustomer($id, $name)
+    {
+        $this->customer_id = $id;
+        $this->search_customer = $name;
+        $this->customers = [];
+    }
+
+    public function addItem()
+    {
+        $this->items[] = ['item_number' => '', 'description' => '', 'quantity' => 1, 'price' => 0, 'handling_price' => 0, 'total' => 0];
+    }
+
+    public function removeItem($index)
+    {
+        unset($this->items[$index]);
+        $this->items = array_values($this->items);
+        $this->calculateTotals();
+    }
+
+    public function calculateTotals()
+    {
+        foreach ($this->items as $key => $item) {
+            $qty = floatval($item['quantity'] ?? 0);
+            $price = floatval($item['price'] ?? 0);
+            $handling = floatval($item['handling_price'] ?? 0);
+            $this->items[$key]['total'] = ($qty * $price) + ($qty * $handling);
+        }
+    }
+
+    public function updatedItems()
+    {
+        $this->calculateTotals();
+    }
+
+    public function getSubtotalProperty()
+    {
+        return collect($this->items)->sum(function ($item) {
+            return floatval($item['quantity'] ?? 0) * floatval($item['price'] ?? 0);
+        });
+    }
+
+    public function getHandlingTotalProperty()
+    {
+        return collect($this->items)->sum(function ($item) {
+            return floatval($item['quantity'] ?? 0) * floatval($item['handling_price'] ?? 0);
+        });
+    }
+
+    public function getTotalProperty()
+    {
+        return $this->getSubtotalProperty() + $this->getHandlingTotalProperty();
+    }
+
+    public function save()
+    {
+        $this->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'items' => 'required|array|min:1',
+            'items.*.description' => 'required|string|max:255',
+            'items.*.quantity' => 'required|numeric|min:0.1',
+            'items.*.price' => 'required|numeric|min:0',
+            'items.*.handling_price' => 'required|numeric|min:0',
+        ]);
+
+        DB::transaction(function () {
+            $tenantId = session('tenant_id');
+            $prefix = 'COT-';
+            $lastQuotation = Quotation::where('tenant_id', $tenantId)->latest('id')->first();
+            $nextNumber = $lastQuotation ? intval(str_replace($prefix, '', $lastQuotation->number)) + 1 : 1;
+            $number = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
+            $quotation = Quotation::create([
+                'tenant_id' => $tenantId,
+                'customer_id' => $this->customer_id,
+                'number' => $number,
+                'subtotal' => $this->getSubtotalProperty(),
+                'handling_total' => $this->getHandlingTotalProperty(),
+                'total' => $this->getTotalProperty(),
+                'status' => 'draft',
+                'notes' => $this->notes,
+            ]);
+
+            foreach ($this->items as $item) {
+                QuotationItem::create([
+                    'tenant_id' => $tenantId,
+                    'quotation_id' => $quotation->id,
+                    'item_number' => $item['item_number'],
+                    'description' => $item['description'],
+                    'quantity' => $item['quantity'],
+                    'price' => $item['price'],
+                    'handling_price' => $item['handling_price'],
+                    'total' => $item['total'],
+                ]);
+            }
+        });
+
+        $this->dispatch('quotation-saved');
+        session()->flash('message', 'Cotización generada con éxito.');
+        $this->initForm();
+    }
+
+    public function render()
+    {
+        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $currency = $tenant->settings_json['currency'] ?? 'USD';
+
+        return view('livewire.billing.create-quotation', [
+            'currency' => $currency,
+        ]);
+    }
+}
