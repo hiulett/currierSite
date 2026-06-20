@@ -108,6 +108,10 @@ class Tenant extends Model
                 'mail.from.address' => $settings['mail_from_address'],
                 'mail.from.name' => $settings['mail_from_name'],
             ]);
+
+            if (app()->bound('mail.manager')) {
+                app('mail.manager')->forgetMailers();
+            }
         }
     }
 

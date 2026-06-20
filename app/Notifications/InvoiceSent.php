@@ -38,6 +38,9 @@ class InvoiceSent extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $tenant = $this->invoice->tenant;
+        if ($tenant) {
+            $tenant->setMailConfig();
+        }
         $logoBase64 = null;
         try {
             $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;

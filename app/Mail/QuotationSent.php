@@ -29,6 +29,10 @@ class QuotationSent extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
+        $tenant = $this->quotation->tenant;
+        if ($tenant) {
+            $tenant->setMailConfig();
+        }
         return new Envelope(
             subject: 'Cotización #' . $this->quotation->number,
         );
@@ -40,6 +44,9 @@ class QuotationSent extends Mailable implements ShouldQueue
     public function content(): Content
     {
         $tenant = $this->quotation->tenant;
+        if ($tenant) {
+            $tenant->setMailConfig();
+        }
         $template = $tenant->settings_json['quotation_email_template'] ?? "Hola {nombre_cliente},\n\nLe hemos generado la cotización #{numero_documento}.\n\nAdjunto a este correo encontrará el documento en formato PDF con todos los detalles y condiciones de los servicios cotizados.\n\nMonto Total: {monto_total}\n\nSi tiene alguna duda o requiere asistencia adicional, no dude en contactarnos.\n\nGracias por su preferencia,\n{nombre_empresa}";
         
         $replacements = [
@@ -68,6 +75,9 @@ class QuotationSent extends Mailable implements ShouldQueue
     public function attachments(): array
     {
         $tenant = $this->quotation->tenant;
+        if ($tenant) {
+            $tenant->setMailConfig();
+        }
         $logoBase64 = null;
         try {
             $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
