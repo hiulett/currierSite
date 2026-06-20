@@ -66,22 +66,24 @@
     <!-- Charts Row -->
     <div class="row mb-4">
         <div class="col-md-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="card-title mb-0 uppercase font-black small">Volumen de Cotizaciones (Últimos 6 meses)</h5>
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="card-title mb-0 uppercase font-black small text-muted" style="letter-spacing: 0.05em;">Volumen de Cotizaciones (Últimos 6 meses)</h5>
                 </div>
-                <div class="card-body">
-                    <canvas id="barChart" height="100"></canvas>
+                <div class="card-body pb-4">
+                    <div style="height: 250px; position: relative;">
+                        <canvas id="barChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="card-title mb-0 uppercase font-black small">Distribución por Estado</h5>
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px;">
+                <div class="card-header bg-white border-0 pt-4 pb-0">
+                    <h5 class="card-title mb-0 uppercase font-black small text-muted" style="letter-spacing: 0.05em;">Distribución por Estado</h5>
                 </div>
-                <div class="card-body d-flex justify-content-center align-items-center">
-                    <div style="width: 250px; height: 250px;">
+                <div class="card-body d-flex justify-content-center align-items-center pb-4">
+                    <div style="width: 100%; height: 250px; position: relative;">
                         <canvas id="pieChart"></canvas>
                     </div>
                 </div>
@@ -269,24 +271,73 @@
                     const ctxPie = document.getElementById('pieChart');
 
                     if (ctxBar && !window.quotationBarChart) {
+                        const ctx = ctxBar.getContext('2d');
+                        const gradient = ctx.createLinearGradient(0, 0, 0, 240);
+                        gradient.addColorStop(0, 'rgba(13, 110, 253, 0.25)');
+                        gradient.addColorStop(1, 'rgba(13, 110, 253, 0.00)');
+
                         window.quotationBarChart = new Chart(ctxBar, {
-                            type: 'bar',
+                            type: 'line',
                             data: {
                                 labels: {!! json_encode($chartLabels) !!},
                                 datasets: [{
                                     label: 'Cotizaciones Generadas',
                                     data: {!! json_encode($chartData) !!},
-                                    backgroundColor: '#0d6efd',
-                                    borderRadius: 4
+                                    borderColor: '#0d6efd',
+                                    borderWidth: 3,
+                                    backgroundColor: gradient,
+                                    fill: true,
+                                    tension: 0.35,
+                                    pointBackgroundColor: '#ffffff',
+                                    pointBorderColor: '#0d6efd',
+                                    pointBorderWidth: 2,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6,
+                                    pointHoverBackgroundColor: '#0d6efd',
+                                    pointHoverBorderColor: '#ffffff',
+                                    pointHoverBorderWidth: 2
                                 }]
                             },
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    },
+                                    tooltip: {
+                                        padding: 12,
+                                        cornerRadius: 8,
+                                        backgroundColor: '#1e293b',
+                                        titleFont: { family: 'Inter, system-ui', weight: 'bold' },
+                                        bodyFont: { family: 'Inter, system-ui' }
+                                    }
+                                },
                                 scales: {
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        },
+                                        ticks: {
+                                            font: {
+                                                family: 'Inter, system-ui',
+                                                size: 11
+                                            }
+                                        }
+                                    },
                                     y: {
                                         beginAtZero: true,
-                                        ticks: { stepSize: 1 }
+                                        ticks: {
+                                            stepSize: 1,
+                                            font: {
+                                                family: 'Inter, system-ui',
+                                                size: 11
+                                            }
+                                        },
+                                        grid: {
+                                            color: '#e2e8f0',
+                                            borderDash: [5, 5]
+                                        }
                                     }
                                 }
                             }
@@ -300,15 +351,35 @@
                                 labels: ['Borrador', 'Enviada', 'Aceptada', 'Rechazada'],
                                 datasets: [{
                                     data: {!! json_encode($pieChartData) !!},
-                                    backgroundColor: ['#6c757d', '#17a2b8', '#28a745', '#dc3545'],
-                                    borderWidth: 0
+                                    backgroundColor: ['#94a3b8', '#38bdf8', '#10b981', '#f43f5e'],
+                                    hoverOffset: 4,
+                                    borderWidth: 2,
+                                    borderColor: '#ffffff'
                                 }]
                             },
                             options: {
                                 responsive: true,
                                 maintainAspectRatio: false,
+                                cutout: '75%',
                                 plugins: {
-                                    legend: { position: 'bottom' }
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            boxWidth: 10,
+                                            padding: 15,
+                                            font: {
+                                                family: 'Inter, system-ui',
+                                                size: 11
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        padding: 12,
+                                        cornerRadius: 8,
+                                        backgroundColor: '#1e293b',
+                                        titleFont: { family: 'Inter, system-ui', weight: 'bold' },
+                                        bodyFont: { family: 'Inter, system-ui' }
+                                    }
                                 }
                             }
                         });
