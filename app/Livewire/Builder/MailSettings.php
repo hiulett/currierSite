@@ -32,7 +32,10 @@ class MailSettings extends Component
         $this->mail_from_address = $settings['mail_from_address'] ?? '';
         $this->mail_from_name = $settings['mail_from_name'] ?? $tenant->name;
         $this->mail_driver = $settings['mail_driver'] ?? 'smtp';
-        $this->test_email_address = auth()->user()->email ?? '';
+        
+        if (empty($this->test_email_address)) {
+            $this->test_email_address = auth()->user()->email ?? '';
+        }
     }
 
     public function save()
@@ -53,7 +56,6 @@ class MailSettings extends Component
         
         // Reload from database to guarantee it was saved
         $tenant->refresh();
-        $this->mount();
 
         session()->flash('message', 'Configuración de correo verificada y guardada correctamente.');
     }
