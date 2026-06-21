@@ -43,6 +43,11 @@ class CreateQuotation extends Component
         $this->searchCustomers();
     }
 
+    public function updatedIsRegistered($value)
+    {
+        $this->is_registered = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
+
     public function searchCustomers()
     {
         $query = Customer::with('user');

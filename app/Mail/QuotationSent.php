@@ -25,6 +25,18 @@ class QuotationSent extends Mailable implements ShouldQueue
     }
 
     /**
+     * Prepare the mailable for delivery.
+     */
+    protected function prepareMailableForDelivery()
+    {
+        $tenant = $this->quotation->tenant;
+        if ($tenant) {
+            $tenant->setMailConfig();
+        }
+        return parent::prepareMailableForDelivery();
+    }
+
+    /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
