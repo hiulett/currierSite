@@ -27,5 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->report(function (\Throwable $e) {
+            file_put_contents('php://stderr', "[" . date('Y-m-d H:i:s') . "] ERROR DIAGNÓSTICO: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n");
+        });
     })->create();
