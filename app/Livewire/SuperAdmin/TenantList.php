@@ -176,11 +176,17 @@ class TenantList extends Component
         if (!isset($features['modules'])) {
             $features['modules'] = [];
         }
-        foreach ([
-            'dashboard', 'recepcion_carga', 'gestion_bodega', 'embarques_salidas',
-            'delivery', 'clientes_soporte', 'facturacion_cotizaciones', 'expenses',
-            'reportes_negocio', 'configuraciones'
-        ] as $mod) {
+        $allModules = [
+            'dashboard', 
+            'recepcion_paquetes', 'control_manifiestos', 
+            'inventario_activo', 'rastreo_global', 'reempaque_consolidacion', 'casilleros_fisicos',
+            'embarques', 'ultima_milla', 'entrega_counter',
+            'base_clientes', 'soporte_tickets',
+            'facturacion', 'cotizaciones', 'control_fletes', 'estados_cuenta', 'expenses', 'reportes_negocio',
+            'identidad_visual', 'gestion_bodegas', 'pagos_integraciones', 'ajustes_correo', 'estados_carga',
+            'niveles_cliente', 'promociones', 'usuarios_roles', 'ajustes_generales'
+        ];
+        foreach ($allModules as $mod) {
             if (!isset($features['modules'][$mod])) {
                 $features['modules'][$mod] = 'active';
             }

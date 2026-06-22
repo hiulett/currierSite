@@ -158,9 +158,7 @@
                             <div class="sidebar-user-subtitle">{{ Auth::user()->role ?? 'Administrador' }}</div>
                         </div>
                     </div>
-                </div>
-
-				<ul class="sidebar-nav">
+                </div				<ul class="sidebar-nav">
 					<li class="sidebar-header">
 						{{ __('Principal') }}
 					</li>
@@ -180,14 +178,14 @@
 					@endtenantFeatureNotHidden
 
                     <!-- PROCESO 1: ENTRADA -->
-					@tenantFeatureNotHidden('recepcion_carga')
 					<li class="sidebar-header">
 						Entrada de Carga
 					</li>
 
 					@can('logistics.receive')
-                    <li class="sidebar-item {{ request()->routeIs('logistics.smart-reception') ? 'active' : '' }} @tenantFeatureDisabled('recepcion_carga') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('recepcion_carga')
+					@tenantFeatureNotHidden('recepcion_paquetes')
+                    <li class="sidebar-item {{ request()->routeIs('logistics.smart-reception') ? 'active' : '' }} @tenantFeatureDisabled('recepcion_paquetes') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('recepcion_paquetes')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Recepción de Paquetes')">
 							<i class="align-middle text-primary" data-feather="lock"></i> <span class="align-middle">Recepción de Paquetes</span>
 						</a>
@@ -197,8 +195,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
-                    <li class="sidebar-item {{ request()->routeIs('logistics.receive-manifest') ? 'active' : '' }} @tenantFeatureDisabled('recepcion_carga') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('recepcion_carga')
+					@endtenantFeatureNotHidden
+
+					@tenantFeatureNotHidden('control_manifiestos')
+                    <li class="sidebar-item {{ request()->routeIs('logistics.receive-manifest') ? 'active' : '' }} @tenantFeatureDisabled('control_manifiestos') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('control_manifiestos')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Control Manifiestos')">
 							<i class="align-middle text-warning" data-feather="lock"></i> <span class="align-middle">Control Manifiestos</span>
 						</a>
@@ -208,18 +209,18 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
-					@endcan
 					@endtenantFeatureNotHidden
+					@endcan
 
                     <!-- PROCESO 2: ALMACENAMIENTO -->
-					@tenantFeatureNotHidden('gestion_bodega')
                     <li class="sidebar-header">
 						Gestión de Bodega
 					</li>
 
 					@can('logistics.inventory')
-					<li class="sidebar-item {{ request()->routeIs('logistics.inventory') ? 'active' : '' }} @tenantFeatureDisabled('gestion_bodega') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('gestion_bodega')
+					@tenantFeatureNotHidden('inventario_activo')
+					<li class="sidebar-item {{ request()->routeIs('logistics.inventory') ? 'active' : '' }} @tenantFeatureDisabled('inventario_activo') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('inventario_activo')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Inventario Activo')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Inventario Activo</span>
 						</a>
@@ -229,9 +230,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('logistics.tracking') ? 'active' : '' }} @tenantFeatureDisabled('gestion_bodega') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('gestion_bodega')
+					@tenantFeatureNotHidden('rastreo_global')
+                    <li class="sidebar-item {{ request()->routeIs('logistics.tracking') ? 'active' : '' }} @tenantFeatureDisabled('rastreo_global') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('rastreo_global')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Rastreo Global')">
 							<i class="align-middle text-info" data-feather="lock"></i> <span class="align-middle">Rastreo Global</span>
 						</a>
@@ -241,11 +244,13 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 					@endcan
 
 					@can('logistics.repack')
-					<li class="sidebar-item {{ request()->routeIs('logistics.repack') ? 'active' : '' }} @tenantFeatureDisabled('gestion_bodega') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('gestion_bodega')
+					@tenantFeatureNotHidden('reempaque_consolidacion')
+					<li class="sidebar-item {{ request()->routeIs('logistics.repack') ? 'active' : '' }} @tenantFeatureDisabled('reempaque_consolidacion') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('reempaque_consolidacion')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Reempaque / Consolidación')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Reempaque / Consolidación</span>
 						</a>
@@ -255,8 +260,8 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
-					@endcan
 					@endtenantFeatureNotHidden
+					@endcan
 
                     <!-- PROCESO 3: SALIDAS Y ENTREGAS -->
                     <li class="sidebar-header">
@@ -264,9 +269,9 @@
 					</li>
 
 					@can('logistics.shipments')
-					@tenantFeatureNotHidden('embarques_salidas')
-					<li class="sidebar-item {{ request()->routeIs('logistics.shipments.*') ? 'active' : '' }} @tenantFeatureDisabled('embarques_salidas') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('embarques_salidas')
+					@tenantFeatureNotHidden('embarques')
+					<li class="sidebar-item {{ request()->routeIs('logistics.shipments.*') ? 'active' : '' }} @tenantFeatureDisabled('embarques') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('embarques')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Embarques (Outbound)')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Embarques (Outbound)</span>
 						</a>
@@ -279,10 +284,10 @@
 					@endtenantFeatureNotHidden
 					@endcan
 
-					@tenantFeatureNotHidden('delivery')
 					@can('logistics.delivery')
-					<li class="sidebar-item {{ request()->routeIs('logistics.delivery') ? 'active' : '' }} @tenantFeatureDisabled('delivery') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('delivery')
+					@tenantFeatureNotHidden('ultima_milla')
+					<li class="sidebar-item {{ request()->routeIs('logistics.delivery') ? 'active' : '' }} @tenantFeatureDisabled('ultima_milla') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('ultima_milla')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Última Milla (Delivery)')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Última Milla (Delivery)</span>
 						</a>
@@ -292,11 +297,13 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 					@endcan
 
                     @can('logistics.counter')
-                    <li class="sidebar-item {{ request()->routeIs('logistics.counter') ? 'active' : '' }} @tenantFeatureDisabled('delivery') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('delivery')
+					@tenantFeatureNotHidden('entrega_counter')
+                    <li class="sidebar-item {{ request()->routeIs('logistics.counter') ? 'active' : '' }} @tenantFeatureDisabled('entrega_counter') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('entrega_counter')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Entrega en Counter')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Entrega en Counter</span>
 						</a>
@@ -306,18 +313,18 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
-					@endcan
 					@endtenantFeatureNotHidden
+					@endcan
 
                     <!-- ADMINISTRACIÓN -->
-					@tenantFeatureNotHidden('clientes_soporte')
                     <li class="sidebar-header">
 						Relaciones y Soporte
 					</li>
 
                     @can('customers.view')
-                    <li class="sidebar-item {{ request()->routeIs('logistics.customers') ? 'active' : '' }} @tenantFeatureDisabled('clientes_soporte') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('clientes_soporte')
+					@tenantFeatureNotHidden('base_clientes')
+                    <li class="sidebar-item {{ request()->routeIs('logistics.customers') ? 'active' : '' }} @tenantFeatureDisabled('base_clientes') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('base_clientes')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Base de Clientes')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Base de Clientes</span>
 						</a>
@@ -327,11 +334,13 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 					@endcan
 
                     @can('tickets.manage')
-                    <li class="sidebar-item {{ request()->routeIs('logistics.tickets') ? 'active' : '' }} @tenantFeatureDisabled('clientes_soporte') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('clientes_soporte')
+					@tenantFeatureNotHidden('soporte_tickets')
+                    <li class="sidebar-item {{ request()->routeIs('logistics.tickets') ? 'active' : '' }} @tenantFeatureDisabled('soporte_tickets') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('soporte_tickets')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Soporte (Tickets)')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Soporte (Tickets)</span>
 						</a>
@@ -341,11 +350,13 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 					@endcan
 
                     @can('logistics.inventory')
-                    <li class="sidebar-item {{ request()->routeIs('logistics.lockers') ? 'active' : '' }} @tenantFeatureDisabled('clientes_soporte') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('clientes_soporte')
+					@tenantFeatureNotHidden('casilleros_fisicos')
+                    <li class="sidebar-item {{ request()->routeIs('logistics.lockers') ? 'active' : '' }} @tenantFeatureDisabled('casilleros_fisicos') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('casilleros_fisicos')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Casilleros Físicos')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Casilleros Físicos</span>
 						</a>
@@ -355,8 +366,8 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
-					@endcan
 					@endtenantFeatureNotHidden
+					@endcan
 
                     <!-- FINANZAS -->
                     <li class="sidebar-header">
@@ -364,9 +375,9 @@
 					</li>
 
 					@can('billing.view')
-					@tenantFeatureNotHidden('facturacion_cotizaciones')
-					<li class="sidebar-item {{ request()->routeIs('billing.index') ? 'active' : '' }} @tenantFeatureDisabled('facturacion_cotizaciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('facturacion_cotizaciones')
+					@tenantFeatureNotHidden('facturacion')
+					<li class="sidebar-item {{ request()->routeIs('billing.index') ? 'active' : '' }} @tenantFeatureDisabled('facturacion') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('facturacion')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Facturación')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Facturación</span>
 						</a>
@@ -376,9 +387,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('billing.quotations.index') ? 'active' : '' }} @tenantFeatureDisabled('facturacion_cotizaciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('facturacion_cotizaciones')
+					@tenantFeatureNotHidden('cotizaciones')
+                    <li class="sidebar-item {{ request()->routeIs('billing.quotations.index') ? 'active' : '' }} @tenantFeatureDisabled('cotizaciones') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('cotizaciones')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Cotizaciones')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Cotizaciones</span>
 						</a>
@@ -388,9 +401,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('billing.driver-trips.index') ? 'active' : '' }} @tenantFeatureDisabled('facturacion_cotizaciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('facturacion_cotizaciones')
+					@tenantFeatureNotHidden('control_fletes')
+                    <li class="sidebar-item {{ request()->routeIs('billing.driver-trips.index') ? 'active' : '' }} @tenantFeatureDisabled('control_fletes') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('control_fletes')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Control de Fletes')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Control de Fletes</span>
 						</a>
@@ -400,9 +415,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('billing.statement') ? 'active' : '' }} @tenantFeatureDisabled('facturacion_cotizaciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('facturacion_cotizaciones')
+					@tenantFeatureNotHidden('estados_cuenta')
+                    <li class="sidebar-item {{ request()->routeIs('billing.statement') ? 'active' : '' }} @tenantFeatureDisabled('estados_cuenta') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('estados_cuenta')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Estados de Cuenta')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Estados de Cuenta</span>
 						</a>
@@ -446,14 +463,14 @@
 					@endcan
 
                     <!-- CONFIGURACIÓN -->
-					@tenantFeatureNotHidden('configuraciones')
                     <li class="sidebar-header">
 						Configuración
 					</li>
 
                     @can('settings.brand')
-                    <li class="sidebar-item {{ request()->routeIs('builder.brand') ? 'active' : '' }} @tenantFeatureDisabled('configuraciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('configuraciones')
+					@tenantFeatureNotHidden('identidad_visual')
+                    <li class="sidebar-item {{ request()->routeIs('builder.brand') ? 'active' : '' }} @tenantFeatureDisabled('identidad_visual') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('identidad_visual')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Identidad Visual')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Identidad Visual</span>
 						</a>
@@ -463,11 +480,13 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 					@endcan
 
                     @can('settings.general')
-                    <li class="sidebar-item {{ request()->routeIs('builder.warehouses') ? 'active' : '' }} @tenantFeatureDisabled('configuraciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('configuraciones')
+					@tenantFeatureNotHidden('gestion_bodegas')
+                    <li class="sidebar-item {{ request()->routeIs('builder.warehouses') ? 'active' : '' }} @tenantFeatureDisabled('gestion_bodegas') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('gestion_bodegas')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Gestión de Bodegas')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Gestión de Bodegas</span>
 						</a>
@@ -477,9 +496,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('builder.integrations') ? 'active' : '' }} @tenantFeatureDisabled('configuraciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('configuraciones')
+					@tenantFeatureNotHidden('pagos_integraciones')
+                    <li class="sidebar-item {{ request()->routeIs('builder.integrations') ? 'active' : '' }} @tenantFeatureDisabled('pagos_integraciones') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('pagos_integraciones')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Pagos e Integraciones')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Pagos e Integraciones</span>
 						</a>
@@ -489,9 +510,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('builder.mail') ? 'active' : '' }} @tenantFeatureDisabled('configuraciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('configuraciones')
+					@tenantFeatureNotHidden('ajustes_correo')
+                    <li class="sidebar-item {{ request()->routeIs('builder.mail') ? 'active' : '' }} @tenantFeatureDisabled('ajustes_correo') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('ajustes_correo')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Ajustes de Correo')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Ajustes de Correo</span>
 						</a>
@@ -501,9 +524,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('builder.statuses') ? 'active' : '' }} @tenantFeatureDisabled('configuraciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('configuraciones')
+					@tenantFeatureNotHidden('estados_carga')
+                    <li class="sidebar-item {{ request()->routeIs('builder.statuses') ? 'active' : '' }} @tenantFeatureDisabled('estados_carga') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('estados_carga')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Estados de Carga')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Estados de Carga</span>
 						</a>
@@ -513,9 +538,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('builder.loyalty') ? 'active' : '' }} @tenantFeatureDisabled('configuraciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('configuraciones')
+					@tenantFeatureNotHidden('niveles_cliente')
+                    <li class="sidebar-item {{ request()->routeIs('builder.loyalty') ? 'active' : '' }} @tenantFeatureDisabled('niveles_cliente') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('niveles_cliente')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Niveles de Cliente')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Niveles de Cliente</span>
 						</a>
@@ -525,9 +552,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('builder.promotions') ? 'active' : '' }} @tenantFeatureDisabled('configuraciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('configuraciones')
+					@tenantFeatureNotHidden('promociones')
+                    <li class="sidebar-item {{ request()->routeIs('builder.promotions') ? 'active' : '' }} @tenantFeatureDisabled('promociones') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('promociones')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Promociones')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Promociones</span>
 						</a>
@@ -537,9 +566,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('builder.users') ? 'active' : '' }} @tenantFeatureDisabled('configuraciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('configuraciones')
+					@tenantFeatureNotHidden('usuarios_roles')
+                    <li class="sidebar-item {{ request()->routeIs('builder.users') ? 'active' : '' }} @tenantFeatureDisabled('usuarios_roles') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('usuarios_roles')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Usuarios y Roles')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Usuarios y Roles</span>
 						</a>
@@ -549,9 +580,11 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
+					@endtenantFeatureNotHidden
 
-                    <li class="sidebar-item {{ request()->routeIs('builder.general') ? 'active' : '' }} @tenantFeatureDisabled('configuraciones') disabled-feature @endtenantFeatureDisabled">
-						@tenantFeatureDisabled('configuraciones')
+					@tenantFeatureNotHidden('ajustes_generales')
+                    <li class="sidebar-item {{ request()->routeIs('builder.general') ? 'active' : '' }} @tenantFeatureDisabled('ajustes_generales') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('ajustes_generales')
 						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Ajustes Generales')">
 							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Ajustes Generales</span>
 						</a>
@@ -561,8 +594,9 @@
 						</a>
 						@endtenantFeatureDisabled
 					</li>
-					@endcan
 					@endtenantFeatureNotHidden
+					@endcan
+
 
                     @if(Auth::user()->role === 'superadmin')
                         <li class="sidebar-header">
