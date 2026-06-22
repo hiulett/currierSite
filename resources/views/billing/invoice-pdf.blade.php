@@ -93,7 +93,7 @@
     </div>
 
     <div class="footer">
-        Este documento es una representación física de una factura electrónica generada por LogiSaaS.
+        Este documento es una representación física de una factura electrónica generada por {{ $invoice->tenant->name ?? 'LogiSaaS' }}.
     </div>
 </body>
 </html>

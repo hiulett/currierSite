@@ -225,7 +225,7 @@
                 <div class="card bg-dark text-white shadow-lg">
                     <div class="card-body p-4 text-center">
                         <i data-feather="shield" class="text-white-50 mb-3" style="width: 40px; height: 40px;"></i>
-                        <h5 class="text-white uppercase font-black mb-2">Garantía LogiSaaS</h5>
+                        <h5 class="text-white uppercase font-black mb-2">Garantía {{ \App\Models\Tenant::current()?->name ?? 'LogiSaaS' }}</h5>
                         <p class="small text-white-50">Toda la información financiera está protegida y auditada bajo protocolos de seguridad SaaS.</p>
                     </div>
                 </div>

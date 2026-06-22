@@ -43,7 +43,7 @@
         </div>
 
         <div class="footer">
-            Generado por LogiSaaS - {{ now()->format('d/m/Y H:i') }}
+            Generado por {{ $package->tenant->name ?? 'LogiSaaS' }} - {{ now()->format('d/m/Y H:i') }}
         </div>
     </div>
 </body>

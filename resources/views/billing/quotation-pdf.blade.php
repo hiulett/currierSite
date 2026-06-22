@@ -99,7 +99,7 @@
     @endif
 
     <div class="footer">
-        Este documento es una cotización comercial generada por LogiSaaS y no representa una factura fiscal ni obliga a su pago. Los precios están sujetos a cambios.
+        Este documento es una cotización comercial generada por {{ $tenant->name ?? 'LogiSaaS' }} y no representa una factura fiscal ni obliga a su pago. Los precios están sujetos a cambios.
     </div>
 </body>
 </html>
