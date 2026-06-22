@@ -71,23 +71,35 @@ class BrandSettings extends Component
 
     public function save()
     {
-        $this->validate([
-            'company_name'       => 'required|min:3',
-            'logo'               => 'nullable|image|max:2048',
-            'login_url_slug'     => 'nullable|alpha_dash|max:80|unique:tenants,login_url_slug,' . $this->getTenant()->id,
-            'login_bg_color'     => 'nullable|max:20',
-            'login_bg_image_url' => 'nullable|url|max:500',
-            'login_welcome_title'=> 'nullable|max:100',
-            'custom_css'         => 'nullable|max:5000',
-        ]);
-
         $tenant = $this->getTenant();
+        $canChangeName = $tenant->hasSubFeature('change_company_name');
+        $canCustomizeBrand = $tenant->hasSubFeature('customize_visual_brand');
+
+        $rules = [];
+        if ($canChangeName) {
+            $rules['company_name'] = 'required|min:3';
+        }
+        if ($canCustomizeBrand) {
+            $rules['logo']               = 'nullable|image|max:2048';
+            $rules['login_url_slug']     = 'nullable|alpha_dash|max:80|unique:tenants,login_url_slug,' . $tenant->id;
+            $rules['login_bg_color']     = 'nullable|max:20';
+            $rules['login_bg_image_url'] = 'nullable|url|max:500';
+            $rules['login_welcome_title']= 'nullable|max:100';
+            $rules['custom_css']         = 'nullable|max:5000';
+        }
+
+        if (empty($rules)) {
+            session()->flash('error', 'No tiene permisos para modificar la configuración de marca.');
+            return;
+        }
+
+        $this->validate($rules);
 
         // Cargamos la configuración actual para no perder otros datos
         $config = $tenant->theme_config_json ?? [];
 
         // 1. Manejo del Logo
-        if ($this->logo) {
+        if ($canCustomizeBrand && $this->logo) {
             try {
                 $filename = 'logo_' . $tenant->id . '_' . time() . '.' . $this->logo->getClientOriginalExtension();
                 $disk = !empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
@@ -120,32 +132,35 @@ class BrandSettings extends Component
                 session()->flash('error', 'Error al subir el logo: ' . $e->getMessage());
                 return;
             }
-        } else {
-            // Si no hay nueva imagen, nos aseguramos de mantener la que ya existía en el estado del componente
+        } elseif (!$this->logo) {
             $config['logo_url'] = $this->current_logo_url;
         }
 
         // 2. Actualizar el resto de la configuración
-        $config['primary']            = $this->primary_color;
-        $config['primary_color']      = $this->primary_color;
-        $config['secondary_color']    = $this->secondary_color;
-        $config['font_family']        = $this->font_family;
-        $config['theme_mode']         = $this->theme_mode;
+        if ($canCustomizeBrand) {
+            $config['primary']            = $this->primary_color;
+            $config['primary_color']      = $this->primary_color;
+            $config['secondary_color']    = $this->secondary_color;
+            $config['font_family']        = $this->font_family;
+            $config['theme_mode']         = $this->theme_mode;
 
-        // Campos de personalización de la pantalla Login/Registro
-        $config['login_bg_color']         = $this->login_bg_color;
-        $config['login_bg_image_url']     = $this->login_bg_image_url;
-        $config['login_welcome_title']    = $this->login_welcome_title;
-        $config['login_welcome_subtitle'] = $this->login_welcome_subtitle;
-        $config['show_register_link']     = (bool) $this->show_register_link;
-        $config['custom_css']             = $this->custom_css;
+            // Campos de personalización de la pantalla Login/Registro
+            $config['login_bg_color']         = $this->login_bg_color;
+            $config['login_bg_image_url']     = $this->login_bg_image_url;
+            $config['login_welcome_title']    = $this->login_welcome_title;
+            $config['login_welcome_subtitle'] = $this->login_welcome_subtitle;
+            $config['show_register_link']     = (bool) $this->show_register_link;
+            $config['custom_css']             = $this->custom_css;
+        }
 
         // 3. Persistencia en Base de Datos
-        $tenant->name            = $this->company_name;
+        if ($canChangeName) {
+            $tenant->name = $this->company_name;
+        }
         $tenant->theme_config_json = $config;
 
-        // Guardar login_url_slug si se proporcionó (validado como único arriba)
-        if (!empty($this->login_url_slug)) {
+        // Guardar login_url_slug si se proporcionó
+        if ($canCustomizeBrand && !empty($this->login_url_slug)) {
             $tenant->login_url_slug = strtolower(trim($this->login_url_slug));
         }
 

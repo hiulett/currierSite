@@ -130,19 +130,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/logistica/embarques', ShipmentList::class)->name('logistics.shipments.index')->middleware('can:logistics.shipments');
         Route::get('/logistica/embarques/{shipment}', ShipmentDetail::class)->name('logistics.shipments.detail')->middleware('can:logistics.shipments');
 
-        Route::get('/facturacion', InvoiceList::class)->name('billing.index')->middleware('can:billing.view');
-        Route::get('/facturacion/nueva', CreateInvoice::class)->name('billing.create')->middleware('can:billing.manage');
-        Route::get('/facturacion/validar-pagos', \App\Livewire\Billing\PaymentApprovals::class)->name('billing.approvals')->middleware('can:billing.manage');
-        Route::get('/facturacion/{invoice}/download', [InvoiceController::class, 'download'])->name('billing.download')->middleware('can:billing.view');
-        Route::get('/facturacion/estado-cuenta', StatementOfAccount::class)->name('billing.statement')->middleware('can:billing.view');
-        Route::get('/facturacion/estado-cuenta/{customer}/download', [InvoiceController::class, 'downloadStatement'])->name('billing.statement.download')->middleware('can:billing.view');
+        Route::middleware(['tenant.feature:billing'])->group(function () {
+            Route::get('/facturacion', InvoiceList::class)->name('billing.index')->middleware('can:billing.view');
+            Route::get('/facturacion/nueva', CreateInvoice::class)->name('billing.create')->middleware('can:billing.manage');
+            Route::get('/facturacion/validar-pagos', \App\Livewire\Billing\PaymentApprovals::class)->name('billing.approvals')->middleware('can:billing.manage');
+            Route::get('/facturacion/{invoice}/download', [InvoiceController::class, 'download'])->name('billing.download')->middleware('can:billing.view');
+            Route::get('/facturacion/estado-cuenta', StatementOfAccount::class)->name('billing.statement')->middleware('can:billing.view');
+            Route::get('/facturacion/estado-cuenta/{customer}/download', [InvoiceController::class, 'downloadStatement'])->name('billing.statement.download')->middleware('can:billing.view');
 
-        // Quotations
-        Route::get('/cotizaciones', \App\Livewire\Billing\QuotationList::class)->name('billing.quotations.index')->middleware('can:billing.view');
-        Route::get('/cotizaciones/{quotation}/download', [\App\Http\Controllers\Billing\QuotationController::class, 'download'])->name('billing.quotations.download')->middleware('can:billing.view');
+            // Quotations
+            Route::get('/cotizaciones', \App\Livewire\Billing\QuotationList::class)->name('billing.quotations.index')->middleware('can:billing.view');
+            Route::get('/cotizaciones/{quotation}/download', [\App\Http\Controllers\Billing\QuotationController::class, 'download'])->name('billing.quotations.download')->middleware('can:billing.view');
 
-        // Control de Fletes / Viajes
-        Route::get('/control-fletes', \App\Livewire\Billing\DriverTripList::class)->name('billing.driver-trips.index')->middleware('can:billing.view');
+            // Control de Fletes / Viajes
+            Route::get('/control-fletes', \App\Livewire\Billing\DriverTripList::class)->name('billing.driver-trips.index')->middleware('can:billing.view');
+        });
+
+        // Egresos (Expenses)
+        Route::get('/egresos', \App\Livewire\Billing\ExpenseList::class)
+            ->name('billing.expenses')
+            ->middleware(['can:billing.view', 'tenant.feature:expenses']);
 
         Route::get('/builder', App\Livewire\Builder\PageList::class)->name('builder.index')->middleware('can:settings.general');
         Route::get('/builder/brand', BrandSettings::class)->name('builder.brand')->middleware('can:settings.brand');

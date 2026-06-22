@@ -58,8 +58,11 @@ class MailSettings extends Component
         $settings['mail_from_name'] = trim($this->mail_from_name);
         $settings['mail_driver'] = $this->mail_driver;
         
-        $settings['invoice_email_template'] = trim($this->invoice_email_template);
-        $settings['quotation_email_template'] = trim($this->quotation_email_template);
+        $canCustomizeTemplates = $tenant ? $tenant->hasSubFeature('customize_mail_templates') : true;
+        if ($canCustomizeTemplates) {
+            $settings['invoice_email_template'] = trim($this->invoice_email_template);
+            $settings['quotation_email_template'] = trim($this->quotation_email_template);
+        }
 
         $tenant->update(['settings_json' => $settings]);
         

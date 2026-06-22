@@ -75,6 +75,18 @@
 
         .cursor-grab { cursor: grab; }
         .cursor-grabbing { cursor: grabbing; }
+
+        /* Feature Toggles (Hide vs Disable) */
+        .sidebar-item.disabled-feature {
+            opacity: 0.55;
+        }
+        .sidebar-item.disabled-feature .sidebar-link {
+            cursor: not-allowed !important;
+            background: transparent !important;
+        }
+        .sidebar-item.disabled-feature .sidebar-link:hover {
+            color: #adb5bd !important;
+        }
 	</style>
 </head>
 
@@ -582,7 +594,73 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             })
         });
-    </script>
-</body>
 
+        // Locked feature interactive notice
+        function showLockedFeatureModal(featureName) {
+            const toastHtml = `
+                <div class="toast show align-items-center text-white bg-dark border-0 shadow-lg position-fixed bottom-0 end-0 m-3 animate-in fade-in zoom-in duration-300" style="z-index: 1200; min-width: 320px;" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body fw-bold d-flex align-items-center py-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock text-warning me-3" style="width: 20px; height: 20px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <div>
+                                El módulo de <span class="text-warning">${featureName}</span> está bloqueado en su plan. Contacte al administrador.
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            `;
+            const container = document.createElement('div');
+            container.innerHTML = toastHtml;
+            document.body.appendChild(container.firstElementChild);
+            
+            // Auto close toast after 5 seconds
+            const lastToast = document.body.lastElementChild;
+            setTimeout(() => {
+                if (lastToast && lastToast.parentNode) {
+                    lastToast.remove();
+                }
+            }, 5000);
+        }
+    </script>
+
+    <!-- Bootstrap Toast Container for Warning/Success/Error Alerts -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1250">
+        @if(session()->has('warning'))
+            <div class="toast show align-items-center text-white bg-warning border-0 shadow-lg mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="6000">
+                <div class="d-flex">
+                    <div class="toast-body fw-bold d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-triangle me-2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        {{ session('warning') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
+
+        @if(session()->has('success'))
+            <div class="toast show align-items-center text-white bg-success border-0 shadow-lg mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="6000">
+                <div class="d-flex">
+                    <div class="toast-body fw-bold d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle me-2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                        {{ session('success') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
+
+        @if(session()->has('error'))
+            <div class="toast show align-items-center text-white bg-danger border-0 shadow-lg mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="6000">
+                <div class="d-flex">
+                    <div class="toast-body fw-bold d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle me-2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        {{ session('error') }}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        @endif
+    </div>
+</body>
 </html>

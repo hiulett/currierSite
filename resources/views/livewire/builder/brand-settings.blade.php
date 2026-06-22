@@ -1,11 +1,23 @@
 <div>
+    @php
+        $canChangeName = \App\Models\Tenant::current()?->hasSubFeature('change_company_name') ?? true;
+        $canCustomizeBrand = \App\Models\Tenant::current()?->hasSubFeature('customize_visual_brand') ?? true;
+    @endphp
+
+    @if(!$canCustomizeBrand || !$canChangeName)
+        <div class="alert alert-warning py-2 mb-4 small d-flex align-items-center shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock text-warning me-2" style="width:16px; height:16px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <span>Algunas funciones de personalización de marca están bloqueadas en su plan actual.</span>
+        </div>
+    @endif
+
     <div class="row mb-3">
         <div class="col-md-8">
             <h1 class="h3 mb-3">Identidad de Marca</h1>
             <p class="text-muted">Define los colores, tipografía y modo visual de tu plataforma.</p>
         </div>
         <div class="col-md-4 text-end">
-            <button wire:click="save" wire:loading.attr="disabled" class="btn btn-primary shadow-sm ms-auto">
+            <button wire:click="save" wire:loading.attr="disabled" class="btn btn-primary shadow-sm ms-auto" @if(!$canChangeName && !$canCustomizeBrand) disabled @endif>
                 <span wire:loading.remove wire:target="save">
                     <i class="align-middle me-1" data-feather="save"></i> Guardar Cambios
                 </span>
@@ -36,7 +48,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label font-bold small text-uppercase">Nombre de la Empresa</label>
-                        <input type="text" wire:model="company_name" class="form-control form-control-lg">
+                        <input type="text" wire:model="company_name" class="form-control form-control-lg" {{ !$canChangeName ? 'disabled' : '' }}>
                     </div>
 
                     <div class="mb-3">
@@ -62,7 +74,7 @@
                                 </div>
                             @endif
                             <div class="flex-grow-1">
-                                <input type="file" wire:model="logo" class="form-control">
+                                <input type="file" wire:model="logo" class="form-control" {{ !$canCustomizeBrand ? 'disabled' : '' }}>
                                 <div wire:loading wire:target="logo" class="text-primary small mt-1">
                                     <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                     Subiendo...
@@ -84,15 +96,15 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label font-bold small text-uppercase">Color Primario</label>
                             <div class="d-flex align-items-center">
-                                <input type="color" wire:model.live="primary_color" class="form-control form-control-color me-2 border-0 p-0" style="width: 45px; height: 45px; border-radius: 8px;">
-                                <input type="text" wire:model.live="primary_color" class="form-control" placeholder="#000000">
+                                <input type="color" wire:model.live="primary_color" class="form-control form-control-color me-2 border-0 p-0" style="width: 45px; height: 45px; border-radius: 8px;" {{ !$canCustomizeBrand ? 'disabled' : '' }}>
+                                <input type="text" wire:model.live="primary_color" class="form-control" placeholder="#000000" {{ !$canCustomizeBrand ? 'disabled' : '' }}>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label font-bold small text-uppercase">Color Secundario</label>
                             <div class="d-flex align-items-center">
-                                <input type="color" wire:model.live="secondary_color" class="form-control form-control-color me-2 border-0 p-0" style="width: 45px; height: 45px; border-radius: 8px;">
-                                <input type="text" wire:model.live="secondary_color" class="form-control" placeholder="#000000">
+                                <input type="color" wire:model.live="secondary_color" class="form-control form-control-color me-2 border-0 p-0" style="width: 45px; height: 45px; border-radius: 8px;" {{ !$canCustomizeBrand ? 'disabled' : '' }}>
+                                <input type="text" wire:model.live="secondary_color" class="form-control" placeholder="#000000" {{ !$canCustomizeBrand ? 'disabled' : '' }}>
                             </div>
                         </div>
                     </div>
@@ -107,7 +119,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <label class="form-label font-bold small text-uppercase">Fuente Principal</label>
-                        <select wire:model="font_family" class="form-select form-select-lg">
+                        <select wire:model="font_family" class="form-select form-select-lg" {{ !$canCustomizeBrand ? 'disabled' : '' }}>
                             <option value="inter">Inter (Profesional)</option>
                             <option value="poppins">Poppins (Creativa)</option>
                             <option value="roboto">Roboto (Estándar)</option>
@@ -126,30 +138,30 @@
                         <label class="form-label font-bold small text-uppercase">Slug de URL personalizada</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light xsmall text-muted">/access/</span>
-                            <input type="text" wire:model="login_url_slug" class="form-control" placeholder="nombre-agencia">
+                            <input type="text" wire:model="login_url_slug" class="form-control" placeholder="nombre-agencia" {{ !$canCustomizeBrand ? 'disabled' : '' }}>
                         </div>
                         <div class="form-text xsmall">Define una URL única para tus clientes (ej: /access/tu-marca).</div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label font-bold small text-uppercase">Título de Bienvenida</label>
-                        <input type="text" wire:model="login_welcome_title" class="form-control" placeholder="Bienvenido a...">
+                        <input type="text" wire:model="login_welcome_title" class="form-control" placeholder="Bienvenido a..." {{ !$canCustomizeBrand ? 'disabled' : '' }}>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label font-bold small text-uppercase">Subtítulo o Instrucción</label>
-                        <input type="text" wire:model="login_welcome_subtitle" class="form-control" placeholder="Acceso al Portal">
+                        <input type="text" wire:model="login_welcome_subtitle" class="form-control" placeholder="Acceso al Portal" {{ !$canCustomizeBrand ? 'disabled' : '' }}>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label font-bold small text-uppercase">Color de Fondo (Pantalla)</label>
-                            <input type="color" wire:model="login_bg_color" class="form-control form-control-color w-100">
+                            <input type="color" wire:model="login_bg_color" class="form-control form-control-color w-100" {{ !$canCustomizeBrand ? 'disabled' : '' }}>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label font-bold small text-uppercase">Mostrar Enlace de Registro</label>
                             <div class="form-check form-switch mt-2">
-                                <input class="form-check-input" type="checkbox" wire:model="show_register_link">
+                                <input class="form-check-input" type="checkbox" wire:model="show_register_link" {{ !$canCustomizeBrand ? 'disabled' : '' }}>
                                 <span class="form-check-label xsmall text-muted">Habilitar creación de cuentas</span>
                             </div>
                         </div>
@@ -157,7 +169,7 @@
 
                     <div class="mb-3">
                         <label class="form-label font-bold small text-uppercase">CSS Personalizado</label>
-                        <textarea wire:model="custom_css" class="form-control font-monospace xsmall" rows="4" placeholder=".btn-primary { border-radius: 0; }"></textarea>
+                        <textarea wire:model="custom_css" class="form-control font-monospace xsmall" rows="4" placeholder=".btn-primary { border-radius: 0; }" {{ !$canCustomizeBrand ? 'disabled' : '' }}></textarea>
                         <div class="form-text xsmall">Añade estilos adicionales a tu portal.</div>
                     </div>
                 </div>
@@ -173,25 +185,25 @@
                 <div class="card-body">
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <button wire:click="$set('theme_mode', 'light')" class="w-100 p-3 rounded border-2 transition text-center d-block {{ $theme_mode == 'light' ? 'border-primary bg-light shadow-sm' : 'border-light bg-white hover:border-muted' }}" style="border-style: solid;">
+                            <button @if($canCustomizeBrand) wire:click="$set('theme_mode', 'light')" @else disabled @endif class="w-100 p-3 rounded border-2 transition text-center d-block {{ $theme_mode == 'light' ? 'border-primary bg-light shadow-sm' : 'border-light bg-white hover:border-muted' }}" style="border-style: solid;">
                                 <div class="bg-white border border-light mx-auto mb-2" style="height: 30px; width: 50px; border-radius: 4px;"></div>
                                 <span class="small font-black text-uppercase {{ $theme_mode == 'light' ? 'text-primary' : 'text-muted' }}">Claro</span>
                             </button>
                         </div>
                         <div class="col-md-4">
-                            <button wire:click="$set('theme_mode', 'dark')" class="w-100 p-3 rounded border-2 transition text-center d-block {{ $theme_mode == 'dark' ? 'border-primary bg-dark shadow-sm' : 'border-light bg-white hover:border-muted' }}" style="border-style: solid;">
+                            <button @if($canCustomizeBrand) wire:click="$set('theme_mode', 'dark')" @else disabled @endif class="w-100 p-3 rounded border-2 transition text-center d-block {{ $theme_mode == 'dark' ? 'border-primary bg-dark shadow-sm' : 'border-light bg-white hover:border-muted' }}" style="border-style: solid;">
                                 <div class="bg-dark mx-auto mb-2 shadow-sm" style="height: 30px; width: 50px; border-radius: 4px;"></div>
                                 <span class="small font-black text-uppercase {{ $theme_mode == 'dark' ? 'text-primary' : 'text-muted' }}">Oscuro</span>
                             </button>
                         </div>
                         <div class="col-md-3">
-                            <button wire:click="$set('theme_mode', 'slate')" class="w-100 p-3 rounded border-2 transition text-center d-block {{ $theme_mode == 'slate' ? 'border-primary bg-dark shadow-sm' : 'border-light bg-white hover:border-muted' }}" style="border-style: solid; background-color: #1e293b !important;">
+                            <button @if($canCustomizeBrand) wire:click="$set('theme_mode', 'slate')" @else disabled @endif class="w-100 p-3 rounded border-2 transition text-center d-block {{ $theme_mode == 'slate' ? 'border-primary bg-dark shadow-sm' : 'border-light bg-white hover:border-muted' }}" style="border-style: solid; background-color: #1e293b !important;">
                                 <div class="bg-slate mx-auto mb-2" style="height: 30px; width: 50px; border-radius: 4px; background-color: #0f172a;"></div>
                                 <span class="small font-black text-uppercase {{ $theme_mode == 'slate' ? 'text-primary' : 'text-muted' }}">Slate</span>
                             </button>
                         </div>
                         <div class="col-md-3">
-                            <button wire:click="$set('theme_mode', 'oceanic')" class="w-100 p-3 rounded border-2 transition text-center d-block {{ $theme_mode == 'oceanic' ? 'border-primary bg-dark shadow-sm' : 'border-light bg-white hover:border-muted' }}" style="border-style: solid; background-color: #0c4a6e !important;">
+                            <button @if($canCustomizeBrand) wire:click="$set('theme_mode', 'oceanic')" @else disabled @endif class="w-100 p-3 rounded border-2 transition text-center d-block {{ $theme_mode == 'oceanic' ? 'border-primary bg-dark shadow-sm' : 'border-light bg-white hover:border-muted' }}" style="border-style: solid; background-color: #0c4a6e !important;">
                                 <div class="bg-info mx-auto mb-2" style="height: 30px; width: 50px; border-radius: 4px; background-color: #082f49;"></div>
                                 <span class="small font-black text-uppercase {{ $theme_mode == 'oceanic' ? 'text-primary' : 'text-muted' }}">Oceánico</span>
                             </button>
@@ -231,53 +243,6 @@
                 </div>
                 <div class="card-footer bg-transparent border-0 pb-4 px-4 text-center">
                     <p class="text-white-50 small mb-0">Los cambios se aplican globalmente al guardar.</p>
-                </div>
-            </div>
-
-            <!-- Login & Registration Customization -->
-            <div class="card shadow-sm mb-4 border-primary" style="border-left-width: 4px;">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Personalización de Pantallas de Acceso</h5>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label class="form-label font-bold small text-uppercase">Slug de URL personalizada</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light xsmall text-muted">/access/</span>
-                            <input type="text" wire:model="login_url_slug" class="form-control" placeholder="nombre-agencia">
-                        </div>
-                        <div class="form-text xsmall">Define una URL única para tus clientes (ej: /access/tu-marca).</div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label font-bold small text-uppercase">Título de Bienvenida</label>
-                        <input type="text" wire:model="login_welcome_title" class="form-control" placeholder="Bienvenido a...">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label font-bold small text-uppercase">Subtítulo o Instrucción</label>
-                        <input type="text" wire:model="login_welcome_subtitle" class="form-control" placeholder="Acceso al Portal">
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label font-bold small text-uppercase">Color de Fondo (Pantalla)</label>
-                            <input type="color" wire:model="login_bg_color" class="form-control form-control-color w-100">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label font-bold small text-uppercase">Mostrar Enlace de Registro</label>
-                            <div class="form-check form-switch mt-2">
-                                <input class="form-check-input" type="checkbox" wire:model="show_register_link">
-                                <span class="form-check-label xsmall text-muted">Habilitar creación de cuentas</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label font-bold small text-uppercase">CSS Personalizado</label>
-                        <textarea wire:model="custom_css" class="form-control font-monospace xsmall" rows="4" placeholder=".btn-primary { border-radius: 0; }"></textarea>
-                        <div class="form-text xsmall">Añade estilos adicionales a tu portal.</div>
-                    </div>
                 </div>
             </div>
         </div>

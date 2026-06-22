@@ -1,4 +1,7 @@
 <div class="container-fluid p-0">
+    @php
+        $canCustomizeTemplates = \App\Models\Tenant::current()?->hasSubFeature('customize_mail_templates') ?? true;
+    @endphp
 
     {{-- ===== PAGE HEADER ===== --}}
     <div class="row mb-4 align-items-center">
@@ -196,6 +199,13 @@
                     </h5>
                 </div>
                 <div class="card-body p-4 p-md-5">
+                    @if(!$canCustomizeTemplates)
+                        <div class="alert alert-warning py-2 mb-3 small d-flex align-items-center shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock text-warning me-2" style="width: 16px; height: 16px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <span>La edición de plantillas de correo está bloqueada en su plan actual.</span>
+                        </div>
+                    @endif
+
                     <div class="alert alert-info small mb-4 d-flex align-items-start gap-2">
                         <i data-feather="info" style="width:18px; height:18px; flex-shrink:0; margin-top:2px;"></i>
                         <div>
@@ -210,14 +220,14 @@
                             <label class="form-label xsmall font-black text-uppercase text-muted">
                                 <i class="align-middle me-1" data-feather="file-minus" style="width:14px; height:14px;"></i> Plantilla — Facturas
                             </label>
-                            <textarea wire:model="invoice_email_template" class="form-control border-2" rows="12"></textarea>
+                            <textarea wire:model="invoice_email_template" class="form-control border-2" rows="12" {{ !$canCustomizeTemplates ? 'disabled' : '' }}></textarea>
                             <div class="form-text xsmall mt-1">Este mensaje se enviará en el cuerpo del correo al enviar una factura al cliente.</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label xsmall font-black text-uppercase text-muted">
                                 <i class="align-middle me-1" data-feather="file-plus" style="width:14px; height:14px;"></i> Plantilla — Cotizaciones
                             </label>
-                            <textarea wire:model="quotation_email_template" class="form-control border-2" rows="12"></textarea>
+                            <textarea wire:model="quotation_email_template" class="form-control border-2" rows="12" {{ !$canCustomizeTemplates ? 'disabled' : '' }}></textarea>
                             <div class="form-text xsmall mt-1">Este mensaje se enviará en el cuerpo del correo al enviar una cotización al cliente.</div>
                         </div>
                     </div>

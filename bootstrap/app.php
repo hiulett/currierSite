@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \App\Http\Middleware\CheckPermission::class,
             'role' => \App\Http\Middleware\RoleRedirect::class,
             'tenant.required' => \App\Http\Middleware\RequiresTenantContext::class,
+            'tenant.feature' => \App\Http\Middleware\CheckTenantFeature::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -12,6 +12,7 @@ class GeneralSettings extends Component
     public $default_rate;
     public $timezone;
     public $locale;
+    public $subtract_provider_costs = true;
 
     // Box Number Settings - Air
     public $box_number_prefix_air;
@@ -73,6 +74,7 @@ class GeneralSettings extends Component
 
         $this->service_air_enabled = $settings['service_air_enabled'] ?? true;
         $this->service_maritime_enabled = $settings['service_maritime_enabled'] ?? true;
+        $this->subtract_provider_costs = $settings['subtract_provider_costs'] ?? true;
     }
 
     public function updatedForcePasswordChange($value)
@@ -119,6 +121,7 @@ class GeneralSettings extends Component
         // Ensure toggles are saved here too
         $settings['service_air_enabled'] = (bool) $this->service_air_enabled;
         $settings['service_maritime_enabled'] = (bool) $this->service_maritime_enabled;
+        $settings['subtract_provider_costs'] = (bool) $this->subtract_provider_costs;
 
         $tenant->update([
             'settings_json' => $settings,

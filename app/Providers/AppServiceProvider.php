@@ -164,5 +164,21 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
         });
+
+        // Register custom tenant feature Blade directives
+        \Illuminate\Support\Facades\Blade::if('tenantFeatureNotHidden', function (string $feature) {
+            $tenant = \App\Models\Tenant::current();
+            return $tenant ? $tenant->getFeatureStatus($feature) !== 'hidden' : true;
+        });
+
+        \Illuminate\Support\Facades\Blade::if('tenantFeatureDisabled', function (string $feature) {
+            $tenant = \App\Models\Tenant::current();
+            return $tenant ? $tenant->getFeatureStatus($feature) === 'disabled' : false;
+        });
+
+        \Illuminate\Support\Facades\Blade::if('tenantSubFeature', function (string $subFeature) {
+            $tenant = \App\Models\Tenant::current();
+            return $tenant ? $tenant->hasSubFeature($subFeature) : true;
+        });
     }
 }

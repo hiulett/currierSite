@@ -239,7 +239,7 @@
     <!-- Modal for Features/Modules (Bootstrap 5) -->
     @if($configuring_tenant_id)
         <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
                 <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
                     <div class="modal-header bg-dark text-white p-4">
                         <h5 class="modal-title uppercase font-black tracking-widest text-white">
@@ -250,44 +250,137 @@
                     <div class="modal-body p-4 bg-light">
                         <div class="alert alert-info py-2 small">
                             <i data-feather="info" class="me-2" style="width: 14px;"></i>
-                            Active o desactive los módulos a los que esta empresa tiene acceso.
+                            Configure el estado de visualización y acceso para cada módulo principal y controle las sub-características permitidas.
                         </div>
 
-                        <div class="list-group shadow-sm mb-4">
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="fw-bold">Módulo de Reempaque</div>
-                                    <div class="small text-muted">Consolidación de carga para clientes.</div>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" wire:model="features.repack">
+                        <div class="row g-4">
+                            <!-- Column 1: Modules Matrix -->
+                            <div class="col-12 col-md-7">
+                                <h6 class="fw-black uppercase text-muted small mb-3 border-bottom pb-2">Estado de Módulos Principales</h6>
+                                <div class="table-responsive bg-white rounded-3 shadow-sm p-2">
+                                    <table class="table table-sm table-borderless align-middle mb-0" style="font-size: 0.85rem;">
+                                        <thead>
+                                            <tr class="text-muted text-uppercase" style="font-size: 0.7rem;">
+                                                <th class="ps-2">Módulo</th>
+                                                <th class="text-center">Activo</th>
+                                                <th class="text-center">Oculto</th>
+                                                <th class="text-center">Bloqueado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $modulesMap = [
+                                                    'dashboard' => 'Dashboard Principal',
+                                                    'recepcion_carga' => 'Recepción de Carga',
+                                                    'gestion_bodega' => 'Gestión de Bodega',
+                                                    'embarques_salidas' => 'Embarques y Salidas',
+                                                    'delivery' => 'Delivery / Entregas',
+                                                    'clientes_soporte' => 'Clientes y Soporte',
+                                                    'facturacion_cotizaciones' => 'Facturación y Cotiz.',
+                                                    'expenses' => 'Módulo de Egresos',
+                                                    'reportes_negocio' => 'Reportes de Negocio',
+                                                    'configuraciones' => 'Ajustes / Config.'
+                                                ];
+                                            @endphp
+                                            @foreach($modulesMap as $key => $label)
+                                                <tr class="border-bottom-dashed">
+                                                    <td class="ps-2 fw-bold text-dark">{{ $label }}</td>
+                                                    <td class="text-center">
+                                                        <input class="form-check-input" type="radio" name="mod_{{ $key }}" value="active" wire:model="features.modules.{{ $key }}">
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input class="form-check-input" type="radio" name="mod_{{ $key }}" value="hidden" wire:model="features.modules.{{ $key }}">
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <input class="form-check-input" type="radio" name="mod_{{ $key }}" value="disabled" wire:model="features.modules.{{ $key }}">
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="fw-bold">WhatsApp IA Agent</div>
-                                    <div class="small text-muted">Chatbot inteligente para consultas.</div>
+
+                            <!-- Column 2: Subfeatures & Legacy -->
+                            <div class="col-12 col-md-5">
+                                <h6 class="fw-black uppercase text-muted small mb-3 border-bottom pb-2">Sub-Características (Permisos)</h6>
+                                <div class="list-group shadow-sm mb-4">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.85rem;">Descargar Reportes</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">Permitir exportar a Excel en reportes.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" wire:model="features.sub_features.download_reports">
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.85rem;">Plantillas de Correo</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">Personalizar textos de emails.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" wire:model="features.sub_features.customize_mail_templates">
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.85rem;">Nombre de Empresa</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">Permitir editar nombre comercial.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" wire:model="features.sub_features.change_company_name">
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.85rem;">Identidad Visual</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">Permitir subir logos y colores.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" wire:model="features.sub_features.customize_visual_brand">
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" wire:model="features.whatsapp_ia">
-                                </div>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="fw-bold">Gestión de Tickets</div>
-                                    <div class="small text-muted">Sistema de soporte técnico interno.</div>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" wire:model="features.tickets">
-                                </div>
-                            </div>
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <div class="fw-bold">Pagos en Línea</div>
-                                    <div class="small text-muted">Acceso a pasarelas Stripe/PayPal.</div>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" wire:model="features.online_payments">
+
+                                <h6 class="fw-black uppercase text-muted small mb-3 border-bottom pb-2">Otras Funcionalidades</h6>
+                                <div class="list-group shadow-sm">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.85rem;">Módulo Reempaque</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">Consolidación de carga.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" wire:model="features.repack">
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.85rem;">WhatsApp IA</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">Asistente virtual automático.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" wire:model="features.whatsapp_ia">
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.85rem;">Tickets Soporte</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">Gestión de reclamos internos.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" wire:model="features.tickets">
+                                        </div>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 0.85rem;">Pagos Online</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">Integración Stripe/PayPal.</div>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" wire:model="features.online_payments">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

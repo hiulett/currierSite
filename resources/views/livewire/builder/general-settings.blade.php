@@ -55,12 +55,20 @@
 
                     <hr class="my-4">
 
-                    <div class="form-check form-switch custom-switch">
+                    <div class="form-check form-switch custom-switch mb-3">
                         <input class="form-check-input" type="checkbox" wire:model.live="force_password_change" id="forcePasswordToggle">
                         <label class="form-check-label fw-black text-uppercase small text-danger" for="forcePasswordToggle">
                             <i data-feather="shield" class="me-1" style="width:14px;"></i> Obligar cambio de contraseña
                         </label>
                         <p class="text-muted xsmall mb-0 mt-1">Si está activo, los clientes que reciban una clave temporal deberán cambiarla en su primer inicio de sesión.</p>
+                    </div>
+
+                    <div class="form-check form-switch custom-switch mt-3">
+                        <input class="form-check-input" type="checkbox" wire:model="subtract_provider_costs" id="subtractProviderCostsToggle">
+                        <label class="form-check-label fw-black text-uppercase small text-primary" for="subtractProviderCostsToggle">
+                            <i data-feather="dollar-sign" class="me-1" style="width:14px;"></i> Descontar Costos de Fletes (Proveedor)
+                        </label>
+                        <p class="text-muted xsmall mb-0 mt-1">Si está activo, el cálculo de la ganancia neta en el dashboard restará el costo de fletes registrado en los paquetes. De lo contrario, solo restará los Egresos Generales.</p>
                     </div>
                 </div>
             </div>

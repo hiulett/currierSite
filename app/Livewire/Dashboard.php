@@ -59,13 +59,20 @@ class Dashboard extends Component
 
             // --- FINANCIAL METRICS (Smart Reception) ---
             $financialMetrics = Package::selectRaw('
-                SUM(CASE WHEN client_total_billed IS NOT NULL AND provider_cost IS NOT NULL THEN (client_total_billed - provider_cost) ELSE 0 END) as total_profit,
                 COUNT(CASE WHEN client_total_billed IS NOT NULL AND provider_cost IS NOT NULL AND provider_cost > client_total_billed THEN 1 END) as leaks_count,
                 AVG(CASE WHEN provider_cost > 0 AND client_total_billed IS NOT NULL THEN ((client_total_billed - provider_cost) / provider_cost * 100) ELSE NULL END) as avg_roi
             ')->first();
 
             // Projected Profit from stock (Received but not billed)
             $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
+            $totalExpenses = floatval(\App\Models\Expense::sum('amount') ?? 0);
+            $totalInvoices = floatval(Invoice::where('status', '!=', 'cancelled')->sum('total') ?? 0);
+            if ($tenant && $tenant->shouldSubtractProviderCosts()) {
+                $totalProviderCosts = floatval(Package::sum('provider_cost') ?? 0);
+                $total_profit = $totalInvoices - $totalExpenses - $totalProviderCosts;
+            } else {
+                $total_profit = $totalInvoices - $totalExpenses;
+            }
             $tenantSettings = $tenant->settings_json ?? [];
             $defaultRate = $tenantSettings['default_rate'] ?? 2.50;
 
@@ -111,8 +118,18 @@ class Dashboard extends Component
                 ->pluck('total_cost', 'month')
                 ->toArray();
 
+            // Real Expenses Data (from expenses table)
+            $monthlyExpenses = \App\Models\Expense::selectRaw("$monthFormat as month, sum(amount) as total_expense")
+                ->where('expense_date', '>=', now()->startOfYear())
+                ->groupBy('month')
+                ->orderBy('month')
+                ->pluck('total_expense', 'month')
+                ->toArray();
+
             $revenueData = array_fill(1, 12, 0);
             $costData = array_fill(1, 12, 0);
+            $expenseData = array_fill(1, 12, 0);
+            $netProfitData = array_fill(1, 12, 0);
             $projectionData = array_fill(1, 12, 0);
 
             foreach ($monthlyRevenue as $month => $total) {
@@ -121,6 +138,18 @@ class Dashboard extends Component
 
             foreach ($monthlyCosts as $month => $cost) {
                 $costData[(int)$month] = $cost;
+            }
+
+            foreach ($monthlyExpenses as $month => $expense) {
+                $expenseData[(int)$month] = $expense;
+            }
+
+            $subtractProviderCosts = $tenant ? $tenant->shouldSubtractProviderCosts() : true;
+            for ($i = 1; $i <= 12; $i++) {
+                $rev = $revenueData[$i] ?? 0;
+                $exp = $expenseData[$i] ?? 0;
+                $pkgCost = $subtractProviderCosts ? ($costData[$i] ?? 0) : 0;
+                $netProfitData[$i] = round($rev - $exp - $pkgCost, 2);
             }
 
             // Calculation weights for projection... (keeping existing projection logic)
@@ -281,7 +310,7 @@ class Dashboard extends Component
                 'total_packages' => $packagesQuery->count(),
                 'total_customers' => Customer::count(),
                 'total_unpaid' => Invoice::where('status', 'unpaid')->sum('total'),
-                'total_profit' => $financialMetrics->total_profit ?? 0,
+                'total_profit' => $total_profit,
                 'projected_profit' => $projectedProfit,
                 'avg_roi' => $financialMetrics->avg_roi ?? 0,
                 'recent_packages' => $recent_packages,
@@ -289,6 +318,8 @@ class Dashboard extends Component
                 'chartData' => array_values($chartData),
                 'revenueData' => array_values($revenueData),
                 'costData' => array_values($costData),
+                'expenseData' => array_values($expenseData),
+                'netProfitData' => array_values($netProfitData),
                 'warehouseLabels' => array_keys($warehouseUsage),
                 'warehouseData' => array_values($warehouseUsage),
                 'actionAlerts' => $actionAlerts,

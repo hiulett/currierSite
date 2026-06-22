@@ -222,4 +222,31 @@ class Tenant extends Model
 
         return null;
     }
+
+    /**
+     * Get the status of a main module/section ('active', 'hidden', 'disabled').
+     */
+    public function getFeatureStatus(string $module): string
+    {
+        $features = $this->features_json ?? [];
+        return $features['modules'][$module] ?? 'active';
+    }
+
+    /**
+     * Check if a granular sub-feature is allowed.
+     */
+    public function hasSubFeature(string $subFeature): bool
+    {
+        $features = $this->features_json ?? [];
+        return (bool) ($features['sub_features'][$subFeature] ?? true);
+    }
+
+    /**
+     * Determine if Net Profit should subtract provider costs.
+     */
+    public function shouldSubtractProviderCosts(): bool
+    {
+        $settings = $this->settings_json ?? [];
+        return (bool) ($settings['subtract_provider_costs'] ?? true);
+    }
 }

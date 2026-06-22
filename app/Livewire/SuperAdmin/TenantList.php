@@ -163,13 +163,42 @@ class TenantList extends Component
         $this->configuring_tenant_id = $id;
         $tenant = Tenant::find($id);
 
-        // Initial features state
-        $this->features = $tenant->features_json ?? [
-            'repack' => true,
-            'whatsapp_ia' => true,
-            'tickets' => true,
-            'online_payments' => true
-        ];
+        $features = $tenant->features_json ?? [];
+
+        // Legacy features default
+        foreach (['repack', 'whatsapp_ia', 'tickets', 'online_payments'] as $legacyKey) {
+            if (!isset($features[$legacyKey])) {
+                $features[$legacyKey] = true;
+            }
+        }
+
+        // Modules default
+        if (!isset($features['modules'])) {
+            $features['modules'] = [];
+        }
+        foreach ([
+            'dashboard', 'recepcion_carga', 'gestion_bodega', 'embarques_salidas',
+            'delivery', 'clientes_soporte', 'facturacion_cotizaciones', 'expenses',
+            'reportes_negocio', 'configuraciones'
+        ] as $mod) {
+            if (!isset($features['modules'][$mod])) {
+                $features['modules'][$mod] = 'active';
+            }
+        }
+
+        // Subfeatures default
+        if (!isset($features['sub_features'])) {
+            $features['sub_features'] = [];
+        }
+        foreach ([
+            'download_reports', 'customize_mail_templates', 'change_company_name', 'customize_visual_brand'
+        ] as $sub) {
+            if (!isset($features['sub_features'][$sub])) {
+                $features['sub_features'][$sub] = true;
+            }
+        }
+
+        $this->features = $features;
     }
 
     public function saveFeatures()

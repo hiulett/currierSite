@@ -78,7 +78,10 @@
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
                             <h3 class="mb-2 fw-black text-white">{{ number_format($total_packages) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('Paquetes Totales') }}</p>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75 d-flex align-items-center">
+                                {{ __('Paquetes Totales') }}
+                                <i class="align-middle ms-1 text-white opacity-75" data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Total de paquetes recibidos en bodega que están en proceso de entrega."></i>
+                            </p>
                         </div>
                         <div class="stat bg-white bg-opacity-25 text-white">
                             <i class="align-middle" data-feather="package"></i>
@@ -93,7 +96,10 @@
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
                             <h3 class="mb-2 text-white fw-black">{{ $currency }} {{ number_format($total_profit, 2) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('Ganancia Real Acumulada') }}</p>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75 d-flex align-items-center">
+                                {{ __('Ganancia Real Acumulada') }}
+                                <i class="align-middle ms-1 text-white opacity-75" data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Facturación total facturada menos egresos generales (y costo de fletes, según su preferencia en Ajustes Generales)."></i>
+                            </p>
                         </div>
                         <div class="stat bg-white bg-opacity-25 text-white">
                             <i class="align-middle" data-feather="trending-up"></i>
@@ -108,7 +114,10 @@
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
                             <h3 class="mb-2 text-white fw-black">{{ $currency }} {{ number_format($projected_profit, 2) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('Ganancia Proyectada (Bodega)') }}</p>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75 d-flex align-items-center">
+                                {{ __('Ganancia Proyectada (Bodega)') }}
+                                <i class="align-middle ms-1 text-white opacity-75" data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Ingresos estimados para los paquetes actualmente almacenados basándose en su peso y la tarifa por defecto, menos el costo estimado del flete."></i>
+                            </p>
                         </div>
                         <div class="stat bg-white bg-opacity-25 text-white">
                             <i class="align-middle" data-feather="eye"></i>
@@ -123,7 +132,10 @@
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
                             <h3 class="mb-2 text-white fw-black">{{ number_format($avg_roi, 1) }}%</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75">{{ __('ROI Promedio (Retorno)') }}</p>
+                            <p class="mb-0 text-uppercase font-bold small opacity-75 d-flex align-items-center">
+                                {{ __('ROI Promedio (Retorno)') }}
+                                <i class="align-middle ms-1 text-white opacity-75" data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Margen de retorno promedio basado en los precios de facturación al cliente final contra los costos cobrados por proveedores de flete."></i>
+                            </p>
                         </div>
                         <div class="stat bg-white bg-opacity-25 text-white">
                             <i class="align-middle" data-feather="percent"></i>
@@ -174,6 +186,28 @@
                 <div class="card-body">
                     <div class="chart chart-md" style="height: 300px;">
                         <canvas id="chartjs-movement"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Monthly Net Revenue vs Expenses Mixed Chart -->
+        <div class="col-12 grid-item mb-4">
+            <div class="card shadow-sm border-0" id="card-net-financials">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 uppercase font-black small text-primary">
+                        <i class="align-middle me-2 cursor-grab" data-feather="grid"></i>
+                        {{ __('Rendimiento Neto: Ingresos vs Egresos y Utilidad Neta') }}
+                    </h5>
+                    <div class="card-actions">
+                        <button class="btn btn-sm btn-light border" onclick="toggleFullscreen('card-net-financials')">
+                            <i data-feather="maximize" style="width: 14px; height: 14px;"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart chart-lg" style="height: 350px;">
+                        <canvas id="chartjs-net-financials"></canvas>
                     </div>
                 </div>
             </div>
@@ -276,6 +310,7 @@
                 if (window.movementChart) window.movementChart.resize();
                 if (window.revenueChart) window.revenueChart.resize();
                 if (window.warehouseChart) window.warehouseChart.resize();
+                if (window.netFinancialsChart) window.netFinancialsChart.resize();
             }, 100);
         }
 
@@ -307,6 +342,7 @@
             if (window.movementChart instanceof Chart) window.movementChart.destroy();
             if (window.revenueChart instanceof Chart) window.revenueChart.destroy();
             if (window.warehouseChart instanceof Chart) window.warehouseChart.destroy();
+            if (window.netFinancialsChart instanceof Chart) window.netFinancialsChart.destroy();
 
             const primaryColor = '#3b7ddd';
             const successColor = '#28a745';
@@ -402,6 +438,67 @@
                     plugins: { legend: { display: false } }
                 }
             });
+
+            // 4. Net Profit Chart (Mixed: Bar + Line)
+            if (document.getElementById("chartjs-net-financials")) {
+                window.netFinancialsChart = new Chart(document.getElementById("chartjs-net-financials"), {
+                    type: "bar",
+                    data: {
+                        labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"],
+                        datasets: [
+                            {
+                                label: "{{ __('Ingresos (Facturado)') }}",
+                                backgroundColor: '#10b981', // Emerald
+                                data: @json($revenueData),
+                                barPercentage: .4,
+                                categoryPercentage: .5,
+                                order: 2
+                            },
+                            {
+                                label: "{{ __('Egresos (Gastos)') }}",
+                                backgroundColor: '#f43f5e', // Rose
+                                data: @json($expenseData),
+                                barPercentage: .4,
+                                categoryPercentage: .5,
+                                order: 2
+                            },
+                            {
+                                label: "{{ __('Ganancia Real Neta') }}",
+                                type: "line",
+                                borderColor: '#3b7ddd', // Blue
+                                backgroundColor: "rgba(59, 125, 221, 0.1)",
+                                data: @json($netProfitData),
+                                fill: true,
+                                tension: 0.4,
+                                order: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: true, position: 'top' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': {{ $currency }} ' + context.parsed.y.toLocaleString();
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { borderDash: [2, 2] },
+                                ticks: {
+                                    callback: function(value) { return '{{ $currency }} ' + (value >= 1000 ? (value/1000).toFixed(1) + 'k' : value); }
+                                }
+                            },
+                            x: { grid: { display: false } }
+                        }
+                    }
+                });
+            }
         }
     </script>
 </div>
