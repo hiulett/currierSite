@@ -98,6 +98,9 @@ class Tenant extends Model
     {
         $settings = $this->settings_json ?? [];
 
+        // Set dynamic app name for email templates
+        config(['app.name' => $this->name]);
+
         if (isset($settings['mail_host']) && $settings['mail_host']) {
             config([
                 'mail.mailers.smtp.host' => $settings['mail_host'],
