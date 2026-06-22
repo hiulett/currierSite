@@ -148,7 +148,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Egresos (Expenses)
         Route::get('/egresos', \App\Livewire\Billing\ExpenseList::class)
-            ->name('billing.expenses')
+            ->name('billing.expenses.index')
             ->middleware(['can:billing.view', 'tenant.feature:expenses']);
 
         Route::get('/builder', App\Livewire\Builder\PageList::class)->name('builder.index')->middleware('can:settings.general');
