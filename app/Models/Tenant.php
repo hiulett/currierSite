@@ -205,6 +205,12 @@ class Tenant extends Model
         // 2. Fallback: Archivo específico guardado en theme_config_json
         $logo = $this->theme_config_json['logo_url'] ?? null;
         if ($logo) {
+            // Si el archivo físico existe en public/logos/, usarlo prioritariamente (evita problemas de symlinks/storage en producción)
+            $filename = basename($logo);
+            if (file_exists(public_path('logos/' . $filename))) {
+                return asset('logos/' . $filename);
+            }
+
             if (filter_var($logo, FILTER_VALIDATE_URL)) {
                 return $logo;
             }
