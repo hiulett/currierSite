@@ -54,7 +54,7 @@
                                 <span class="text-uppercase xsmall font-black text-muted tracking-widest">Fuente de Datos</span>
                                 <div class="mt-1 fw-black small uppercase">
                                     @if($package)
-                                        <span class="text-success"><i data-feather="database" class="me-1" style="width: 12px;"></i> LogiSaaS Local</span>
+                                        <span class="text-success"><i data-feather="database" class="me-1" style="width: 12px;"></i> {{ $package->tenant->name ?? config('app.name') }} Local</span>
                                     @else
                                         <span class="text-info"><i data-feather="globe" class="me-1" style="width: 12px;"></i> Intel. Externa</span>
                                     @endif
@@ -65,7 +65,7 @@
                             <div class="card border-0 shadow-sm p-3 bg-white text-center rounded-3">
                                 <span class="text-uppercase xsmall font-black text-muted tracking-widest">Transportista</span>
                                 <div class="mt-1 fw-black small uppercase text-primary">
-                                    {{ $external_data['carrier'] ?? 'LogiSaaS' }}
+                                    {{ $external_data['carrier'] ?? config('app.name') }}
                                 </div>
                             </div>
                         </div>

@@ -19,7 +19,7 @@
 <body>
     <div class="label-container">
         <div class="header">
-            <div class="company-name">{{ config('app.name') }}</div>
+            <div class="company-name">{{ $package->tenant->name ?? config('app.name') }}</div>
             <div style="font-size: 10px;">{{ $package->warehouse->name }} ({{ $package->warehouse->code }})</div>
         </div>
 
@@ -43,7 +43,7 @@
         </div>
 
         <div class="footer">
-            Generado por {{ $package->tenant->name ?? 'LogiSaaS' }} - {{ now()->format('d/m/Y H:i') }}
+            Generado por {{ $package->tenant->name ?? config('app.name') }} - {{ now()->format('d/m/Y H:i') }}
         </div>
     </div>
 </body>

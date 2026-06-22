@@ -49,6 +49,7 @@ class PackagesArrivedNotification extends Notification implements ShouldQueue
         }
 
         $this->invoice->load(['customer.user', 'items', 'tenant']);
+        $tenantName = $this->invoice->tenant?->name ?? config('app.name');
 
         // Prepare logo for PDF
         $logoBase64 = null;
@@ -85,7 +86,7 @@ class PackagesArrivedNotification extends Notification implements ShouldQueue
                     ->attachData($pdf->output(), "Factura_{$this->invoice->number}.pdf", [
                         'mime' => 'application/pdf',
                     ])
-                    ->line('¡Gracias por preferir nuestros servicios logísticos!');
+                    ->line('¡Gracias por preferir los servicios de ' . $tenantName . '!');
     }
 
     /**

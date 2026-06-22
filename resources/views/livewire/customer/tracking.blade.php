@@ -61,7 +61,7 @@
                                                 'date' => $e->created_at->format('d M, Y H:i'),
                                                 'location' => $e->location,
                                                 'notes' => $e->notes,
-                                                'source' => 'LogiSaaS Local'
+                                                'source' => (\App\Models\Tenant::current()?->name ?? config('app.name')) . ' Local'
                                             ])->toArray() : ($external_data['history'] ?? []);
                                         @endphp
 

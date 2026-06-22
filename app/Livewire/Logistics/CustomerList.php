@@ -83,7 +83,7 @@ class CustomerList extends Component
             ]);
 
             // Enviar notificación al correo
-            $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($this->new_password, $customer->user->name));
+            $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($this->new_password, $customer->user->name, $tenant));
 
             $customer->update(['password_sent_at' => now()]);
 
@@ -116,7 +116,8 @@ class CustomerList extends Component
             ]);
 
             // Enviar notificación
-            $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($plainPassword, $customer->user->name));
+            $tenant = \App\Models\Tenant::find(session('tenant_id'));
+            $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($plainPassword, $customer->user->name, $tenant));
 
             $count++;
         }
@@ -157,7 +158,8 @@ class CustomerList extends Component
             }
 
             if ($customer->user) {
-                $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($customer->temporary_password, $customer->user->name));
+                $notifTenant = \App\Models\Tenant::find(session('tenant_id'));
+                $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($customer->temporary_password, $customer->user->name, $notifTenant));
                 $customer->update(['password_sent_at' => now()]);
                 session()->flash('message', 'Credenciales enviadas correctamente a: ' . $customer->user->email);
             } else {

@@ -20,7 +20,7 @@
 
         <footer class="bg-slate-50 border-t py-12">
             <div class="max-w-7xl mx-auto px-4 text-center">
-                <p class="text-sm text-slate-500">&copy; {{ date('Y') }} {{ config('app.name') }}. Potenciado por LogiSaaS.</p>
+                <p class="text-sm text-slate-500">&copy; {{ date('Y') }} {{ config('app.name') }}.</p>
             </div>
         </footer>
     </body>

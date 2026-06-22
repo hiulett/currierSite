@@ -39,6 +39,11 @@ class PaymentReminder extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        if ($this->invoice->tenant) {
+            $this->invoice->tenant->setMailConfig();
+        }
+        $tenantName = $this->invoice->tenant?->name ?? config('app.name');
+
         $subject = match($this->type) {
             'before' => "Recordatorio de Pago: Factura #{$this->invoice->number} próxima a vencer",
             'on_due' => "Aviso de Vencimiento: Factura #{$this->invoice->number} vence hoy",
@@ -63,7 +68,8 @@ class PaymentReminder extends Notification implements ShouldQueue
         return $message
                     ->line("Monto total: {$this->invoice->currency} {$this->invoice->total}")
                     ->action('Ver Factura y Pagar', url("/invoices/{$this->invoice->id}"))
-                    ->line('Si ya realizaste el pago, por favor ignora este mensaje.');
+                    ->line("Si ya realizaste el pago, por favor ignora este mensaje.")
+                    ->line("Atentamente, " . $tenantName);
     }
 
     /**

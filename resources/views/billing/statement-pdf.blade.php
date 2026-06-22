@@ -135,7 +135,7 @@
     @endif
 
     <div class="footer">
-        {{ config('app.name') }} - Sistema de Gestión Logística SaaS. Generado automáticamente.
+        {{ $tenant->name ?? config('app.name') }} - Sistema de Gestión. Generado automáticamente.
     </div>
 </body>
 </html>

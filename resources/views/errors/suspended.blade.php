@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servicio Suspendido - LogiSaaS</title>
+    <title>Servicio Suspendido - {{ config('app.name') }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f8f9fa; height: 100vh; display: flex; align-items: center; justify-content: center; }
@@ -26,13 +26,13 @@
                 Periodo de suscripción vencido, mantenimiento programado o incumplimiento de términos de servicio.
             </div>
             <p class="small text-secondary mb-0">
-                Si es el dueño de la empresa, por favor contacte a soporte técnico de <strong>LogiSaaS</strong> para regularizar su situación.
+                Si es el dueño de la empresa, por favor contacte a soporte técnico de <strong>{{ config('app.name') }}</strong> para regularizar su situación.
             </p>
             <div class="mt-4 pt-3 border-top">
-                <a href="mailto:soporte@logisaas.com" class="btn btn-dark px-4 rounded-pill fw-bold">CONTACTAR SOPORTE</a>
+                <a href="mailto:{{ \App\Models\AppSetting::get('support_email', 'soporte@' . request()->getHost()) }}" class="btn btn-dark px-4 rounded-pill fw-bold">CONTACTAR SOPORTE</a>
             </div>
         </div>
-        <p class="mt-4 text-muted small">&copy; {{ date('Y') }} LogiSaaS Core System</p>
+        <p class="mt-4 text-muted small">&copy; {{ date('Y') }} {{ config('app.name') }}</p>
     </div>
 </body>
 </html>

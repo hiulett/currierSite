@@ -37,8 +37,13 @@ class PackageReceivedNotification extends Notification implements ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
+        if ($this->package->tenant) {
+            $this->package->tenant->setMailConfig();
+        }
+        $tenantName = $this->package->tenant?->name ?? config('app.name');
+
         return (new MailMessage)
-                    ->subject('¡Paquete Recibido! - ' . config('app.name'))
+                    ->subject('¡Paquete Recibido! - ' . $tenantName)
                     ->greeting('Hola ' . $notifiable->name . ',')
                     ->line('Hemos recibido un nuevo paquete en nuestra bodega con el siguiente detalle:')
                     ->line('**Tracking:** ' . $this->package->tracking_number)

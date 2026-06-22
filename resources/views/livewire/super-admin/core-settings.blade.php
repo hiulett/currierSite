@@ -2,7 +2,7 @@
     <div class="row mb-3">
         <div class="col-md-8">
             <h1 class="h3 mb-2 uppercase font-black tracking-tight">Ajustes del Núcleo</h1>
-            <p class="text-muted">Configuración global de la plataforma LogiSaaS.</p>
+            <p class="text-muted">Configuración global de la plataforma {{ \App\Models\AppSetting::get('platform_name', config('app.name')) }}.</p>
         </div>
         <div class="col-md-4 text-end">
             <button wire:click="save" class="btn btn-primary shadow-sm fw-black">

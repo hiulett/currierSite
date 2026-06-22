@@ -2,7 +2,7 @@
     <div class="row mb-3">
         <div class="col-12">
             <h1 class="h3 mb-2 uppercase font-black tracking-tight">Buscador Maestro de Carga</h1>
-            <p class="text-muted">Localice cualquier paquete en todo el ecosistema LogiSaaS usando el Tracking ID.</p>
+            <p class="text-muted">Localice cualquier paquete en todo el ecosistema {{ \App\Models\AppSetting::get('platform_name', config('app.name')) }} usando el Tracking ID.</p>
         </div>
     </div>
 

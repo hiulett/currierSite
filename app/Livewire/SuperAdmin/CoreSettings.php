@@ -16,8 +16,8 @@ class CoreSettings extends Component
 
     public function mount()
     {
-        $this->platform_name = AppSetting::get('platform_name', 'LogiSaaS');
-        $this->support_email = AppSetting::get('support_email', 'support@logisaas.com');
+        $this->platform_name = AppSetting::get('platform_name', config('app.name', 'Sistema Logístico'));
+        $this->support_email = AppSetting::get('support_email', env('SUPPORT_EMAIL', 'soporte@' . request()->getHost()));
         $this->system_status = AppSetting::get('system_status', 'online');
         $this->maintenance_message = AppSetting::get('maintenance_message', 'Estamos realizando mejoras técnicas...');
         $this->base_currency = AppSetting::get('base_currency', 'USD');

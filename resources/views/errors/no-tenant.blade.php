@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contexto no identificado - LogiSaaS</title>
+    <title>Contexto no identificado - {{ config('app.name') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
@@ -27,7 +27,7 @@
 
             <div class="pt-4 border-t border-slate-100 mt-6">
                 <p class="text-xs text-slate-400 font-bold uppercase tracking-widest">
-                    LogiSaaS Multi-Tenant Gateway
+                    {{ config('app.name') }} Multi-Tenant Gateway
                 </p>
             </div>
         </div>

@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>SuperAdmin Global | LogiSaaS</title>
+	<title>SuperAdmin Global | {{ \App\Models\AppSetting::get('platform_name', config('app.name')) }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 	<link href="{{ asset('adminkit/css/light.css') }}" rel="stylesheet">
@@ -59,7 +59,7 @@
                         <i class="align-middle text-primary" data-feather="shield" style="width: 40px; height: 40px;"></i>
                     </div>
                     <span class="sidebar-brand-text align-middle">
-                        Logi<span>SaaS</span> <small class="sidebar-badge">CORE</small>
+                        {{ \App\Models\AppSetting::get('platform_name', config('app.name')) }} <small class="sidebar-badge">CORE</small>
                     </span>
 				</a>
 
@@ -228,7 +228,7 @@
 					<div class="row text-muted">
 						<div class="col-6 text-start">
 							<p class="mb-0">
-								<strong>LogiSaaS Core</strong> &copy; {{ date('Y') }}
+								<strong>{{ \App\Models\AppSetting::get('platform_name', config('app.name')) }} Core</strong> &copy; {{ date('Y') }}
 							</p>
 						</div>
 					</div>

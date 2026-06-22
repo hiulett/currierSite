@@ -2,7 +2,7 @@
     <div class="row mb-3">
         <div class="col-12">
             <h1 class="h3 mb-2 uppercase font-black tracking-tight">Directorio Global de Usuarios</h1>
-            <p class="text-muted">Administre todos los usuarios registrados en el ecosistema LogiSaaS.</p>
+            <p class="text-muted">Administre todos los usuarios registrados en el ecosistema {{ \App\Models\AppSetting::get('platform_name', config('app.name')) }}.</p>
         </div>
     </div>
 

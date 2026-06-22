@@ -42,6 +42,7 @@ class PackageStatusNotification extends Notification implements ShouldQueue
         if ($this->package->tenant) {
             $this->package->tenant->setMailConfig();
         }
+        $tenantName = $this->package->tenant?->name ?? config('app.name');
 
         $statusMessages = [
             'in_transit' => [
@@ -86,7 +87,7 @@ class PackageStatusNotification extends Notification implements ShouldQueue
                     ->line('• Peso: ' . $this->package->weight . ' lbs')
                     ->line('• Descripción: ' . ($this->package->description ?? 'Sin descripción'))
                     ->action('Rastrear Paquete', url('/customer/packages'))
-                    ->line('Gracias por elegirnos.');
+                    ->line('Gracias por elegir ' . $tenantName . '.');
     }
 
     /**

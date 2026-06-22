@@ -376,13 +376,11 @@
                     @endif
 				</ul>
 
-				</ul>
-
 				<div class="sidebar-cta">
 					<div class="sidebar-cta-content">
-						<strong class="d-inline-block mb-2">LogiSaaS Pro</strong>
+						<strong class="d-inline-block mb-2">{{ $tenant->name ?? config('app.name') }}</strong>
 						<div class="mb-3 text-sm">
-							Sistema integral de logística multi-tenant.
+							Sistema integral de logística.
 						</div>
 						<div class="d-grid">
 							<a href="#" class="btn btn-primary">Documentación</a>
@@ -516,7 +514,7 @@
 					<div class="row text-muted">
 						<div class="col-6 text-start">
 							<p class="mb-0">
-								<a class="text-muted" href="#" target="_blank"><strong>LogiSaaS</strong></a> &copy; {{ date('Y') }}
+								<strong>{{ $tenant->name ?? config('app.name') }}</strong> &copy; {{ date('Y') }}
 							</p>
 						</div>
 						<div class="col-6 text-end">

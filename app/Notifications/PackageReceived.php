@@ -41,6 +41,7 @@ class PackageReceived extends Notification implements ShouldQueue
         if ($this->package->tenant) {
             $this->package->tenant->setMailConfig();
         }
+        $tenantName = $this->package->tenant?->name ?? config('app.name');
 
         return (new MailMessage)
             ->subject('Paquete Recibido - ' . $this->package->tracking_number)
@@ -49,7 +50,7 @@ class PackageReceived extends Notification implements ShouldQueue
             ->line('Tracking: ' . $this->package->tracking_number)
             ->line('Peso: ' . $this->package->weight . ' kg')
             ->action('Ver mi Casillero', url('/portal/paquetes'))
-            ->line('Gracias por confiar en nosotros.');
+            ->line('Gracias por confiar en ' . $tenantName . '.');
     }
 
     /**

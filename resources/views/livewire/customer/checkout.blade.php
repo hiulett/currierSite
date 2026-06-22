@@ -102,15 +102,15 @@
                                     <p class="xsmall text-muted mb-1 font-bold uppercase">Datos de la Cuenta:</p>
                                     <div class="bg-white p-2 rounded border small">
                                         <strong>Banco General</strong><br>
-                                        Cuenta Corriente: 03-01-01-223344-5<br>
-                                        Nombre: LogiSaaS Corp.
+                                        Cuenta Corriente: {{ \App\Models\Tenant::current()?->settings_json['bank_account_number'] ?? '03-01-01-223344-5' }}<br>
+                                        Nombre: {{ \App\Models\Tenant::current()?->settings_json['payment_account_name'] ?? (\App\Models\Tenant::current()?->name ?? config('app.name')) }}
                                     </div>
                                 </div>
                                 <div class="col-sm-6 mt-3 mt-sm-0">
                                     <p class="xsmall text-muted mb-1 font-bold uppercase">Yappy:</p>
                                     <div class="bg-white p-2 rounded border small">
-                                        <strong>@logisaas</strong><br>
-                                        Tel: 6655-4433
+                                        <strong>{{ \App\Models\Tenant::current()?->settings_json['yappy_handle'] ?? '' }}</strong><br>
+                                        Tel: {{ \App\Models\Tenant::current()?->settings_json['yappy_phone'] ?? '6655-4433' }}
                                     </div>
                                 </div>
                             </div>

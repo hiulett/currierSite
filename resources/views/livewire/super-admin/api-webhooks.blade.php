@@ -25,7 +25,7 @@
                         <tbody>
                             <tr>
                                 <td class="ps-4">
-                                    <div class="fw-bold">https://analytics.external.com/logisaas</div>
+                                    <div class="fw-bold">https://analytics.external.com/api/webhook</div>
                                     <div class="small text-muted">Analytics Sync</div>
                                 </td>
                                 <td><span class="badge bg-primary-light text-primary">package.created</span></td>
@@ -87,7 +87,7 @@
             <div class="card bg-info text-white shadow-lg">
                 <div class="card-body p-4">
                     <h5 class="text-white uppercase font-black mb-3 small">Documentación API</h5>
-                    <p class="small mb-4 opacity-75">Integre otros servicios con el núcleo de LogiSaaS usando nuestra API REST profesional.</p>
+                    <p class="small mb-4 opacity-75">Integre otros servicios con el núcleo de {{ \App\Models\AppSetting::get('platform_name', config('app.name')) }} usando nuestra API REST profesional.</p>
                     <a href="#" class="btn btn-light btn-sm w-100 fw-bold">LEER DOCUMENTACIÓN</a>
                 </div>
             </div>

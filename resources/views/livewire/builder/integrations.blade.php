@@ -2,7 +2,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <h2 class="h3 mb-0 uppercase font-black tracking-tight text-dark">Integraciones y Pagos</h2>
-            <p class="text-muted small">Configura tus pasarelas de pago y conecta LogiSaaS con tu ecosistema digital.</p>
+            <p class="text-muted small">Configura tus pasarelas de pago y conecta {{ \App\Models\Tenant::current()?->name ?? config('app.name') }} con tu ecosistema digital.</p>
         </div>
     </div>
 

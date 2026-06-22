@@ -2,7 +2,7 @@
     <div class="row mb-3">
         <div class="col-auto d-none d-sm-block">
             <h1 class="h3 mb-0 uppercase font-black">Panel de Control Global</h1>
-            <p class="text-muted">Métricas consolidadas de todo el ecosistema LogiSaaS.</p>
+            <p class="text-muted">Métricas consolidadas de todo el ecosistema {{ \App\Models\AppSetting::get('platform_name', config('app.name')) }}.</p>
         </div>
     </div>
 

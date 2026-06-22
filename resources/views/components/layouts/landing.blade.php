@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'LogiSaaS') }} | Automatiza tu Courier en 48 Horas</title>
+    <title>{{ config('app.name') }} | Automatiza tu Courier en 48 Horas</title>
     <meta name="description" content="Automatización logística con OCR, IA y programas de fidelización para couriers modernos.">
 
     <!-- Fonts -->

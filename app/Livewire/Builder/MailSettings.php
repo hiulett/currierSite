@@ -110,9 +110,10 @@ class MailSettings extends Component
             \Illuminate\Support\Facades\Mail::purge('smtp');
             \Illuminate\Support\Facades\Mail::purge($this->mail_driver);
 
-            \Illuminate\Support\Facades\Mail::raw("Este es un correo de prueba de LogiSaaS para validar tu configuración SMTP. Si recibiste esto, ¡todo está funcionando correctamente!", function ($message) {
+            $tenantName = \App\Models\Tenant::current()?->name ?? config('app.name');
+            \Illuminate\Support\Facades\Mail::raw("Este es un correo de prueba de {$tenantName} para validar tu configuración SMTP. Si recibiste esto, ¡todo está funcionando correctamente!", function ($message) use ($tenantName) {
                 $message->to($this->test_email_address)
-                        ->subject('Prueba de Configuración de Correo - LogiSaaS');
+                        ->subject("Prueba de Configuración de Correo - {$tenantName}");
             });
 
             session()->flash('message', '¡Éxito! Correo de prueba enviado (vía SMTP) a: ' . $this->test_email_address);
@@ -139,7 +140,7 @@ class MailSettings extends Component
                 'content' => [
                     [
                         'type' => 'text/plain',
-                        'value' => 'Este es un correo de prueba enviado a través de la API oficial de SendGrid desde LogiSaaS.'
+                        'value' => 'Este es un correo de prueba enviado a través de la API oficial de SendGrid desde ' . (\App\Models\Tenant::current()?->name ?? config('app.name')) . '.'
                     ]
                 ]
             ]);

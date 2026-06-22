@@ -53,7 +53,7 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with([
                 'tenant'          => $tenant,
-                'tenantName'      => $tenant?->name ?? 'LogiSaaS',
+                'tenantName'      => $tenant?->name ?? config('app.name'),
                 'logoUrl'         => $tenant?->getLogoUrl(),
                 'primaryColor'    => $theme['primary_color'] ?? '#3B82F6',
                 'primaryDark'     => $theme['primary_dark_color'] ?? '#1D4ED8',

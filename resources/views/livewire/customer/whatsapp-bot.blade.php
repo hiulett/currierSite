@@ -92,7 +92,7 @@
                             <div class="d-flex justify-content-start">
                                 <div class="bg-white p-3 shadow-sm border" style="border-radius: 0 1.5rem 1.5rem 1.5rem; max-width: 85%;">
                                     <p class="text-dark small mb-0 fw-medium leading-relaxed">
-                                        ¡Hola! Soy tu asistente de **LogiSaaS**. ¿En qué puedo ayudarte hoy? Puedes preguntarme por tus paquetes o tu saldo actual.
+                                        ¡Hola! Soy tu asistente de **{{ \App\Models\Tenant::current()?->name ?? config('app.name') }}**. ¿En qué puedo ayudarte hoy? Puedes preguntarme por tus paquetes o tu saldo actual.
                                     </p>
                                 </div>
                             </div>
