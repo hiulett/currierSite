@@ -280,6 +280,12 @@
 						</a>
 					</li>
 
+                    <li class="sidebar-item {{ request()->routeIs('billing.driver-trips.index') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('billing.driver-trips.index') }}'>
+							<i class="align-middle" data-feather="truck"></i> <span class="align-middle">Control de Fletes</span>
+						</a>
+					</li>
+
                     <li class="sidebar-item {{ request()->routeIs('billing.statement') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('billing.statement') }}'>
 							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">Estados de Cuenta</span>

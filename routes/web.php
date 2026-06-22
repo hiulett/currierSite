@@ -141,6 +141,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/cotizaciones', \App\Livewire\Billing\QuotationList::class)->name('billing.quotations.index')->middleware('can:billing.view');
         Route::get('/cotizaciones/{quotation}/download', [\App\Http\Controllers\Billing\QuotationController::class, 'download'])->name('billing.quotations.download')->middleware('can:billing.view');
 
+        // Control de Fletes / Viajes
+        Route::get('/control-fletes', \App\Livewire\Billing\DriverTripList::class)->name('billing.driver-trips.index')->middleware('can:billing.view');
+
         Route::get('/builder', App\Livewire\Builder\PageList::class)->name('builder.index')->middleware('can:settings.general');
         Route::get('/builder/brand', BrandSettings::class)->name('builder.brand')->middleware('can:settings.brand');
         Route::get('/builder/mail', MailSettings::class)->name('builder.mail')->middleware('can:settings.general');
