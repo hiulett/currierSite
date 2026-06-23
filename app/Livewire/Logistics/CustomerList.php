@@ -81,13 +81,17 @@ class CustomerList extends Component
             $customer->update([
                 'temporary_password' => $this->new_password
             ]);
+            try {
+                // Enviar notificación al correo
+                $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($this->new_password, $customer->user->name, $tenant));
 
-            // Enviar notificación al correo
-            $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($this->new_password, $customer->user->name, $tenant));
+                $customer->update(['password_sent_at' => now()]);
 
-            $customer->update(['password_sent_at' => now()]);
-
-            session()->flash('message', 'Contraseña actualizada y enviada por correo a: ' . $customer->user->name);
+                session()->flash('message', 'Contraseña actualizada y enviada por correo a: ' . $customer->user->name);
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error enviando correo de reset de contraseña: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                session()->flash('error', 'Contraseña actualizada, pero NO se pudo enviar el correo. Error interno: ' . $e->getMessage());
+            }
         }
 
         $this->dispatch('close-password-modal');
@@ -115,11 +119,14 @@ class CustomerList extends Component
                 'temporary_password' => $plainPassword
             ]);
 
-            // Enviar notificación
-            $tenant = \App\Models\Tenant::find(session('tenant_id'));
-            $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($plainPassword, $customer->user->name, $tenant));
-
-            $count++;
+            try {
+                // Enviar notificación
+                $tenant = \App\Models\Tenant::find(session('tenant_id'));
+                $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($plainPassword, $customer->user->name, $tenant));
+                $count++;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error enviando correo bulk para ' . $customer->user->email . ': ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            }
         }
 
         session()->flash('message', "Operación masiva completada. Se enviaron $count correos con nuevas contraseñas.");
@@ -166,8 +173,8 @@ class CustomerList extends Component
                 session()->flash('error', 'El cliente no tiene un usuario asociado.');
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error enviando correo de contraseña: ' . $e->getMessage());
-            session()->flash('error', 'No se pudo enviar el correo: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Error enviando correo de contraseña: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            session()->flash('error', 'No se pudo enviar el correo. Error interno: ' . $e->getMessage());
         }
 
         $this->dispatch('close-confirm-password-modal');

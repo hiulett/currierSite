@@ -8,9 +8,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TemporaryPasswordNotification extends Notification implements ShouldQueue
+class TemporaryPasswordNotification extends Notification
 {
-    use Queueable;
+
 
     public $password;
     public $name;
