@@ -262,5 +262,16 @@
             });
         });
     </script>
+    <script>
+        // Kill any lingering service workers from old PWA packages
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
+
