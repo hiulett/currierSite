@@ -183,7 +183,7 @@
                                 <div class="mt-4 p-3 bg-white rounded shadow-sm">
                                     <span class="xsmall text-muted uppercase font-black d-block mb-2">Vista Previa Cliente (Aéreo):</span>
                                     <div class="font-monospace small line-height-sm">
-                                        <span class="text-primary fw-black">{{ $box_number_prefix_air }}{{ $box_number_counter + 1 }}</span> <span class="fw-black">JUAN PEREZ</span><br>
+                                        <span class="text-primary fw-black">{{ $this->preview_air }}</span><br>
                                         {{ $air_address ?: '...' }}<br>
                                         CIUDAD: {{ $air_city ?: '...' }}<br>
                                         ESTADO: {{ $air_state ?: '...' }}<br>
@@ -193,7 +193,10 @@
                                 </div>
                             </div>
 
-                            <div class="text-end">
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                @if (session()->has('saved_air'))
+                                    <span class="text-success fw-bold small"><i class="align-middle me-1" data-feather="check-circle"></i> Guardado exitosamente</span>
+                                @endif
                                 <button wire:click="saveAir" class="btn btn-primary fw-black uppercase shadow-sm" {{ !$service_air_enabled ? 'disabled' : '' }}>
                                     <span wire:loading.remove wire:target="saveAir">Guardar Configuración Aérea</span>
                                     <span wire:loading wire:target="saveAir">Guardando...</span>
@@ -258,7 +261,7 @@
                                 <div class="mt-4 p-3 bg-white rounded shadow-sm">
                                     <span class="xsmall text-muted uppercase font-black d-block mb-2">Vista Previa Cliente (Marítimo):</span>
                                     <div class="font-monospace small line-height-sm">
-                                        <span class="text-info fw-black">{{ $box_number_prefix_maritime }}{{ $box_number_counter + 1 }}</span> <span class="fw-black">JUAN PEREZ</span><br>
+                                        <span class="text-info fw-black">{{ $this->preview_maritime }}</span><br>
                                         {{ $maritime_address ?: '...' }}<br>
                                         CIUDAD: {{ $maritime_city ?: '...' }}<br>
                                         ESTADO: {{ $maritime_state ?: '...' }}<br>
@@ -268,7 +271,10 @@
                                 </div>
                             </div>
 
-                            <div class="text-end">
+                            <div class="d-flex justify-content-end align-items-center gap-3">
+                                @if (session()->has('saved_maritime'))
+                                    <span class="text-success fw-bold small"><i class="align-middle me-1" data-feather="check-circle"></i> Guardado exitosamente</span>
+                                @endif
                                 <button wire:click="saveMaritime" class="btn btn-info fw-black uppercase shadow-sm text-white" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
                                     <span wire:loading.remove wire:target="saveMaritime">Guardar Configuración Marítima</span>
                                     <span wire:loading wire:target="saveMaritime">Guardando...</span>

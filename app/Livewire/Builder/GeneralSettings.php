@@ -129,7 +129,32 @@ class GeneralSettings extends Component
         ]);
 
         session()->flash('message', 'Configuraciones generales actualizadas correctamente.');
-        return redirect()->route('builder.general');
+    }
+
+    public function getPreviewAirProperty()
+    {
+        $id = $this->box_number_counter + 1;
+        $name = 'JUAN PEREZ';
+        $template = $this->box_number_template_air ?: '{PREFIX}{ID} {NAME}';
+        
+        return str_replace(
+            ['{PREFIX}', '{ID}', '{NAME}'],
+            [$this->box_number_prefix_air, $id, $name],
+            $template
+        );
+    }
+
+    public function getPreviewMaritimeProperty()
+    {
+        $id = $this->box_number_counter + 1;
+        $name = 'JUAN PEREZ';
+        $template = $this->box_number_template_maritime ?: '{PREFIX}{ID} {NAME}';
+        
+        return str_replace(
+            ['{PREFIX}', '{ID}', '{NAME}'],
+            [$this->box_number_prefix_maritime, $id, $name],
+            $template
+        );
     }
 
     public function saveAir()
@@ -157,8 +182,7 @@ class GeneralSettings extends Component
         $settings['air_phone'] = $this->air_phone;
 
         $tenant->update(['settings_json' => $settings]);
-        session()->flash('message', 'Configuración de servicio aéreo actualizada.');
-        return redirect()->route('builder.general');
+        session()->flash('saved_air', true);
     }
 
     public function saveMaritime()
@@ -186,8 +210,7 @@ class GeneralSettings extends Component
         $settings['maritime_phone'] = $this->maritime_phone;
 
         $tenant->update(['settings_json' => $settings]);
-        session()->flash('message', 'Configuración de servicio marítimo actualizada.');
-        return redirect()->route('builder.general');
+        session()->flash('saved_maritime', true);
     }
 
     public function saveCounter()
@@ -203,7 +226,6 @@ class GeneralSettings extends Component
 
         $tenant->update(['settings_json' => $settings]);
         session()->flash('message', 'Contador secuencial actualizado.');
-        return redirect()->route('builder.general');
     }
 
     public function render()
