@@ -15,6 +15,10 @@ php artisan view:cache
 echo "🗄️ Ejecutando migraciones..."
 php artisan migrate --force
 
+# Create storage symlink
+echo "🔗 Creando enlaces simbólicos de storage..."
+php artisan storage:link --force
+
 # Start the queue worker in background
 echo "📬 Iniciando worker de colas de correo..."
 php artisan queue:work --sleep=3 --tries=3 --max-time=3600 &

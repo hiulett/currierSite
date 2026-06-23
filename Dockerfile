@@ -48,7 +48,7 @@ RUN composer install --optimize-autoloader --no-scripts --no-interaction
 RUN npm install && npm run build
 
 # Create necessary directories
-RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views storage/app/public/logos
 
 # Set permissions
 RUN chown -R www-data:www-data /app \
