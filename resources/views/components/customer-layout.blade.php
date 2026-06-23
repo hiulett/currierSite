@@ -30,11 +30,14 @@
 			opacity: 0;
             background: #F8FAFC !important;
 		}
+        .wrapper {
+            background: #F8FAFC !important;
+        }
         :root {
             --bs-primary: var(--primary-color, #3b7ddd);
         }
         .main {
-            background: transparent;
+            background: #F8FAFC !important;
         }
         .sidebar-brand-text {
             color: white;
@@ -228,7 +231,7 @@
 		</nav>
 
 		<div class="main">
-			<nav class="navbar navbar-expand navbar-light navbar-bg floating-navbar shadow-sm mx-4 mt-3">
+			<nav class="navbar navbar-expand navbar-light navbar-bg bg-white border-bottom shadow-sm mb-4 sticky-top">
 				<a class="sidebar-toggle js-sidebar-toggle">
 					<i class="hamburger align-self-center"></i>
 				</a>
