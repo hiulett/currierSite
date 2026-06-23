@@ -24,6 +24,7 @@ class CustomerList extends Component
 
     public $is_editing = false;
     public $customer_id;
+    public $send_credentials_now = true;
 
     // Password Management Properties (RE-DECLARED FOR SAFETY)
     public $selected_customer_id = null;
@@ -183,6 +184,7 @@ class CustomerList extends Component
     public function resetFields()
     {
         $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'loyalty_level_id', 'identification_number', 'address', 'admin_notes', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id']);
+        $this->send_credentials_now = true;
     }
 
     public function openCreateModal()
@@ -221,13 +223,17 @@ class CustomerList extends Component
                 'required', 'email',
                 'unique:users,email,' . $targetUserId
             ],
-            'box_number' => 'required',
             'locker_id' => 'nullable|exists:lockers,id',
             'loyalty_level_id' => 'nullable|exists:loyalty_levels,id',
-            'phone' => 'nullable|string|max:20',
-            'identification_number' => 'nullable|string|max:50',
+            'phone' => 'required|string|max:20',
+            'identification_number' => 'required|string|max:50',
             'address' => 'nullable|string|max:500',
         ];
+
+        // Box number is only required if we are editing
+        if ($this->is_editing) {
+            $rules['box_number'] = 'required';
+        }
 
         $this->validate($rules);
 
@@ -252,31 +258,58 @@ class CustomerList extends Component
 
             session()->flash('message', 'Cliente actualizado exitosamente.');
         } else {
+            $tenant = \App\Models\Tenant::find(session('tenant_id'));
+            $settings = $tenant->settings_json ?? [];
+            
+            // Generar Casillero Automáticamente
+            $nextId = ($settings['box_number_counter'] ?? 1000) + 1;
+            $prefix = $settings['box_prefix'] ?? 'LGX';
+            $generatedBoxNumber = $prefix . $nextId;
+
+            // Actualizar el contador en la configuración del tenant
+            $settings['box_number_counter'] = $nextId;
+            $tenant->update(['settings_json' => $settings]);
+
+            $plainPassword = Str::random(8);
+
             $user = User::create([
                 'tenant_id' => session('tenant_id'),
                 'name' => $this->name,
                 'email' => $this->email,
-                'password' => Hash::make('password123'),
-                'role' => 'customer'
+                'password' => Hash::make($plainPassword),
+                'role' => 'customer',
+                'must_change_password' => $settings['force_password_change'] ?? false,
             ]);
 
-            Customer::create([
+            $customer = Customer::create([
                 'tenant_id' => session('tenant_id'),
                 'user_id' => $user->id,
-                'box_number' => $this->box_number,
-                'box_number_air' => $this->box_number_air ?: $this->box_number,
-                'box_number_maritime' => $this->box_number_maritime ?: $this->box_number,
+                'box_number' => $generatedBoxNumber,
+                'box_number_air' => $generatedBoxNumber,
+                'box_number_maritime' => $generatedBoxNumber,
                 'phone' => $this->phone,
                 'locker_id' => $this->locker_id,
-                'loyalty_level_id' => $this->loyalty_level_id,
+                'loyalty_level_id' => null, // Siempre nulo al inicio
                 'identification_number' => $this->identification_number,
                 'address' => $this->address,
                 'admin_notes' => $this->admin_notes,
+                'temporary_password' => $plainPassword,
                 'balance' => 0,
                 'points' => 0,
             ]);
 
-            session()->flash('message', 'Cliente registrado exitosamente.');
+            if ($this->send_credentials_now) {
+                try {
+                    $user->notify(new \App\Notifications\TemporaryPasswordNotification($plainPassword, $user->name, $tenant));
+                    $customer->update(['password_sent_at' => now()]);
+                    session()->flash('message', 'Cliente registrado y credenciales enviadas.');
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Error enviando credenciales nuevo cliente: ' . $e->getMessage());
+                    session()->flash('message', 'Cliente registrado. No se pudo enviar el correo de credenciales automáticamente.');
+                }
+            } else {
+                session()->flash('message', 'Cliente registrado exitosamente.');
+            }
         }
 
         if ($this->locker_id) {

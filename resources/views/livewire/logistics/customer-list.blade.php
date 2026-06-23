@@ -267,21 +267,21 @@
                     <div class="modal-body p-4 p-md-5">
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label xsmall font-black text-uppercase text-muted">Nombre Completo</label>
+                                <label class="form-label xsmall font-black text-uppercase text-muted">Nombre Completo <span class="text-danger">*</span></label>
                                 <input type="text" wire:model="name" class="form-control fw-bold border-2">
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label xsmall font-black text-uppercase text-muted">Email</label>
+                                <label class="form-label xsmall font-black text-uppercase text-muted">Email <span class="text-danger">*</span></label>
                                 <input type="email" wire:model="email" class="form-control border-2">
                             </div>
                         </div>
                         <div class="row g-3 mb-4">
                             <div class="col-md-3">
-                                <label class="form-label xsmall font-black text-uppercase text-muted">Identificación</label>
+                                <label class="form-label xsmall font-black text-uppercase text-muted">Identificación <span class="text-danger">*</span></label>
                                 <input type="text" wire:model="identification_number" class="form-control border-2">
                             </div>
                             <div class="col-md-3">
-                                <label class="form-label xsmall font-black text-uppercase text-muted">Teléfono</label>
+                                <label class="form-label xsmall font-black text-uppercase text-muted">Teléfono <span class="text-danger">*</span></label>
                                 <input type="text" wire:model="phone" class="form-control border-2">
                             </div>
                             <div class="col-md-3">
@@ -293,6 +293,7 @@
                                     @endforeach
                                 </select>
                             </div>
+                            @if($is_editing)
                             <div class="col-md-3">
                                 <label class="form-label xsmall font-black text-uppercase text-muted">Nivel</label>
                                 <select wire:model="loyalty_level_id" class="form-select border-2">
@@ -302,7 +303,9 @@
                                     @endforeach
                                 </select>
                             </div>
+                            @endif
                         </div>
+                        @if($is_editing)
                         <div class="row g-3 mb-4">
                             <div class="col-md-4">
                                 <label class="form-label xsmall font-black text-uppercase text-muted">ID Master</label>
@@ -321,6 +324,12 @@
                                 </div>
                             @endif
                         </div>
+                        @else
+                        <div class="alert alert-info xsmall py-2 mb-4 d-flex align-items-center">
+                            <i data-feather="info" class="me-2" style="width:14px;"></i>
+                            El ID del Casillero se asignará automáticamente (ej. LGX1001) tras guardar.
+                        </div>
+                        @endif
                         <div class="mb-3">
                             <label class="form-label xsmall font-black text-uppercase text-muted">Dirección Local</label>
                             <textarea wire:model="address" rows="2" class="form-control border-2"></textarea>
@@ -329,6 +338,17 @@
                             <label class="form-label xsmall font-black text-uppercase text-muted text-warning"><i data-feather="edit-3" style="width:12px;"></i> Notas Administrativas (Privado)</label>
                             <textarea wire:model="admin_notes" rows="2" class="form-control border-2 bg-light bg-opacity-50" placeholder="Escribe aquí recordatorios o detalles sobre este cliente..."></textarea>
                         </div>
+                        
+                        @if(!$is_editing)
+                        <div class="mt-4 pt-3 border-top">
+                            <div class="form-check form-switch d-flex align-items-center gap-2">
+                                <input class="form-check-input mt-0" type="checkbox" id="sendCredentialsSwitch" wire:model="send_credentials_now" style="width: 40px; height: 20px;">
+                                <label class="form-check-label text-muted small fw-bold mb-0" for="sendCredentialsSwitch">
+                                    Enviar credenciales por correo automáticamente
+                                </label>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                     <div class="modal-footer bg-light p-4">
                         <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cerrar</button>
