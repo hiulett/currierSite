@@ -139,11 +139,13 @@
                             <div class="row g-3 mb-4 {{ !$service_air_enabled ? 'opacity-50' : '' }}">
                                 <div class="col-md-6">
                                     <label class="form-label xsmall font-black text-uppercase text-muted">Prefijo</label>
-                                    <input type="text" wire:model="box_number_prefix_air" class="form-control border-2 fw-bold" placeholder="AIR" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                    <input type="text" wire:model.live="box_number_prefix_air" class="form-control border-2 fw-bold" placeholder="AIR" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                    @error('box_number_prefix_air') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label xsmall font-black text-uppercase text-muted">Plantilla ID</label>
-                                    <input type="text" wire:model="box_number_template_air" class="form-control border-2 fw-bold" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                    <input type="text" wire:model.live="box_number_template_air" class="form-control border-2 fw-bold" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                    @error('box_number_template_air') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                 </div>
                             </div>
 
@@ -153,23 +155,28 @@
                                 <div class="row g-3">
                                     <div class="col-12">
                                         <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Dirección Línea 1</label>
-                                        <input type="text" wire:model="air_address" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                        <input type="text" wire:model.live="air_address" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                        @error('air_address') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Ciudad</label>
-                                        <input type="text" wire:model="air_city" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                        <input type="text" wire:model.live="air_city" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                        @error('air_city') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Estado</label>
-                                        <input type="text" wire:model="air_state" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                        <input type="text" wire:model.live="air_state" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                        @error('air_state') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Zip Code</label>
-                                        <input type="text" wire:model="air_zip_code" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                        <input type="text" wire:model.live="air_zip_code" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                        @error('air_zip_code') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Teléfono</label>
-                                        <input type="text" wire:model="air_phone" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                        <input type="text" wire:model.live="air_phone" class="form-control form-control-sm border-2" {{ !$service_air_enabled ? 'disabled' : '' }}>
+                                        @error('air_phone') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
 
@@ -188,7 +195,8 @@
 
                             <div class="text-end">
                                 <button wire:click="saveAir" class="btn btn-primary fw-black uppercase shadow-sm" {{ !$service_air_enabled ? 'disabled' : '' }}>
-                                    Guardar Configuración Aérea
+                                    <span wire:loading.remove wire:target="saveAir">Guardar Configuración Aérea</span>
+                                    <span wire:loading wire:target="saveAir">Guardando...</span>
                                 </button>
                             </div>
                         </div>
@@ -206,11 +214,13 @@
                             <div class="row g-3 mb-4 {{ !$service_maritime_enabled ? 'opacity-50' : '' }}">
                                 <div class="col-md-6">
                                     <label class="form-label xsmall font-black text-uppercase text-muted">Prefijo</label>
-                                    <input type="text" wire:model="box_number_prefix_maritime" class="form-control border-2 fw-bold" placeholder="MAR" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                    <input type="text" wire:model.live="box_number_prefix_maritime" class="form-control border-2 fw-bold" placeholder="MAR" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                    @error('box_number_prefix_maritime') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label xsmall font-black text-uppercase text-muted">Plantilla ID</label>
-                                    <input type="text" wire:model="box_number_template_maritime" class="form-control border-2 fw-bold" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                    <input type="text" wire:model.live="box_number_template_maritime" class="form-control border-2 fw-bold" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                    @error('box_number_template_maritime') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                 </div>
                             </div>
 
@@ -220,23 +230,28 @@
                                 <div class="row g-3">
                                     <div class="col-12">
                                         <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Dirección Línea 1</label>
-                                        <input type="text" wire:model="maritime_address" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                        <input type="text" wire:model.live="maritime_address" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                        @error('maritime_address') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Ciudad</label>
-                                        <input type="text" wire:model="maritime_city" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                        <input type="text" wire:model.live="maritime_city" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                        @error('maritime_city') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Estado</label>
-                                        <input type="text" wire:model="maritime_state" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                        <input type="text" wire:model.live="maritime_state" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                        @error('maritime_state') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Zip Code</label>
-                                        <input type="text" wire:model="maritime_zip_code" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                        <input type="text" wire:model.live="maritime_zip_code" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                        @error('maritime_zip_code') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label xsmall font-bold text-uppercase text-muted mb-1">Teléfono</label>
-                                        <input type="text" wire:model="maritime_phone" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                        <input type="text" wire:model.live="maritime_phone" class="form-control form-control-sm border-2" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
+                                        @error('maritime_phone') <span class="text-danger xsmall">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
 
@@ -255,7 +270,8 @@
 
                             <div class="text-end">
                                 <button wire:click="saveMaritime" class="btn btn-info fw-black uppercase shadow-sm text-white" {{ !$service_maritime_enabled ? 'disabled' : '' }}>
-                                    Guardar Configuración Marítima
+                                    <span wire:loading.remove wire:target="saveMaritime">Guardar Configuración Marítima</span>
+                                    <span wire:loading wire:target="saveMaritime">Guardando...</span>
                                 </button>
                             </div>
                         </div>

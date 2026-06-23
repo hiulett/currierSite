@@ -158,6 +158,7 @@ class GeneralSettings extends Component
 
         $tenant->update(['settings_json' => $settings]);
         session()->flash('message', 'Configuración de servicio aéreo actualizada.');
+        return redirect()->route('builder.general');
     }
 
     public function saveMaritime()
@@ -186,6 +187,7 @@ class GeneralSettings extends Component
 
         $tenant->update(['settings_json' => $settings]);
         session()->flash('message', 'Configuración de servicio marítimo actualizada.');
+        return redirect()->route('builder.general');
     }
 
     public function saveCounter()
@@ -201,6 +203,7 @@ class GeneralSettings extends Component
 
         $tenant->update(['settings_json' => $settings]);
         session()->flash('message', 'Contador secuencial actualizado.');
+        return redirect()->route('builder.general');
     }
 
     public function render()
