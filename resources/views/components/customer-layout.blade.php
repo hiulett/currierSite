@@ -28,25 +28,37 @@
 	<style>
 		body {
 			opacity: 0;
-            background: #77b url('{{ asset('adminkit/img/backblue.gif') }}') !important;
-            background-size: cover;
-            background-attachment: fixed;
+            background: #F8FAFC !important;
 		}
         :root {
             --bs-primary: var(--primary-color, #3b7ddd);
         }
         .main {
-            background: rgba(245, 247, 251, 0.85); /* Semi-transparent to show background */
+            background: transparent;
         }
         .sidebar-brand-text {
             color: white;
-            font-weight: 800;
+            font-weight: 700;
         }
         .sidebar-link i, .sidebar-link svg {
             color: rgba(255, 255, 255, .5);
         }
         .sidebar-item.active .sidebar-link i, .sidebar-item.active .sidebar-link svg {
             color: #e9ecef;
+        }
+
+        /* Hover Lift for Cards */
+        .hover-lift {
+            transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        /* Premium Shadow for non-lifted cards */
+        .shadow-premium {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
         }
 
         /* Retractable Sidebar (Mini Mode) */
@@ -81,10 +93,11 @@
         /* Modern Floating Navbar Styles */
         .floating-navbar {
             border-radius: 1rem;
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.9) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
             transition: all 0.3s ease;
         }
         .navbar-bg {

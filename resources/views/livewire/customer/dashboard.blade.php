@@ -8,11 +8,11 @@
             <p class="text-muted xsmall mb-0">Bienvenido a tu centro de control logístico.</p>
         </div>
         <div class="col-auto ms-auto text-end">
-            <div class="card d-inline-block border-0 shadow-sm bg-primary text-white px-3 py-1 mb-0" style="border-radius: 0.75rem;">
+            <div class="card d-inline-block border-0 shadow-premium rounded-4 bg-primary text-white px-3 py-1 mb-0" style="border-radius: 0.75rem;">
                 <div class="d-flex align-items-center">
                     <div class="me-3">
-                        <p class="xsmall font-black uppercase mb-0 text-white-50" style="font-size: 0.55rem;">Tu Casillero</p>
-                        <h5 class="mb-0 fw-black text-white">{{ $customer->box_number }}</h5>
+                        <p class="xsmall font-black uppercase mb-0 text-muted" style="font-size: 0.55rem;">Tu Casillero</p>
+                        <h5 class="mb-0 fw-black text-dark">{{ $customer->box_number }}</h5>
                     </div>
                     <i data-feather="box" style="width: 18px; height: 18px; opacity: 0.5;"></i>
                 </div>
@@ -24,11 +24,11 @@
     @if($currentLevel || $nextLevel)
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card border-0 shadow-sm overflow-hidden" style="background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);">
+            <div class="card border-0 shadow-premium rounded-4 overflow-hidden" style="background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);">
                 <div class="card-body p-4">
                     <div class="row align-items-center">
                         <div class="col-md-auto text-center mb-3 mb-md-0">
-                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm mb-2"
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center shadow-premium rounded-4 mb-2"
                                  style="width: 64px; height: 64px; background-color: {{ $currentLevel->color ?? '#6c757d' }}; color: white;">
                                 <i data-feather="{{ $currentLevel->icon ?? 'star' }}" style="width: 32px; height: 32px;"></i>
                             </div>
@@ -84,7 +84,7 @@
     <!-- Quick Stats Row -->
     <div class="row mb-4">
         <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm overflow-hidden hover-lift transition-all">
+            <div class="card flex-fill border-0 shadow-premium rounded-4 overflow-hidden hover-lift transition-all">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
@@ -99,7 +99,7 @@
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm overflow-hidden hover-lift transition-all">
+            <div class="card flex-fill border-0 shadow-premium rounded-4 overflow-hidden hover-lift transition-all">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
@@ -114,7 +114,7 @@
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm overflow-hidden hover-lift transition-all border-start border-danger border-4">
+            <div class="card flex-fill border-0 shadow-premium rounded-4 overflow-hidden hover-lift transition-all border-start border-danger border-4">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
@@ -129,7 +129,7 @@
             </div>
         </div>
         <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm overflow-hidden hover-lift transition-all">
+            <div class="card flex-fill border-0 shadow-premium rounded-4 overflow-hidden hover-lift transition-all">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
@@ -148,7 +148,7 @@
     <div class="row">
         <!-- Main Content: Activity -->
         <div class="col-12 col-xl-8">
-            <div class="card border-0 shadow-sm mb-4 h-100">
+            <div class="card border-0 shadow-premium rounded-4 mb-4 h-100">
                 <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
                     <h5 class="card-title mb-0 uppercase font-black small">Actividad de mi Carga</h5>
                     <a href="{{ route('customer.packages') }}" class="btn btn-xs btn-light border text-uppercase fw-bold">Ver Historial</a>
@@ -194,11 +194,11 @@
 
         <!-- Sidebar: Addresses -->
         <div class="col-12 col-xl-4">
-            <div class="card bg-dark text-white border-0 shadow-lg mb-4" style="border-radius: 1rem;">
+            <div class="card bg-white border-0 shadow-premium mb-4" style="border-radius: 1rem;">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center mb-4">
                         <i data-feather="map-pin" class="text-primary me-3" style="width: 24px; height: 24px;"></i>
-                        <h5 class="card-title text-white mb-0 uppercase font-black small tracking-widest">Tus Direcciones USA</h5>
+                        <h5 class="card-title text-dark mb-0 uppercase font-black small tracking-widest">Tus Direcciones USA</h5>
                     </div>
 
                     @php
@@ -213,26 +213,26 @@
                     @if($airEnabled && isset($settings['air_address']))
                         <div class="mb-4">
                             <h6 class="xsmall font-black text-primary uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="send" style="width: 12px;"></i> Servicio Aéreo</h6>
-                            <div class="bg-white bg-opacity-10 p-4 rounded-4 border border-white border-opacity-10 position-relative shadow-sm overflow-hidden">
+                            <div class="bg-light p-4 rounded-4 border border-light position-relative shadow-premium rounded-4 overflow-hidden">
                                 <div class="position-absolute top-0 end-0 bg-primary opacity-10 rounded-circle" style="width: 100px; height: 100px; transform: translate(30%, -30%);"></div>
 
-                                <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
+                                <button class="btn btn-link btn-sm p-0 text-muted xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
                                     onclick="navigator.clipboard.writeText('{{ $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['air_address'] }}\nCIUDAD: {{ $settings['air_city'] }}\nESTADO: {{ $settings['air_state'] }}\nZIP CODE: {{ $settings['air_zip_code'] }}\nTEL: {{ $settings['air_phone'] }}'); alert('¡Dirección Aérea copiada!');">
                                     <i data-feather="copy" class="me-1" style="width: 14px;"></i> COPIAR
                                 </button>
 
                                 <div class="position-relative">
                                     <div class="mb-3">
-                                        <h5 class="fw-black text-white mb-0">
+                                        <h5 class="fw-black text-dark mb-0">
                                             <span class="text-primary">{{ $customer->box_number }}</span> {{ $customer->user->name }}
                                         </h5>
                                     </div>
-                                    <div class="font-monospace small text-white-50 leading-loose">
-                                        <div class="mb-1 text-white fw-bold">{{ $settings['air_address'] }}</div>
-                                        <div class="mb-0">CIUDAD: <span class="text-white">{{ $settings['air_city'] }}</span></div>
-                                        <div class="mb-0">ESTADO: <span class="text-white">{{ $settings['air_state'] }}</span></div>
-                                        <div class="mb-0">ZIP CODE: <span class="text-white">{{ $settings['air_zip_code'] }}</span></div>
-                                        <div class="mb-0">TEL: <span class="text-white">{{ $settings['air_phone'] }}</span></div>
+                                    <div class="font-monospace small text-muted leading-loose">
+                                        <div class="mb-1 text-dark fw-bold">{{ $settings['air_address'] }}</div>
+                                        <div class="mb-0">CIUDAD: <span class="text-dark">{{ $settings['air_city'] }}</span></div>
+                                        <div class="mb-0">ESTADO: <span class="text-dark">{{ $settings['air_state'] }}</span></div>
+                                        <div class="mb-0">ZIP CODE: <span class="text-dark">{{ $settings['air_zip_code'] }}</span></div>
+                                        <div class="mb-0">TEL: <span class="text-dark">{{ $settings['air_phone'] }}</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -240,33 +240,33 @@
                     @endif
 
                     @if($airEnabled && $maritimeEnabled)
-                        <hr class="my-4 border-white border-opacity-10">
+                        <hr class="my-4 border-light">
                     @endif
 
                     <!-- MARITIME SERVICE ADDRESS -->
                     @if($maritimeEnabled && isset($settings['maritime_address']))
                         <div class="mb-4">
                             <h6 class="xsmall font-black text-info uppercase mb-3 tracking-widest"><i class="align-middle me-1" data-feather="anchor" style="width: 12px;"></i> Servicio Marítimo</h6>
-                            <div class="bg-white bg-opacity-10 p-4 rounded-4 border border-white border-opacity-10 position-relative shadow-sm overflow-hidden">
+                            <div class="bg-light p-4 rounded-4 border border-light position-relative shadow-premium rounded-4 overflow-hidden">
                                 <div class="position-absolute top-0 end-0 bg-info opacity-10 rounded-circle" style="width: 100px; height: 100px; transform: translate(30%, -30%);"></div>
 
-                                <button class="btn btn-link btn-sm p-0 text-white-50 xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
+                                <button class="btn btn-link btn-sm p-0 text-muted xsmall fw-bold shadow-none border-0 position-absolute top-0 end-0 m-3"
                                     onclick="navigator.clipboard.writeText('{{ $customer->box_number }} {{ $customer->user->name }}\n{{ $settings['maritime_address'] }}\nCIUDAD: {{ $settings['maritime_city'] }}\nESTADO: {{ $settings['maritime_state'] }}\nZIP CODE: {{ $settings['maritime_zip_code'] }}\nTEL: {{ $settings['maritime_phone'] }}'); alert('¡Dirección Marítima copiada!');">
                                     <i data-feather="copy" class="me-1" style="width: 14px;"></i> COPIAR
                                 </button>
 
                                 <div class="position-relative">
                                     <div class="mb-3">
-                                        <h5 class="fw-black text-white mb-0">
+                                        <h5 class="fw-black text-dark mb-0">
                                             <span class="text-info">{{ $customer->box_number }}</span> {{ $customer->user->name }}
                                         </h5>
                                     </div>
-                                    <div class="font-monospace small text-white-50 leading-loose">
-                                        <div class="mb-1 text-white fw-bold">{{ $settings['maritime_address'] }}</div>
-                                        <div class="mb-0">CIUDAD: <span class="text-white">{{ $settings['maritime_city'] }}</span></div>
-                                        <div class="mb-0">ESTADO: <span class="text-white">{{ $settings['maritime_state'] }}</span></div>
-                                        <div class="mb-0">ZIP CODE: <span class="text-white">{{ $settings['maritime_zip_code'] }}</span></div>
-                                        <div class="mb-0">TEL: <span class="text-white">{{ $settings['maritime_phone'] }}</span></div>
+                                    <div class="font-monospace small text-muted leading-loose">
+                                        <div class="mb-1 text-dark fw-bold">{{ $settings['maritime_address'] }}</div>
+                                        <div class="mb-0">CIUDAD: <span class="text-dark">{{ $settings['maritime_city'] }}</span></div>
+                                        <div class="mb-0">ESTADO: <span class="text-dark">{{ $settings['maritime_state'] }}</span></div>
+                                        <div class="mb-0">ZIP CODE: <span class="text-dark">{{ $settings['maritime_zip_code'] }}</span></div>
+                                        <div class="mb-0">TEL: <span class="text-dark">{{ $settings['maritime_phone'] }}</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -282,11 +282,11 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm overflow-hidden mb-4">
+            <div class="card border-0 shadow-premium rounded-4 overflow-hidden mb-4">
                 <div class="card-body p-4 text-center">
                     <h6 class="fw-black text-muted text-uppercase xsmall tracking-widest mb-3">Rastreo de Paquetes Externos</h6>
                     <form action="{{ route('customer.tracking') }}" method="GET">
-                        <div class="input-group input-group-sm mb-2 shadow-sm border rounded-pill overflow-hidden">
+                        <div class="input-group input-group-sm mb-2 shadow-premium rounded-4 border rounded-pill overflow-hidden">
                             <input type="text" name="search_tracking" class="form-control border-0 ps-3" placeholder="UPS, FedEx, USPS...">
                             <button type="submit" class="btn btn-primary px-3 fw-black uppercase tracking-tighter">
                                 <i data-feather="search" style="width: 14px;"></i>
@@ -297,11 +297,11 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm overflow-hidden">
+            <div class="card border-0 shadow-premium rounded-4 overflow-hidden">
                 <div class="card-body p-4 text-center">
                     <h6 class="fw-black text-muted text-uppercase xsmall tracking-widest mb-3">Centro de Ayuda</h6>
                     <div class="d-grid gap-2">
-                        <a href="{{ route('customer.tickets.index') }}" class="btn btn-outline-primary btn-sm fw-black shadow-sm">
+                        <a href="{{ route('customer.tickets.index') }}" class="btn btn-outline-primary btn-sm fw-black shadow-premium rounded-4">
                             SOPORTE TÉCNICO
                         </a>
                     </div>
@@ -310,3 +310,4 @@
         </div>
     </div>
 </div>
+
