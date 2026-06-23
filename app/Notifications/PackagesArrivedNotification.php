@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Invoice;
 use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -12,7 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class PackagesArrivedNotification extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, SerializesModels;
 
     protected $invoice;
     protected $packages;
@@ -106,3 +107,4 @@ class PackagesArrivedNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

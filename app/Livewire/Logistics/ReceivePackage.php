@@ -160,7 +160,11 @@ class ReceivePackage extends Component
         }
 
         if ($this->found_customer->user) {
-            $this->found_customer->user->notify(new PackageReceived($package));
+            try {
+                $this->found_customer->user->notify(new PackageReceived($package));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error enviando notificación de paquete recibido: ' . $e->getMessage());
+            }
         }
 
         // Add to recent receivers

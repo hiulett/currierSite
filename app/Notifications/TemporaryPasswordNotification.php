@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Tenant;
 use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -47,3 +48,4 @@ class TemporaryPasswordNotification extends Notification
             ->line('¡Gracias por confiar en ' . $tenantName . '!');
     }
 }
+

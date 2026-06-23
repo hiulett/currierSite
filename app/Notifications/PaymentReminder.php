@@ -4,13 +4,14 @@ namespace App\Notifications;
 
 use App\Models\Invoice;
 use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PaymentReminder extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, SerializesModels;
 
     protected $invoice;
     protected $type; // 'before', 'on_due', 'after_7', 'after_30'
@@ -86,3 +87,4 @@ class PaymentReminder extends Notification implements ShouldQueue
         ];
     }
 }
+

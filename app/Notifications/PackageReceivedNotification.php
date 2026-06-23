@@ -4,13 +4,14 @@ namespace App\Notifications;
 
 use App\Models\Package;
 use Illuminate\Bus\Queueable;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PackageReceivedNotification extends Notification implements ShouldQueue
 {
-    use Queueable;
+    use Queueable, SerializesModels;
 
     public $package;
 
@@ -68,3 +69,4 @@ class PackageReceivedNotification extends Notification implements ShouldQueue
         ];
     }
 }
+

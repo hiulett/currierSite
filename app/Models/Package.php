@@ -168,7 +168,11 @@ class Package extends Model
                 // 2. Notify Customer (exclude initial received/prealert as they are handled elsewhere)
                 $notifiableStatuses = ['in_transit', 'arrived', 'ready_for_pickup', 'out_for_delivery', 'delivered'];
                 if (in_array($package->status, $notifiableStatuses) && $package->customer && $package->customer->user) {
-                    $package->customer->user->notify(new \App\Notifications\PackageStatusNotification($package, $package->status));
+                    try {
+                        $package->customer->user->notify(new \App\Notifications\PackageStatusNotification($package, $package->status));
+                    } catch (\Exception $e) {
+                        \Illuminate\Support\Facades\Log::error('Error enviando notificación de estado de paquete: ' . $e->getMessage());
+                    }
                 }
 
                 // 3. Award Loyalty Points if delivered
