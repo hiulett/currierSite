@@ -43,43 +43,49 @@
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label" for="weight">Peso Real (lbs)</label>
                                         <div class="input-group">
-                                            <input type="number" step="0.1" wire:model="weight" id="weight" class="form-control">
+                                            <input type="number" step="0.1" wire:model="weight" id="weight" class="form-control @error('weight') is-invalid @enderror">
                                             <span class="input-group-text">lbs</span>
                                         </div>
+                                        @error('weight') <span class="text-danger small">{{ $message }}</span> @enderror
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label" for="declared_value">Valor Declarado (USD)</label>
                                         <div class="input-group">
                                             <span class="input-group-text">$</span>
-                                            <input type="number" step="0.01" wire:model="declared_value" id="declared_value" class="form-control">
+                                            <input type="number" step="0.01" wire:model="declared_value" id="declared_value" class="form-control @error('declared_value') is-invalid @enderror">
                                         </div>
+                                        @error('declared_value') <span class="text-danger small">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label" for="category_id">Categoría de Aduana</label>
-                                    <select wire:model="category_id" id="category_id" class="form-select">
+                                    <select wire:model="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror">
                                         <option value="">Seleccione categoría...</option>
                                         @foreach($categories as $cat)
                                             <option value="{{ $cat->id }}">{{ $cat->name }} ({{ $cat->percentage }}%)</option>
                                         @endforeach
                                     </select>
+                                    @error('category_id') <span class="text-danger small">{{ $message }}</span> @enderror
                                 </div>
 
                                 <div class="mb-4">
                                     <label class="form-label">Dimensiones (Pulgadas - Opcional)</label>
                                     <div class="row g-2">
                                         <div class="col-4">
-                                            <input type="number" wire:model="length" placeholder="Largo" class="form-control text-center">
+                                            <input type="number" wire:model="length" placeholder="Largo" class="form-control text-center @error('length') is-invalid @enderror">
                                         </div>
                                         <div class="col-4">
-                                            <input type="number" wire:model="width" placeholder="Ancho" class="form-control text-center">
+                                            <input type="number" wire:model="width" placeholder="Ancho" class="form-control text-center @error('width') is-invalid @enderror">
                                         </div>
                                         <div class="col-4">
-                                            <input type="number" wire:model="height" placeholder="Alto" class="form-control text-center">
+                                            <input type="number" wire:model="height" placeholder="Alto" class="form-control text-center @error('height') is-invalid @enderror">
                                         </div>
                                     </div>
+                                    @if($errors->has('length') || $errors->has('width') || $errors->has('height'))
+                                        <span class="text-danger small">Las dimensiones deben ser numéricas.</span>
+                                    @endif
                                     <p class="text-muted small mt-2 mb-0">El sistema calculará automáticamente si aplica el peso volumétrico.</p>
                                 </div>
 

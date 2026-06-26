@@ -20,6 +20,11 @@ class ShippingCalculator extends Component
 
     public function calculate()
     {
+        $this->length = $this->length === '' ? null : $this->length;
+        $this->width = $this->width === '' ? null : $this->width;
+        $this->height = $this->height === '' ? null : $this->height;
+        $this->declared_value = $this->declared_value === '' ? 0 : $this->declared_value;
+
         $this->validate([
             'service_type' => 'required|in:air,maritime',
             'weight' => 'required|numeric|min:0.1',
