@@ -14,7 +14,6 @@ class ShippingCalculator extends Component
     public $length = 0;
     public $width = 0;
     public $height = 0;
-    public $category_id = '';
 
     public $result = null;
 
@@ -32,7 +31,6 @@ class ShippingCalculator extends Component
             'length' => 'nullable|numeric|min:0',
             'width' => 'nullable|numeric|min:0',
             'height' => 'nullable|numeric|min:0',
-            'category_id' => 'required|exists:tax_categories,id',
         ]);
 
         $tenant = Tenant::find(session('tenant_id'));
@@ -49,10 +47,9 @@ class ShippingCalculator extends Component
 
         $shipping_cost = $chargeable_weight * $rate;
 
-        // Custom Duties
-        $category = TaxCategory::find($this->category_id);
-        $tax_percentage = $category->percentage;
-        $customs_duty = $this->declared_value * ($tax_percentage / 100);
+        // Custom Duties removed
+        $customs_duty = 0;
+        $tax_percentage = 0;
 
         // Fuel Surcharge (Sample logic)
         $fuel_surcharge = $shipping_cost * 0.05;

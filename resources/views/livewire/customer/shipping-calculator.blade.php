@@ -59,16 +59,7 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label" for="category_id">Categoría de Aduana</label>
-                                    <select wire:model="category_id" id="category_id" class="form-select @error('category_id') is-invalid @enderror">
-                                        <option value="">Seleccione categoría...</option>
-                                        @foreach($categories as $cat)
-                                            <option value="{{ $cat->id }}">{{ $cat->name }} ({{ $cat->percentage }}%)</option>
-                                        @endforeach
-                                    </select>
-                                    @error('category_id') <span class="text-danger small">{{ $message }}</span> @enderror
-                                </div>
+
 
                                 <div class="mb-4">
                                     <label class="form-label">Dimensiones (Pulgadas - Opcional)</label>
@@ -110,10 +101,6 @@
                                     <div class="d-flex justify-content-between mb-2">
                                         <span class="small text-white-50">Flete ({{ number_format($result['chargeable_weight'], 1) }} lbs)</span>
                                         <span class="fw-bold">${{ number_format($result['shipping_cost'], 2) }}</span>
-                                    </div>
-                                    <div class="d-flex justify-content-between mb-2">
-                                        <span class="small text-white-50">Aranceles ({{ $result['tax_percentage'] }}%)</span>
-                                        <span class="fw-bold">${{ number_format($result['customs_duty'], 2) }}</span>
                                     </div>
                                     <div class="d-flex justify-content-between mb-0">
                                         <span class="small text-white-50">Recargo Combustible (5%)</span>
