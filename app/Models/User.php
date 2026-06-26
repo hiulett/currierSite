@@ -72,4 +72,16 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasOne(Customer::class);
     }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $tenant = $this->tenant_id ? \App\Models\Tenant::find($this->tenant_id) : null;
+        $this->notify(new \App\Notifications\TenantPasswordResetNotification($token, $tenant));
+    }
 }
