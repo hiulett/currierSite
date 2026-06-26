@@ -116,11 +116,11 @@
 				<a class='sidebar-brand d-flex flex-column align-items-center py-4' href='{{ route('customer.dashboard') }}'>
                     @php
                         $tenant = \App\Models\Tenant::find(session('tenant_id'));
-                        $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
+                        $logoUrl = $tenant ? $tenant->getLogoUrl() : null;
                     @endphp
 
                     @if($logoUrl)
-                        <img src="{{ $logoUrl }}" alt="{{ $tenant->name }}" style="max-height: 55px; width: auto;" class="mb-3">
+                        <img src="{{ $logoUrl }}" alt="{{ $tenant->name ?? config('app.name') }}" style="max-height: 55px; width: auto;" class="mb-3">
                     @endif
 
 					<span class="sidebar-brand-text align-middle">
