@@ -30,13 +30,17 @@ class CreateQuotation extends Component
         $this->initForm();
     }
 
-    public function initForm($params = null)
+    public function initForm($quotationId = null)
     {
         $this->reset(['quotation_id', 'customer_id', 'search_customer', 'notes', 'customers', 'client_name', 'client_lastname', 'client_email', 'service_type']);
         $this->is_registered = true;
         
-        if (is_array($params) && isset($params['quotationId'])) {
-            $this->loadQuotation($params['quotationId']);
+        if (is_array($quotationId) && isset($quotationId['quotationId'])) {
+            $quotationId = $quotationId['quotationId'];
+        }
+        
+        if ($quotationId) {
+            $this->loadQuotation($quotationId);
         } else {
             $this->service_type = 'air';
             $this->items = [
