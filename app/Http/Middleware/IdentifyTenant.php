@@ -121,6 +121,7 @@ class IdentifyTenant
                 \Illuminate\Support\Facades\Mail::purge('smtp');
                 \Illuminate\Support\Facades\Mail::purge($driver);
             } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
                 // Ignore if Mail facade is not fully loaded yet
             }
         }

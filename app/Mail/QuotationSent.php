@@ -101,6 +101,7 @@ class QuotationSent extends Mailable implements ShouldQueue
                 }
             }
         } catch (\Exception $e) {}
+            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
 
         $currency = $tenant->settings_json['currency'] ?? 'USD';
         

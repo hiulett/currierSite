@@ -386,6 +386,7 @@ class InventoryList extends Component
             session()->flash('message', '¡Base de datos del tenant reparada! 10 paquetes generados.');
             return redirect()->route('logistics.inventory');
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             session()->flash('error', 'Error en reparación: ' . $e->getMessage());
         }
     }

@@ -213,7 +213,7 @@
                     Cancelar
                 </button>
                 <button type="submit" class="btn btn-primary px-5 py-2 fw-black text-uppercase shadow-lg d-flex align-items-center gap-2" wire:loading.attr="disabled">
-                    <span wire:loading.remove><i data-feather="check-circle" style="width: 18px;"></i> Guardar Cotización</span>
+                    <span wire:loading.remove><i data-feather="check-circle" style="width: 18px;"></i> {{ $quotation_id ? 'Guardar Cambios' : 'Guardar Cotización' }}</span>
                     <span wire:loading><span class="spinner-border spinner-border-sm"></span> Procesando...</span>
                 </button>
             </div>

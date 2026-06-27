@@ -159,6 +159,7 @@ class AIParserService
             }
             return $ocr->lang('spa', 'eng')->run();
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             return "ERROR OCR: " . $e->getMessage();
         }
     }

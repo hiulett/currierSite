@@ -223,6 +223,9 @@
                                     <button wire:click="sendEmail({{ $quotation->id }})" class="btn btn-sm btn-light border" title="Enviar Email al Cliente">
                                         <i class="align-middle text-info" data-feather="mail" style="width: 14px;"></i>
                                     </button>
+                                    <button onclick="openQuotationModal({{ $quotation->id }})" class="btn btn-sm btn-light border" title="Editar Cotización">
+                                        <i class="align-middle text-warning" data-feather="edit-2" style="width: 14px;"></i>
+                                    </button>
                                     <button wire:click="deleteQuotation({{ $quotation->id }})" wire:confirm="¿Seguro que deseas eliminar esta cotización?" class="btn btn-sm btn-outline-danger" title="Eliminar Cotización">
                                         <i class="align-middle" data-feather="trash-2" style="width: 14px;"></i>
                                     </button>
@@ -247,7 +250,7 @@
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content shadow-lg border-0" style="border-radius: 1rem; overflow: hidden;">
                 <div class="modal-header bg-primary text-white p-4">
-                    <h5 class="modal-title uppercase font-black tracking-widest">
+                    <h5 class="modal-title uppercase font-black tracking-widest" id="quotationModalTitle">
                         <i class="align-middle me-2" data-feather="file-text"></i> Generar Nueva Cotización
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -262,12 +265,20 @@
     <!-- Scripts and Styles for Charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        window.openQuotationModal = function() {
+        window.openQuotationModal = function(id = null) {
             var el = document.getElementById('modalCreateQuotation');
-                var myModal = bootstrap.Modal.getOrCreateInstance(el);
+            var myModal = bootstrap.Modal.getOrCreateInstance(el);
+            
+            var titleEl = document.getElementById('quotationModalTitle');
+            if (id) {
+                titleEl.innerHTML = '<i class="align-middle me-2" data-feather="edit-2"></i> Editar Cotización';
+                Livewire.dispatch('openCreateQuotationModal', { quotationId: id });
+            } else {
+                titleEl.innerHTML = '<i class="align-middle me-2" data-feather="file-text"></i> Generar Nueva Cotización';
                 Livewire.dispatch('openCreateQuotationModal');
-                myModal.show();
             }
+            myModal.show();
+        }
 
             window.addEventListener('quotation-saved', event => {
                 bootstrap.Modal.getOrCreateInstance(document.getElementById('modalCreateQuotation')).hide();

@@ -64,6 +64,7 @@ class PackagesArrivedNotification extends Notification implements ShouldQueue
                 }
             }
         } catch (\Exception $e) { }
+            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
 
         $pdf = Pdf::loadView('billing.invoice-pdf', [
             'invoice' => $this->invoice,

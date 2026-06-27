@@ -53,6 +53,7 @@ class InvoiceSent extends Notification implements ShouldQueue
                 }
             }
         } catch (\Exception $e) {}
+            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('billing.invoice-pdf', [
             'invoice' => $this->invoice,

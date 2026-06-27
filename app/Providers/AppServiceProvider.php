@@ -111,6 +111,7 @@ class AppServiceProvider extends ServiceProvider
                 }
             }
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             // Silence errors during migration/seeding
         }
 
@@ -159,6 +160,7 @@ class AppServiceProvider extends ServiceProvider
                     $view->with('totalNavAlerts', array_sum($alerts) + $dbNotificationsCount);
                     $view->with('showBillingAlert', $billingAlert);
                 } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
                     $view->with('navAlerts', []);
                     $view->with('totalNavAlerts', 0);
                 }

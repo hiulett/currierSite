@@ -166,6 +166,7 @@ class SmartReceptionHub extends Component
             $this->reset(['tracking_number', 'customer_search', 'weight', 'found_customer', 'box_number']);
             $this->dispatch('package-saved');
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
             session()->flash('error', 'Error al guardar el paquete.');
         }
     }
