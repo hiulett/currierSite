@@ -142,6 +142,12 @@ class QuotationList extends Component
             $stats['rejected_count']
         ];
 
+        $this->dispatch('updateQuotationCharts', 
+            chartLabels: array_values($chartLabels), 
+            chartData: array_values($chartData), 
+            pieChartData: array_values($pieChartData)
+        );
+
         return view('livewire.billing.quotation-list', [
             'quotations' => $quotations,
             'stats' => $stats,

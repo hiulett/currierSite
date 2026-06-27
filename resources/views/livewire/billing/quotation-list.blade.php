@@ -437,14 +437,18 @@
                 initCharts();
 
                 // Re-init when livewire component is updated
-                Livewire.hook('request', ({ respond }) => {
-                    respond(() => {
-                        if (window.quotationBarChart) window.quotationBarChart.destroy();
-                        if (window.quotationPieChart) window.quotationPieChart.destroy();
-                        window.quotationBarChart = null;
-                        window.quotationPieChart = null;
-                        setTimeout(initCharts, 100);
-                    });
+                Livewire.on('updateQuotationCharts', (data) => {
+                    if (data && data[0]) {
+                        if (window.quotationBarChart) {
+                            window.quotationBarChart.data.labels = data[0].chartLabels;
+                            window.quotationBarChart.data.datasets[0].data = data[0].chartData;
+                            window.quotationBarChart.update();
+                        }
+                        if (window.quotationPieChart) {
+                            window.quotationPieChart.data.datasets[0].data = data[0].pieChartData;
+                            window.quotationPieChart.update();
+                        }
+                    }
                 });
             });
     </script>
