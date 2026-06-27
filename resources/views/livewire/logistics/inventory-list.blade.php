@@ -355,18 +355,28 @@
                                 @error('edit_warehouse_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label small font-black text-uppercase text-muted">Estado Actual</label>
-                            <select wire:model="edit_status" class="form-select fw-bold border-2">
-                                <option value="received">Recibido</option>
-                                <option value="prealert">Pre-alerta</option>
-                                <option value="in_transit">En Tránsito</option>
-                                <option value="arrived">Llegó al País</option>
-                                <option value="ready_for_pickup">Listo para Entrega</option>
-                                <option value="out_for_delivery">En Ruta de Entrega</option>
-                                <option value="delivered">Entregado</option>
-                            </select>
-                            @error('edit_status') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="form-label small font-black text-uppercase text-muted">Estado Actual</label>
+                                <select wire:model="edit_status" class="form-select fw-bold border-2">
+                                    <option value="received">Recibido</option>
+                                    <option value="prealert">Pre-alerta</option>
+                                    <option value="in_transit">En Tránsito</option>
+                                    <option value="arrived">Llegó al País</option>
+                                    <option value="ready_for_pickup">Listo para Entrega</option>
+                                    <option value="out_for_delivery">En Ruta de Entrega</option>
+                                    <option value="delivered">Entregado</option>
+                                </select>
+                                @error('edit_status') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small font-black text-uppercase text-muted">Tipo de Servicio</label>
+                                <select wire:model="edit_service_type" class="form-select fw-bold border-2">
+                                    <option value="air">Aéreo</option>
+                                    <option value="maritime">Marítimo</option>
+                                </select>
+                                @error('edit_service_type') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                            </div>
                         </div>
                         <div class="mb-0">
                             <label class="form-label small font-black text-uppercase text-muted">Descripción / Contenido</label>

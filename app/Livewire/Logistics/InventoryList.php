@@ -61,6 +61,7 @@ class InventoryList extends Component
     public $edit_weight;
     public $edit_status;
     public $edit_warehouse_id;
+    public $edit_service_type;
 
     protected $listeners = ['package-saved' => '$refresh'];
 
@@ -73,8 +74,8 @@ class InventoryList extends Component
         $this->view_tab = 'all';
         $this->resetPage();
 
-        $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
-        $this->custom_rate = $tenant->settings_json['default_rate'] ?? 2.50;
+        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $this->custom_rate = $tenant->settings_json['air_rate'] ?? 2.50;
     }
 
     public function updatedSelectAll($value)
@@ -123,6 +124,7 @@ class InventoryList extends Component
             $this->edit_weight = $package->weight;
             $this->edit_status = $package->status;
             $this->edit_warehouse_id = $package->warehouse_id;
+            $this->edit_service_type = $package->service_type ?? 'air';
             $this->dispatch('open-edit-modal');
         }
     }
@@ -134,6 +136,7 @@ class InventoryList extends Component
             'edit_weight' => 'required|numeric|min:0',
             'edit_status' => 'required|string',
             'edit_warehouse_id' => 'required|exists:warehouses,id',
+            'edit_service_type' => 'required|in:air,maritime',
         ]);
 
         $package = Package::findOrFail($this->editing_package_id);
@@ -143,6 +146,7 @@ class InventoryList extends Component
             'weight' => $this->edit_weight,
             'status' => $this->edit_status,
             'warehouse_id' => $this->edit_warehouse_id,
+            'service_type' => $this->edit_service_type,
         ]);
 
         session()->flash('message', 'Paquete actualizado correctamente.');
@@ -220,7 +224,7 @@ class InventoryList extends Component
 
         DB::transaction(function() use ($packages) {
             $tenant = \App\Models\Tenant::current();
-            $default_air_rate = $tenant->settings_json['default_rate'] ?? 2.50;
+            $default_air_rate = $tenant->settings_json['air_rate'] ?? 2.50;
             $default_maritime_rate = $tenant->settings_json['maritime_rate'] ?? 1.50;
 
             // If user left custom_rate as the default air rate, we use package specific rates. 

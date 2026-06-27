@@ -37,7 +37,7 @@ class ShippingCalculator extends Component
 
         // Base rate per pound (usually different for air/maritime)
         $rate = $this->service_type === 'air'
-            ? ($settings['default_rate'] ?? 2.50)
+            ? ($settings['air_rate'] ?? 2.50)
             : ($settings['maritime_rate'] ?? 1.50);
 
         // Volumetric Weight (L * W * H / 166 or similar)
@@ -69,7 +69,8 @@ class ShippingCalculator extends Component
 
     public function render()
     {
-        $tenant = Tenant::find(session('tenant_id'));
+        $tenant = Tenant::find(session('tenant_id')) ?? Tenant::first();
+        $this->airRate = $tenant->settings_json['air_rate'] ?? 2.50;
         $airEnabled = $tenant->settings_json['service_air_enabled'] ?? true;
         $maritimeEnabled = $tenant->settings_json['service_maritime_enabled'] ?? true;
 

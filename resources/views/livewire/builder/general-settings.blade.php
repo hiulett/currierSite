@@ -48,7 +48,7 @@
                             <label class="form-label small font-black text-uppercase text-muted tracking-widest">Tarifa por Libra (Aéreo)</label>
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text bg-light border-2 border-end-0">&dollar;</span>
-                                <input type="number" step="0.01" wire:model="default_rate" class="form-control border-2 fw-bold">
+                                <input type="number" step="0.01" wire:model="air_rate" class="form-control border-2 fw-bold">
                             </div>
                         </div>
                         <div class="col-md-4">

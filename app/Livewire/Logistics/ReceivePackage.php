@@ -126,7 +126,7 @@ class ReceivePackage extends Component
 
                 $rate = $this->service_type === 'maritime' 
                     ? ($settings['maritime_rate'] ?? 1.50) 
-                    : ($settings['default_rate'] ?? 2.50);
+                    : ($settings['air_rate'] ?? 2.50);
                     
                 $tax_percent = $settings['default_tax'] ?? 7;
 
