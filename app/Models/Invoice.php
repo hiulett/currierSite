@@ -19,6 +19,7 @@ class Invoice extends Model
         'discount',
         'total',
         'status',
+        'service_type',
         'currency',
         'due_date',
         'paid_at',

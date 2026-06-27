@@ -71,7 +71,16 @@
                             @forelse($invoices as $invoice)
                                 <tr>
                                     <td class="ps-4">
-                                        <div class="fw-black text-dark">{{ $invoice->number }}</div>
+                                        <div class="fw-black text-dark">
+                                            {{ $invoice->number }}
+                                            @if($invoice->service_type === 'maritime')
+                                                <span class="badge bg-info text-white ms-1" style="font-size: 0.6rem;">MARÍTIMO</span>
+                                            @elseif($invoice->service_type === 'air')
+                                                <span class="badge bg-primary text-white ms-1" style="font-size: 0.6rem;">AÉREO</span>
+                                            @elseif($invoice->service_type === 'mixed')
+                                                <span class="badge bg-secondary text-white ms-1" style="font-size: 0.6rem;">MIXTO</span>
+                                            @endif
+                                        </div>
                                         <div class="text-muted xsmall uppercase font-bold">Concepto: Envío de Carga</div>
                                     </td>
                                     <td>

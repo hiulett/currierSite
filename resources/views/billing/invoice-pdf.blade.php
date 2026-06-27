@@ -26,6 +26,16 @@
             <div>#{{ $invoice->number }}</div>
             <div>Fecha: {{ $invoice->created_at->format('d/m/Y') }}</div>
             <div>Vence: {{ $invoice->due_date ? $invoice->due_date->format('d/m/Y') : 'N/A' }}</div>
+            <div style="margin-top: 5px; font-weight: bold; color: #1a56db;">
+                TIPO DE SERVICIO: 
+                @if($invoice->service_type === 'maritime')
+                    MARÍTIMO
+                @elseif($invoice->service_type === 'air')
+                    AÉREO
+                @else
+                    MIXTO
+                @endif
+            </div>
         </div>
 
         @php

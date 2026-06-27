@@ -159,6 +159,19 @@ class CreateInvoice extends Component
             $tax = $subtotal * ($this->tax_percent / 100);
             $total = $subtotal + $tax;
 
+            // Determine invoice service_type from items
+            $types = [];
+            foreach ($this->items as $item) {
+                if (isset($item['package_id'])) {
+                    $pkg = \App\Models\Package::find($item['package_id']);
+                    if ($pkg && $pkg->service_type) {
+                        $types[] = $pkg->service_type;
+                    }
+                }
+            }
+            $types = array_unique($types);
+            $serviceType = count($types) === 1 ? $types[0] : (count($types) > 1 ? 'mixed' : 'air');
+
             $invoice = Invoice::create([
                 'customer_id' => $this->found_customer->id,
                 'number' => 'INV-' . date('Ymd') . '-' . rand(100, 999),
@@ -166,6 +179,7 @@ class CreateInvoice extends Component
                 'tax' => $tax,
                 'total' => $total,
                 'status' => 'unpaid',
+                'service_type' => $serviceType,
                 'due_date' => now()->addDays(7),
                 'notes' => $this->notes,
             ]);
