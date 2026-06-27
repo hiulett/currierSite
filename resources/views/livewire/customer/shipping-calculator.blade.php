@@ -102,10 +102,12 @@
                                         <span class="small text-white-50">Flete ({{ number_format($result['chargeable_weight'], 1) }} lbs)</span>
                                         <span class="fw-bold">${{ number_format($result['shipping_cost'], 2) }}</span>
                                     </div>
-                                    <div class="d-flex justify-content-between mb-0">
-                                        <span class="small text-white-50">Recargo Combustible (5%)</span>
-                                        <span class="fw-bold">${{ number_format($result['fuel_surcharge'], 2) }}</span>
+                                    @foreach($result['applied_charges'] as $charge)
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="small text-white-50">{{ $charge['name'] }}</span>
+                                        <span class="fw-bold">${{ number_format($charge['amount'], 2) }}</span>
                                     </div>
+                                    @endforeach
                                 </div>
 
                                 <div class="p-3 bg-white bg-opacity-10 rounded mb-4">

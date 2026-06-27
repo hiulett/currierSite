@@ -15,6 +15,8 @@ class GeneralSettings extends Component
     public $locale;
     public $subtract_provider_costs = true;
 
+    public $other_charges = [];
+
     // Box Number Settings - Air
     public $box_number_prefix_air;
     public $box_number_template_air;
@@ -54,6 +56,8 @@ class GeneralSettings extends Component
         $this->maritime_rate = $settings['maritime_rate'] ?? 1.50;
         $this->timezone = $settings['timezone'] ?? 'UTC';
         $this->locale = $tenant->locale ?? 'es';
+        
+        $this->other_charges = $settings['other_charges'] ?? [];
 
         $this->box_number_prefix_air = $settings['box_number_prefix_air'] ?? 'AIR';
         $this->box_number_template_air = $settings['box_number_template_air'] ?? '{PREFIX}{ID} {NAME}';
@@ -103,6 +107,17 @@ class GeneralSettings extends Component
         $tenant->update(['settings_json' => $settings]);
     }
 
+    public function addCharge()
+    {
+        $this->other_charges[] = ['name' => '', 'type' => 'percentage', 'value' => 0];
+    }
+
+    public function removeCharge($index)
+    {
+        unset($this->other_charges[$index]);
+        $this->other_charges = array_values($this->other_charges);
+    }
+
     public function saveGeneral()
     {
         $this->validate([
@@ -111,6 +126,9 @@ class GeneralSettings extends Component
             'air_rate' => 'required|numeric|min:0',
             'maritime_rate' => 'required|numeric|min:0',
             'locale' => 'required|in:es,en',
+            'other_charges.*.name' => 'required|string',
+            'other_charges.*.type' => 'required|in:percentage,fixed',
+            'other_charges.*.value' => 'required|numeric|min:0',
         ]);
 
         $tenant = Tenant::current();
@@ -121,6 +139,7 @@ class GeneralSettings extends Component
         $settings['air_rate'] = $this->air_rate;
         $settings['maritime_rate'] = $this->maritime_rate;
         $settings['timezone'] = $this->timezone;
+        $settings['other_charges'] = $this->other_charges;
 
         // Ensure toggles are saved here too
         $settings['service_air_enabled'] = (bool) $this->service_air_enabled;

@@ -62,6 +62,41 @@
 
                     <hr class="my-4">
 
+                    <h6 class="font-black text-uppercase small text-dark mb-3"><i data-feather="plus-circle" style="width: 14px;"></i> Otros Cargos Dinámicos (Fletes y Calculadora)</h6>
+                    <div class="bg-light p-3 rounded border mb-4">
+                        @forelse($other_charges as $index => $charge)
+                            <div class="row g-2 mb-2 align-items-center">
+                                <div class="col-md-4">
+                                    <input type="text" wire:model="other_charges.{{ $index }}.name" class="form-control form-control-sm border-2 fw-bold" placeholder="Nombre (Ej. Combustible)">
+                                    @error('other_charges.'.$index.'.name') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-md-4">
+                                    <select wire:model="other_charges.{{ $index }}.type" class="form-select form-select-sm border-2 fw-bold">
+                                        <option value="percentage">Porcentaje del Flete (%)</option>
+                                        <option value="fixed">Monto Fijo por Paquete ($)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="number" step="0.01" wire:model="other_charges.{{ $index }}.value" class="form-control form-control-sm border-2 fw-bold" placeholder="Valor">
+                                    @error('other_charges.'.$index.'.value') <span class="text-danger xsmall">{{ $message }}</span> @enderror
+                                </div>
+                                <div class="col-md-1 text-end">
+                                    <button type="button" wire:click="removeCharge({{ $index }})" class="btn btn-sm btn-outline-danger border-0">
+                                        <i data-feather="trash-2" style="width: 14px;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-muted small mb-2">No hay cargos adicionales configurados.</div>
+                        @endforelse
+                        
+                        <button type="button" wire:click="addCharge" class="btn btn-sm btn-outline-primary fw-bold mt-2">
+                            <i data-feather="plus" style="width: 14px;"></i> Agregar Cargo Adicional
+                        </button>
+                    </div>
+
+                    <hr class="my-4">
+
                     <div class="form-check form-switch custom-switch mb-3">
                         <input class="form-check-input" type="checkbox" wire:model.live="force_password_change" id="forcePasswordToggle">
                         <label class="form-check-label fw-black text-uppercase small text-danger" for="forcePasswordToggle">

@@ -50,15 +50,33 @@ class ShippingCalculator extends Component
         $customs_duty = 0;
         $tax_percentage = 0;
 
-        // Fuel Surcharge (Sample logic)
-        $fuel_surcharge = $shipping_cost * 0.05;
+        $other_charges_settings = $settings['other_charges'] ?? [];
+        $applied_charges = [];
+        $total_other_charges = 0;
 
-        $total = $shipping_cost + $customs_duty + $fuel_surcharge;
+        foreach ($other_charges_settings as $charge) {
+            $value = floatval($charge['value'] ?? 0);
+            if ($charge['type'] === 'percentage') {
+                $amount = $shipping_cost * ($value / 100);
+            } else {
+                $amount = $value;
+            }
+            
+            if ($amount > 0) {
+                $applied_charges[] = [
+                    'name' => $charge['name'] ?? 'Cargo Extra',
+                    'amount' => $amount
+                ];
+                $total_other_charges += $amount;
+            }
+        }
+
+        $total = $shipping_cost + $customs_duty + $total_other_charges;
 
         $this->result = [
             'shipping_cost' => $shipping_cost,
             'customs_duty' => $customs_duty,
-            'fuel_surcharge' => $fuel_surcharge,
+            'applied_charges' => $applied_charges,
             'total' => $total,
             'chargeable_weight' => $chargeable_weight,
             'is_volumetric' => $volumetric_weight > $this->weight,
