@@ -56,12 +56,12 @@ class QuotationList extends Component
         if ($email) {
             try {
                 \Illuminate\Support\Facades\Mail::to($email)
-                    ->queue(new \App\Mail\QuotationSent($quotation));
+                    ->send(new \App\Mail\QuotationSent($quotation));
                 $quotation->update(['status' => 'email_sent']);
-                session()->flash('message', '✉️ Correo de cotización encolado para ' . $email . '. El mensaje se enviará en breve.');
+                session()->flash('message', '✉️ Correo de cotización enviado con éxito a ' . $email);
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error('Error dispatching quotation email: ' . $e->getMessage());
-                session()->flash('error', 'Error al encolar el correo. Verifique la configuración SMTP. Detalle: ' . $e->getMessage());
+                session()->flash('error', 'Error al enviar el correo. Verifique la configuración SMTP. Detalle: ' . $e->getMessage());
             }
         } else {
             session()->flash('error', 'El cliente no tiene un correo electrónico asociado.');
