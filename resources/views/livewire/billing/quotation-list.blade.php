@@ -71,7 +71,7 @@
                     <h5 class="card-title mb-0 uppercase font-black small text-muted" style="letter-spacing: 0.05em;">Volumen de Cotizaciones (Últimos 6 meses)</h5>
                 </div>
                 <div class="card-body pb-4">
-                    <div style="height: 250px; position: relative;">
+                    <div style="height: 250px; position: relative;" wire:ignore>
                         <canvas id="barChart"></canvas>
                     </div>
                 </div>
@@ -83,7 +83,7 @@
                     <h5 class="card-title mb-0 uppercase font-black small text-muted" style="letter-spacing: 0.05em;">Distribución por Estado</h5>
                 </div>
                 <div class="card-body d-flex justify-content-center align-items-center pb-4">
-                    <div style="width: 100%; height: 250px; position: relative;">
+                    <div style="width: 100%; height: 250px; position: relative;" wire:ignore>
                         <canvas id="pieChart"></canvas>
                     </div>
                 </div>
