@@ -37,18 +37,25 @@
                     </div>
 
                     <div class="row g-3">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label small font-black text-uppercase text-muted tracking-widest">Impuesto (%)</label>
                             <div class="input-group input-group-lg">
                                 <input type="number" step="0.1" wire:model="default_tax" class="form-control border-2 fw-bold">
                                 <span class="input-group-text bg-light border-2 border-start-0">%</span>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label small font-black text-uppercase text-muted tracking-widest">Tarifa Base por Libra</label>
+                        <div class="col-md-4">
+                            <label class="form-label small font-black text-uppercase text-muted tracking-widest">Tarifa por Libra (Aéreo)</label>
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text bg-light border-2 border-end-0">&dollar;</span>
                                 <input type="number" step="0.01" wire:model="default_rate" class="form-control border-2 fw-bold">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small font-black text-uppercase text-muted tracking-widest">Tarifa por Libra (Marítimo)</label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-light border-2 border-end-0">&dollar;</span>
+                                <input type="number" step="0.01" wire:model="maritime_rate" class="form-control border-2 fw-bold">
                             </div>
                         </div>
                     </div>

@@ -10,6 +10,7 @@ class GeneralSettings extends Component
     public $currency;
     public $default_tax;
     public $default_rate;
+    public $maritime_rate;
     public $timezone;
     public $locale;
     public $subtract_provider_costs = true;
@@ -50,6 +51,7 @@ class GeneralSettings extends Component
         $this->currency = $settings['currency'] ?? 'USD';
         $this->default_tax = $settings['default_tax'] ?? 7;
         $this->default_rate = $settings['default_rate'] ?? 2.50;
+        $this->maritime_rate = $settings['maritime_rate'] ?? 1.50;
         $this->timezone = $settings['timezone'] ?? 'UTC';
         $this->locale = $tenant->locale ?? 'es';
 
@@ -107,6 +109,7 @@ class GeneralSettings extends Component
             'currency' => 'required|string|max:3',
             'default_tax' => 'required|numeric|min:0',
             'default_rate' => 'required|numeric|min:0',
+            'maritime_rate' => 'required|numeric|min:0',
             'locale' => 'required|in:es,en',
         ]);
 
@@ -116,6 +119,7 @@ class GeneralSettings extends Component
         $settings['currency'] = strtoupper($this->currency);
         $settings['default_tax'] = $this->default_tax;
         $settings['default_rate'] = $this->default_rate;
+        $settings['maritime_rate'] = $this->maritime_rate;
         $settings['timezone'] = $this->timezone;
 
         // Ensure toggles are saved here too

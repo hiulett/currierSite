@@ -219,10 +219,27 @@ class InventoryList extends Component
         $packages = Package::whereIn('id', $this->selected_packages)->get();
 
         DB::transaction(function() use ($packages) {
-            $total_weight = $packages->sum('weight');
-            $subtotal = ($total_weight * $this->custom_rate) + (float)$this->extra_charge;
-
             $tenant = \App\Models\Tenant::current();
+            $default_air_rate = $tenant->settings_json['default_rate'] ?? 2.50;
+            $default_maritime_rate = $tenant->settings_json['maritime_rate'] ?? 1.50;
+
+            // If user left custom_rate as the default air rate, we use package specific rates. 
+            // If they changed it, we apply the custom rate to everything.
+            $use_custom_rate = $this->custom_rate != $default_air_rate;
+
+            $total_weight = $packages->sum('weight');
+            
+            $subtotal = 0;
+            foreach ($packages as $pkg) {
+                if ($use_custom_rate) {
+                    $rate = $this->custom_rate;
+                } else {
+                    $rate = $pkg->service_type === 'maritime' ? $default_maritime_rate : $default_air_rate;
+                }
+                $subtotal += $pkg->weight * $rate;
+            }
+            $subtotal += (float)$this->extra_charge;
+
             $tax_percent = $tenant->settings_json['default_tax'] ?? ($tenant->settings_json['tax_rate'] ?? 0);
             $tax = $subtotal * ($tax_percent / 100);
             $total = $subtotal + $tax;
@@ -242,13 +259,20 @@ class InventoryList extends Component
 
             // 2. Create Invoice Items
             foreach ($packages as $pkg) {
+                if ($use_custom_rate) {
+                    $rate = $this->custom_rate;
+                } else {
+                    $rate = $pkg->service_type === 'maritime' ? $default_maritime_rate : $default_air_rate;
+                }
+                $serviceLabel = $pkg->service_type === 'maritime' ? 'Marítimo' : 'Aéreo';
+
                 InvoiceItem::create([
                     'tenant_id' => session('tenant_id'),
                     'invoice_id' => $invoice->id,
-                    'description' => "Flete: " . $pkg->tracking_number . " (" . $pkg->weight . " lbs)",
+                    'description' => "Flete " . $serviceLabel . ": " . $pkg->tracking_number . " (" . $pkg->weight . " lbs)",
                     'quantity' => $pkg->weight,
-                    'unit_price' => $this->custom_rate,
-                    'total' => $pkg->weight * $this->custom_rate,
+                    'unit_price' => $rate,
+                    'total' => $pkg->weight * $rate,
                 ]);
 
                 // 3. Update Packages

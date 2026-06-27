@@ -4,7 +4,6 @@ namespace App\Livewire\Customer;
 
 use Livewire\Component;
 use App\Models\Tenant;
-use App\Models\TaxCategory;
 
 class ShippingCalculator extends Component
 {
@@ -75,7 +74,6 @@ class ShippingCalculator extends Component
         $maritimeEnabled = $tenant->settings_json['service_maritime_enabled'] ?? true;
 
         return view('livewire.customer.shipping-calculator', [
-            'categories' => TaxCategory::all(),
             'airEnabled' => $airEnabled,
             'maritimeEnabled' => $maritimeEnabled,
         ])->layout('components.customer-layout');

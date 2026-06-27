@@ -115,9 +115,9 @@
 
                         <div class="row g-4 mb-5">
                             {{-- Tracking --}}
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label small fw-black text-dark mb-2">
-                                    Nº Tracking Externo
+                                    Nº Tracking
                                     <span class="text-danger ms-1">*</span>
                                 </label>
                                 <div class="input-group">
@@ -128,7 +128,7 @@
                                     <input type="text" wire:model="tracking_number"
                                            class="form-control fw-black border-start-0 @error('tracking_number') is-invalid @enderror"
                                            style="font-size:1.1rem;border:1.5px solid #e2e8f0;border-left:0;border-radius:0 .75rem .75rem 0;background:#fafafa;padding:.8rem 1rem;"
-                                           placeholder="Escanear o escribir..." autofocus>
+                                           placeholder="Escanear..." autofocus>
                                 </div>
                                 @error('tracking_number')
                                     <div class="text-danger small mt-1 fw-bold">
@@ -137,8 +137,20 @@
                                 @enderror
                             </div>
 
+                            {{-- Service Type --}}
+                            <div class="col-md-3">
+                                <label class="form-label small fw-black text-dark mb-2">
+                                    Servicio
+                                    <span class="text-danger ms-1">*</span>
+                                </label>
+                                <select wire:model="service_type" class="form-select fw-black" style="font-size:1.1rem;border:1.5px solid #e2e8f0;border-radius:.75rem;padding:.8rem 1rem;background:#fafafa;">
+                                    <option value="air">Aéreo</option>
+                                    <option value="maritime">Marítimo</option>
+                                </select>
+                            </div>
+
                             {{-- Buscar Cliente --}}
-                            <div class="col-md-6 position-relative" x-data="{ open: true }">
+                            <div class="col-md-5 position-relative" x-data="{ open: true }">
                                 <label class="form-label small fw-black text-dark mb-2">
                                     Cliente / Casillero
                                     <span class="text-danger ms-1">*</span>

@@ -20,6 +20,7 @@ class Package extends Model
         'tracking_number',
         'internal_tracking',
         'description',
+        'service_type',
         'shelf_location',
         'weight',
         'length',

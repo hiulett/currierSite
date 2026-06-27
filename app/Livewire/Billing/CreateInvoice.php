@@ -96,11 +96,15 @@ class CreateInvoice extends Component
             $this->selectedPackages[] = $packageId;
 
             $tenant = \App\Models\Tenant::find(session('tenant_id'));
-            $rate = $tenant->settings_json['default_rate'] ?? 2.50;
+            $rate = $package->service_type === 'maritime' 
+                ? ($tenant->settings_json['maritime_rate'] ?? 1.50) 
+                : ($tenant->settings_json['default_rate'] ?? 2.50);
+
+            $serviceLabel = $package->service_type === 'maritime' ? 'Marítimo' : 'Aéreo';
 
             $this->items[] = [
                 'package_id' => $package->id,
-                'description' => 'Flete Aéreo - ' . $package->tracking_number,
+                'description' => 'Flete ' . $serviceLabel . ' - ' . $package->tracking_number,
                 'quantity' => $package->weight,
                 'unit_price' => $rate,
                 'total' => $package->weight * $rate,

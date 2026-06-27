@@ -75,11 +75,21 @@ class Dashboard extends Component
             }
             $tenantSettings = $tenant->settings_json ?? [];
             $defaultRate = $tenantSettings['default_rate'] ?? 2.50;
+            $maritimeRate = $tenantSettings['maritime_rate'] ?? 1.50;
 
-            $projectedRevenue = Package::whereNotIn('status', ['delivered', 'cancelled'])
+            $airWeight = Package::whereNotIn('status', ['delivered', 'cancelled'])
                 ->whereNull('client_total_billed')
+                ->where('service_type', 'air')
                 ->where('weight', '>', 0)
-                ->sum('weight') * $defaultRate;
+                ->sum('weight');
+                
+            $maritimeWeight = Package::whereNotIn('status', ['delivered', 'cancelled'])
+                ->whereNull('client_total_billed')
+                ->where('service_type', 'maritime')
+                ->where('weight', '>', 0)
+                ->sum('weight');
+
+            $projectedRevenue = ($airWeight * $defaultRate) + ($maritimeWeight * $maritimeRate);
 
             $projectedCost = Package::whereNotIn('status', ['delivered', 'cancelled'])
                 ->whereNull('provider_cost')

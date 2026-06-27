@@ -26,6 +26,7 @@ class ReceivePackage extends Component
     public $warehouse_id;
     public $last_package_id = null;
     public $auto_invoice = true;
+    public $service_type = 'air';
 
     public $found_customer = null;
     public $customer_search = '';
@@ -75,6 +76,17 @@ class ReceivePackage extends Component
         $this->box_number = $this->found_customer->box_number;
         $this->customer_search = $this->found_customer->user->name . ' (' . $this->found_customer->box_number . ')';
         $this->search_results = [];
+
+        // Auto-detect service type based on customer box number match
+        $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
+        $settings = $tenant->settings_json ?? [];
+        $maritime_prefix = $settings['box_number_prefix_maritime'] ?? 'SEA';
+        
+        if (str_starts_with(strtoupper($this->box_number), strtoupper($maritime_prefix)) || $this->box_number === $this->found_customer->box_number_maritime) {
+            $this->service_type = 'maritime';
+        } else {
+            $this->service_type = 'air';
+        }
     }
 
     public function save()
@@ -104,6 +116,7 @@ class ReceivePackage extends Component
                 'volumetric_weight' => $this->volumetric_weight,
                 'description' => $this->description,
                 'status' => 'received',
+                'service_type' => $this->service_type,
             ]);
 
             // Auto-invoice logic
@@ -111,7 +124,10 @@ class ReceivePackage extends Component
                 $tenant = \App\Models\Tenant::find(session('tenant_id'));
                 $settings = $tenant->settings_json ?? [];
 
-                $rate = $settings['default_rate'] ?? 2.50;
+                $rate = $this->service_type === 'maritime' 
+                    ? ($settings['maritime_rate'] ?? 1.50) 
+                    : ($settings['default_rate'] ?? 2.50);
+                    
                 $tax_percent = $settings['default_tax'] ?? 7;
 
                 $subtotal = $this->weight * $rate;
@@ -130,10 +146,11 @@ class ReceivePackage extends Component
                     'notes' => 'Factura automática por recepción de paquete ' . $this->tracking_number,
                 ]);
 
+                $serviceLabel = $this->service_type === 'maritime' ? 'Marítimo' : 'Aéreo';
                 InvoiceItem::create([
                     'tenant_id' => session('tenant_id'),
                     'invoice_id' => $invoice->id,
-                    'description' => 'Flete Aéreo (Libras) - ' . $this->tracking_number,
+                    'description' => 'Flete ' . $serviceLabel . ' (Libras) - ' . $this->tracking_number,
                     'quantity' => $this->weight,
                     'unit_price' => $rate,
                     'total' => $subtotal,
@@ -179,7 +196,7 @@ class ReceivePackage extends Component
 
         session()->flash('message', 'Paquete registrado exitosamente: ' . $package->tracking_number);
 
-        $this->reset(['tracking_number', 'customer_search', 'weight', 'description', 'found_customer', 'box_number']);
+        $this->reset(['tracking_number', 'customer_search', 'weight', 'description', 'found_customer', 'box_number', 'service_type']);
     }
 
     public function render()
