@@ -18,6 +18,7 @@ class CreateQuotation extends Component
     public $client_lastname = '';
     public $client_email = '';
     public $notes = '';
+    public $service_type = 'air';
 
     public $items = [];
 
@@ -30,10 +31,11 @@ class CreateQuotation extends Component
 
     public function initForm()
     {
-        $this->reset(['customer_id', 'search_customer', 'notes', 'customers', 'client_name', 'client_lastname', 'client_email']);
+        $this->reset(['customer_id', 'search_customer', 'notes', 'customers', 'client_name', 'client_lastname', 'client_email', 'service_type']);
         $this->is_registered = true;
+        $this->service_type = 'air';
         $this->items = [
-            ['item_number' => '', 'description' => '', 'quantity' => 1, 'price' => 0, 'handling_price' => 0, 'total' => 0]
+            ['item_number' => '', 'description' => '', 'quantity' => 1, 'price' => $this->getCurrentRate(), 'handling_price' => 0, 'total' => 0]
         ];
         $this->searchCustomers();
     }
@@ -69,7 +71,24 @@ class CreateQuotation extends Component
 
     public function addItem()
     {
-        $this->items[] = ['item_number' => '', 'description' => '', 'quantity' => 1, 'price' => 0, 'handling_price' => 0, 'total' => 0];
+        $this->items[] = ['item_number' => '', 'description' => '', 'quantity' => 1, 'price' => $this->getCurrentRate(), 'handling_price' => 0, 'total' => 0];
+        $this->calculateTotals();
+    }
+
+    public function updatedServiceType()
+    {
+        $rate = $this->getCurrentRate();
+        foreach ($this->items as $key => $item) {
+            $this->items[$key]['price'] = $rate;
+        }
+        $this->calculateTotals();
+    }
+
+    private function getCurrentRate()
+    {
+        $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
+        $settings = $tenant->settings_json ?? [];
+        return $this->service_type === 'maritime' ? ($settings['maritime_rate'] ?? 1.50) : ($settings['air_rate'] ?? 2.50);
     }
 
     public function removeItem($index)
@@ -151,6 +170,7 @@ class CreateQuotation extends Component
                 'handling_total' => $this->getHandlingTotalProperty(),
                 'total' => $this->getTotalProperty(),
                 'status' => 'draft',
+                'service_type' => $this->service_type,
                 'notes' => $this->notes,
             ]);
 

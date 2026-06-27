@@ -18,6 +18,7 @@ class Quotation extends Model
         'handling_total',
         'total',
         'status',
+        'service_type',
         'notes',
     ];
 

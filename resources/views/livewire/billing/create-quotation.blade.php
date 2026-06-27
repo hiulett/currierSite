@@ -13,6 +13,16 @@
                         <label class="btn btn-outline-primary text-uppercase font-bold small px-3" for="unreg_client">No Registrado</label>
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label font-black text-uppercase small text-muted d-block">Tipo de Cotización</label>
+                    <div class="btn-group" role="group" aria-label="Tipo de Cotización">
+                        <input type="radio" class="btn-check" name="service_type" id="service_air" value="air" wire:model.live="service_type" autocomplete="off">
+                        <label class="btn btn-outline-primary text-uppercase font-bold small px-3" for="service_air"><i data-feather="send" class="me-1" style="width: 14px;"></i> Aérea</label>
+
+                        <input type="radio" class="btn-check" name="service_type" id="service_maritime" value="maritime" wire:model.live="service_type" autocomplete="off">
+                        <label class="btn btn-outline-primary text-uppercase font-bold small px-3" for="service_maritime"><i data-feather="anchor" class="me-1" style="width: 14px;"></i> Marítima</label>
+                    </div>
+                </div>
             </div>
 
             <!-- Customer Selection or Unregistered Fields -->
@@ -69,8 +79,8 @@
                                 <tr>
                                     <th style="width: 15%;"># Item</th>
                                     <th style="width: 35%;">Descripción</th>
-                                    <th style="width: 10%;">Cant.</th>
-                                    <th style="width: 15%;">Precio Unit.</th>
+                                    <th style="width: 10%;">Cant./Peso</th>
+                                    <th style="width: 15%;">Precio Unit. <small class="text-muted">(Auto)</small></th>
                                     <th style="width: 15%;">Manejo Unit.</th>
                                     <th style="width: 15%;" class="text-end">Total</th>
                                     <th style="width: 5%;"></th>
