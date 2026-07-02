@@ -8,6 +8,7 @@ use App\Models\Role;
 use Livewire\WithPagination;
 use App\Traits\WithSorting;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserManagement extends Component
 {
@@ -20,6 +21,7 @@ class UserManagement extends Component
     public function resetFields()
     {
         $this->reset(['name', 'email', 'password', 'role_id', 'selected_user_id', 'is_editing']);
+        $this->resetErrorBag();
     }
 
     public function createUser()
@@ -51,12 +53,16 @@ class UserManagement extends Component
 
         if (!$this->is_editing) {
             $rules['password'] = 'required|min:8';
+        } else {
+            if ($this->password) {
+                $rules['password'] = 'min:8';
+            }
         }
 
         $this->validate($rules);
 
         if ($this->is_editing) {
-            $user = User::find($this->selected_user_id);
+            $user = User::findOrFail($this->selected_user_id);
             $updateData = [
                 'name' => $this->name,
                 'email' => $this->email,

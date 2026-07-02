@@ -19,6 +19,7 @@ class RoleManagement extends Component
     public function resetFields()
     {
         $this->reset(['name', 'description', 'selected_role_id', 'selected_permissions', 'is_editing']);
+        $this->resetErrorBag();
     }
 
     public function createRole()
@@ -45,7 +46,7 @@ class RoleManagement extends Component
         ]);
 
         if ($this->is_editing) {
-            $role = Role::find($this->selected_role_id);
+            $role = Role::findOrFail($this->selected_role_id);
             $role->update([
                 'name' => $this->name,
                 'description' => $this->description,

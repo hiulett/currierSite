@@ -432,6 +432,7 @@
 					@endtenantFeatureNotHidden
 					@endcan
 
+					@can('billing.view')
 					@tenantFeatureNotHidden('expenses')
 					<li class="sidebar-item {{ request()->routeIs('billing.expenses.index') ? 'active' : '' }} @tenantFeatureDisabled('expenses') disabled-feature @endtenantFeatureDisabled">
 						@tenantFeatureDisabled('expenses')
@@ -445,6 +446,7 @@
 						@endtenantFeatureDisabled
 					</li>
 					@endtenantFeatureNotHidden
+					@endcan
 
                     @can('logistics.reports')
 					@tenantFeatureNotHidden('reportes_negocio')
@@ -567,21 +569,36 @@
 						@endtenantFeatureDisabled
 					</li>
 					@endtenantFeatureNotHidden
+					@endcan
 
+					@can('settings.users')
 					@tenantFeatureNotHidden('usuarios_roles')
                     <li class="sidebar-item {{ request()->routeIs('builder.users') ? 'active' : '' }} @tenantFeatureDisabled('usuarios_roles') disabled-feature @endtenantFeatureDisabled">
 						@tenantFeatureDisabled('usuarios_roles')
-						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Usuarios y Roles')">
-							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Usuarios y Roles</span>
+						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Colaboradores')">
+							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Colaboradores</span>
 						</a>
 						@else
 						<a class='sidebar-link' href='{{ route('builder.users') }}'>
-							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Usuarios y Roles</span>
+							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Colaboradores</span>
+						</a>
+						@endtenantFeatureDisabled
+					</li>
+                    <li class="sidebar-item {{ request()->routeIs('builder.roles') ? 'active' : '' }} @tenantFeatureDisabled('usuarios_roles') disabled-feature @endtenantFeatureDisabled">
+						@tenantFeatureDisabled('usuarios_roles')
+						<a class='sidebar-link' href='javascript:void(0);' onclick="showLockedFeatureModal('Roles y Permisos')">
+							<i class="align-middle" data-feather="lock"></i> <span class="align-middle">Roles y Permisos</span>
+						</a>
+						@else
+						<a class='sidebar-link' href='{{ route('builder.roles') }}'>
+							<i class="align-middle" data-feather="shield"></i> <span class="align-middle">Roles y Permisos</span>
 						</a>
 						@endtenantFeatureDisabled
 					</li>
 					@endtenantFeatureNotHidden
+					@endcan
 
+					@can('settings.general')
 					@tenantFeatureNotHidden('ajustes_generales')
                     <li class="sidebar-item {{ request()->routeIs('builder.general') ? 'active' : '' }} @tenantFeatureDisabled('ajustes_generales') disabled-feature @endtenantFeatureDisabled">
 						@tenantFeatureDisabled('ajustes_generales')
