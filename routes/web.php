@@ -17,6 +17,7 @@ use App\Livewire\Logistics\SupportTickets;
 use App\Livewire\Logistics\ReportCenter;
 use App\Livewire\Billing\InvoiceList;
 use App\Livewire\Billing\CreateInvoice;
+use App\Livewire\Billing\EditInvoice;
 use App\Livewire\Billing\StatementOfAccount;
 use App\Livewire\Builder\BrandSettings;
 use App\Livewire\Builder\MailSettings;
@@ -133,6 +134,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware(['tenant.feature:billing'])->group(function () {
             Route::get('/facturacion', InvoiceList::class)->name('billing.index')->middleware('can:billing.view');
             Route::get('/facturacion/nueva', CreateInvoice::class)->name('billing.create')->middleware('can:billing.manage');
+            Route::get('/facturacion/{invoice}/editar', EditInvoice::class)->name('billing.edit')->middleware('can:billing.manage');
             Route::get('/facturacion/validar-pagos', \App\Livewire\Billing\PaymentApprovals::class)->name('billing.approvals')->middleware('can:billing.manage');
             Route::get('/facturacion/{invoice}/download', [InvoiceController::class, 'download'])->name('billing.download')->middleware('can:billing.view');
             Route::get('/facturacion/estado-cuenta', StatementOfAccount::class)->name('billing.statement')->middleware('can:billing.view');

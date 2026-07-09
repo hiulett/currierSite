@@ -197,6 +197,11 @@
                                     <button wire:click="sendEmail({{ $invoice->id }})" class="btn btn-sm btn-light border" title="Enviar Email">
                                         <i class="align-middle text-info" data-feather="mail" style="width: 14px;"></i>
                                     </button>
+                                    @if($invoice->status !== 'cancelled')
+                                        <a href="{{ route('billing.edit', $invoice) }}" class="btn btn-sm btn-light border" title="Editar Factura">
+                                            <i class="align-middle text-warning" data-feather="edit" style="width: 14px;"></i>
+                                        </a>
+                                    @endif
                                     @if($invoice->status !== 'paid')
                                         <button wire:click="openPaymentModal({{ $invoice->id }})" class="btn btn-sm btn-success fw-bold px-3">
                                             COBRAR

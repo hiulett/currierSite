@@ -111,4 +111,71 @@ class BillingTest extends TestCase
             ->assertSet('customer_search', '')
             ->assertSet('customer_results', []);
     }
+
+    public function test_can_create_invoice_via_livewire_and_update_customer_balance()
+    {
+        $this->actingAs($this->admin);
+
+        // Initial balance is 100.00
+        $this->assertEquals(100.00, $this->customer->fresh()->balance);
+
+        Livewire::test(CreateInvoice::class)
+            ->call('selectCustomer', $this->customer->id)
+            ->set('items', [
+                [
+                    'description' => 'Servicio de Flete',
+                    'quantity' => 2,
+                    'unit_price' => 10.00,
+                    'total' => 20.00
+                ]
+            ])
+            ->set('tax_percent', 10)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        // 20.00 + 2.00 (10% tax) = 22.00
+        // New balance: 100.00 + 22.00 = 122.00
+        $this->assertEquals(122.00, $this->customer->fresh()->balance);
+    }
+
+    public function test_can_edit_invoice_via_livewire_and_adjust_customer_balance()
+    {
+        $this->actingAs($this->admin);
+
+        // Create an unpaid invoice
+        $invoice = Invoice::create([
+            'tenant_id' => $this->tenant->id,
+            'customer_id' => $this->customer->id,
+            'number' => 'INV-002',
+            'subtotal' => 50.00,
+            'tax' => 5.00,
+            'total' => 55.00,
+            'status' => 'unpaid',
+            'due_date' => now()->addDays(7),
+        ]);
+
+        // Prior customer balance is 100.00
+        $this->assertEquals(100.00, $this->customer->fresh()->balance);
+
+        Livewire::test(\App\Livewire\Billing\EditInvoice::class, ['invoice' => $invoice])
+            ->assertSet('box_number', 'PTY-12345')
+            ->set('items', [
+                [
+                    'description' => 'Updated Item',
+                    'quantity' => 1,
+                    'unit_price' => 30.00,
+                    'total' => 30.00
+                ]
+            ])
+            ->set('tax_percent', 0)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        // New total is 30.00
+        // Old total was 55.00
+        // Difference is -25.00
+        // New balance: 100.00 - 25.00 = 75.00
+        $this->assertEquals(75.00, $this->customer->fresh()->balance);
+        $this->assertEquals(30.00, $invoice->fresh()->total);
+    }
 }

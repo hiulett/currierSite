@@ -8,41 +8,67 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Illuminate\Support\Facades\DB;
 
-class CreateInvoice extends Component
+class EditInvoice extends Component
 {
+    public Invoice $invoice;
     public $box_number;
     public $found_customer = null;
     public $items = [];
     public $notes;
-    public $tax_percent = 0; // Cambiado de 7 a 0 por defecto
+    public $tax_percent = 0;
     public $selectedPackages = [];
     public $availablePackages = [];
     public $customer_search = '';
     public $customer_results = [];
 
-    public function mount()
+    public function mount(Invoice $invoice)
     {
-        $this->addItem();
-
-        $tenant = \App\Models\Tenant::current();
-        if ($tenant) {
-            // Intentar leer 'default_tax', si no existe buscar 'tax_rate' (compatibilidad con seeder), si no 0.
-            $this->tax_percent = $tenant->settings_json['default_tax'] ?? ($tenant->settings_json['tax_rate'] ?? 0);
-        }
-
-        if (request()->has('customer')) {
-            $customer = Customer::find(request('customer'));
-            if ($customer) {
-                $this->found_customer = $customer;
-                $this->box_number = $customer->box_number;
+        $this->invoice = $invoice;
+        $this->found_customer = $invoice->customer;
+        $this->box_number = $this->found_customer ? $this->found_customer->box_number : '';
+        $this->notes = $invoice->notes;
+        
+        // Calculate tax percent based on existing values or fallback to default settings
+        if ($invoice->subtotal > 0) {
+            $this->tax_percent = round(($invoice->tax / $invoice->subtotal) * 100, 2);
+        } else {
+            $tenant = \App\Models\Tenant::current();
+            if ($tenant) {
+                $this->tax_percent = $tenant->settings_json['default_tax'] ?? ($tenant->settings_json['tax_rate'] ?? 0);
             }
         }
+
+        // Load items into array format
+        $this->items = $invoice->items->map(fn($item) => [
+            'id' => $item->id,
+            'package_id' => $item->package_id,
+            'description' => $item->description,
+            'quantity' => $item->quantity,
+            'unit_price' => $item->unit_price,
+            'total' => $item->total,
+            'provider_cost' => $item->package?->provider_cost ?? 0
+        ])->toArray();
+
+        if (empty($this->items)) {
+            $this->addItem();
+        }
+
+        // Set selected packages
+        $this->selectedPackages = collect($this->items)
+            ->pluck('package_id')
+            ->filter()
+            ->toArray();
+
+        $this->loadAvailablePackages();
     }
 
     public function updatedBoxNumber($value)
     {
         $this->found_customer = Customer::where('box_number', $value)->first();
         if ($this->found_customer) {
+            $this->items = [];
+            $this->addItem();
+            $this->selectedPackages = [];
             $this->loadAvailablePackages();
         } else {
             $this->availablePackages = [];
@@ -70,14 +96,31 @@ class CreateInvoice extends Component
             $this->box_number = $this->found_customer->box_number;
             $this->customer_search = '';
             $this->customer_results = [];
+            $this->items = [];
+            $this->addItem();
+            $this->selectedPackages = [];
             $this->loadAvailablePackages();
         }
     }
 
     public function loadAvailablePackages()
     {
+        if (!$this->found_customer) {
+            $this->availablePackages = [];
+            return;
+        }
+
+        $currentPackageIds = collect($this->items)
+            ->pluck('package_id')
+            ->filter()
+            ->toArray();
+
+        // Get customer packages that are either not delivered/cancelled OR already linked to this invoice
         $this->availablePackages = \App\Models\Package::where('customer_id', $this->found_customer->id)
-            ->whereNotIn('status', ['delivered', 'cancelled'])
+            ->where(function($query) use ($currentPackageIds) {
+                $query->whereNotIn('status', ['delivered', 'cancelled'])
+                      ->orWhereIn('id', $currentPackageIds);
+            })
             ->get();
     }
 
@@ -155,6 +198,12 @@ class CreateInvoice extends Component
         ]);
 
         DB::transaction(function() {
+            // Keep old values to adjust customer balance
+            $oldCustomerId = $this->invoice->customer_id;
+            $oldTotal = $this->invoice->total;
+            $oldStatus = $this->invoice->status;
+            $oldCustomer = $this->invoice->customer;
+
             $subtotal = collect($this->items)->sum('total');
             $tax = $subtotal * ($this->tax_percent / 100);
             $total = $subtotal + $tax;
@@ -172,22 +221,28 @@ class CreateInvoice extends Component
             $types = array_unique($types);
             $serviceType = count($types) === 1 ? $types[0] : (count($types) > 1 ? 'mixed' : 'air');
 
-            $invoice = Invoice::create([
+            // Reset client_total_billed for old packages attached to this invoice
+            $oldPackageIds = $this->invoice->items()->whereNotNull('package_id')->pluck('package_id')->toArray();
+            \App\Models\Package::whereIn('id', $oldPackageIds)->update(['client_total_billed' => 0]);
+
+            // Clear previous items
+            $this->invoice->items()->delete();
+
+            // Update invoice fields
+            $this->invoice->update([
                 'customer_id' => $this->found_customer->id,
-                'number' => 'INV-' . date('Ymd') . '-' . rand(100, 999),
                 'subtotal' => $subtotal,
                 'tax' => $tax,
                 'total' => $total,
-                'status' => 'unpaid',
                 'service_type' => $serviceType,
-                'due_date' => now()->addDays(7),
                 'notes' => $this->notes,
             ]);
 
+            // Create new items and set package billed totals
             foreach ($this->items as $item) {
                 InvoiceItem::create([
                     'tenant_id' => session('tenant_id'),
-                    'invoice_id' => $invoice->id,
+                    'invoice_id' => $this->invoice->id,
                     'package_id' => $item['package_id'] ?? null,
                     'description' => $item['description'],
                     'quantity' => $item['quantity'],
@@ -202,22 +257,29 @@ class CreateInvoice extends Component
                 }
             }
 
-            // Increment customer balance
-            if ($this->found_customer) {
-                $this->found_customer->increment('balance', $total);
+            // Adjust Customer Balance if invoice is unpaid
+            if ($oldStatus === 'unpaid') {
+                if ($oldCustomerId != $this->found_customer->id) {
+                    if ($oldCustomer) {
+                        $oldCustomer->decrement('balance', $oldTotal);
+                    }
+                    if ($this->found_customer) {
+                        $this->found_customer->increment('balance', $total);
+                    }
+                } else {
+                    if ($this->found_customer) {
+                        $this->found_customer->increment('balance', $total - $oldTotal);
+                    }
+                }
             }
         });
 
-        $this->dispatch('invoice-saved');
-
-        session()->flash('message', 'Factura generada exitosamente.');
-        // return redirect()->route('billing.index'); // We don't want to redirect anymore
-        $this->reset(['box_number', 'found_customer', 'items', 'notes', 'customer_search', 'customer_results']);
-        $this->addItem();
+        session()->flash('message', 'Factura ' . $this->invoice->number . ' actualizada exitosamente.');
+        return redirect()->route('billing.index');
     }
 
     public function render()
     {
-        return view('livewire.billing.create-invoice')->layout('components.layouts.app');
+        return view('livewire.billing.edit-invoice')->layout('components.layouts.app');
     }
 }
