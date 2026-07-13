@@ -28,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'role',
         'last_seen_at',
+        'is_active',
     ];
 
     public function user_role()
@@ -65,6 +66,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'last_seen_at' => 'datetime',
+            'is_active' => 'boolean',
         ];
     }
 

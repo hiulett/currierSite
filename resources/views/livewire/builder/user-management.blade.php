@@ -18,6 +18,13 @@
         </div>
     @endif
 
+    @if (session()->has('error'))
+        <div class="alert alert-danger alert-dismissible shadow-sm mb-4" role="alert">
+            <div class="alert-message"><strong>¡Error!</strong> {{ session('error') }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="row">
         <div class="col-12">
             <div class="card border-0 shadow-sm overflow-hidden">
@@ -44,6 +51,12 @@
                                         <i class="align-middle ms-1" data-feather="{{ $sortDirection === 'asc' ? 'chevron-up' : 'chevron-down' }}" style="width: 14px; height: 14px;"></i>
                                     @endif
                                 </th>
+                                <th class="text-center cursor-pointer" wire:click="sortBy('is_active')">
+                                    Estado / Contraseña
+                                    @if($sortField === 'is_active')
+                                        <i class="align-middle ms-1" data-feather="{{ $sortDirection === 'asc' ? 'chevron-up' : 'chevron-down' }}" style="width: 14px; height: 14px;"></i>
+                                    @endif
+                                </th>
                                 <th class="text-center cursor-pointer" wire:click="sortBy('updated_at')">
                                     Última Conexión
                                     @if($sortField === 'updated_at')
@@ -62,7 +75,12 @@
                                                 {{ substr($user->name, 0, 1) }}
                                             </div>
                                             <div>
-                                                <div class="fw-black text-dark leading-tight">{{ $user->name }}</div>
+                                                <div class="fw-black text-dark leading-tight">
+                                                    {{ $user->name }}
+                                                    @if(auth()->id() === $user->id)
+                                                        <span class="badge bg-primary-light text-primary fw-black ms-1" style="font-size: 0.55rem;">TÚ</span>
+                                                    @endif
+                                                </div>
                                                 <div class="text-muted xsmall font-bold">{{ $user->email }}</div>
                                             </div>
                                         </div>
@@ -76,20 +94,56 @@
                                             <span class="text-muted xsmall italic">Sin rol asignado</span>
                                         @endif
                                     </td>
+                                    <td class="text-center">
+                                        @if($user->is_active)
+                                            <span class="badge bg-success-light text-success fw-black text-uppercase" style="font-size: 0.6rem;">Activo</span>
+                                        @else
+                                            <span class="badge bg-danger-light text-danger fw-black text-uppercase" style="font-size: 0.6rem;">Inactivo</span>
+                                        @endif
+
+                                        @if($user->must_change_password)
+                                            <span class="badge bg-warning-light text-warning fw-black text-uppercase ms-1" style="font-size: 0.6rem;" title="Debe cambiar contraseña en el primer inicio">Reinicio</span>
+                                        @endif
+                                    </td>
                                     <td class="text-center text-muted small">
-                                        {{ $user->updated_at->diffForHumans() }}
+                                        {{ $user->updated_at ? $user->updated_at->diffForHumans() : 'Nunca' }}
                                     </td>
                                     <td class="pe-4 text-end">
                                         <div class="btn-group">
+                                            <!-- Toggle Active State -->
+                                            <button wire:click="toggleActive({{ $user->id }})" 
+                                                    class="btn btn-sm {{ $user->is_active ? 'btn-outline-danger' : 'btn-outline-success' }} border shadow-sm" 
+                                                    title="{{ $user->is_active ? 'Desactivar' : 'Activar' }}"
+                                                    @if(auth()->id() === $user->id) disabled @endif>
+                                                <i class="align-middle" data-feather="{{ $user->is_active ? 'user-minus' : 'user-check' }}"></i>
+                                            </button>
+
+                                            <!-- Reset Password & Email -->
+                                            <button wire:click="resetAndSendPassword({{ $user->id }})" 
+                                                    class="btn btn-sm btn-light border shadow-sm" 
+                                                    title="Restablecer y enviar contraseña por correo"
+                                                    onclick="confirm('¿Estás seguro de que deseas restablecer la contraseña de este usuario y enviársela por correo?') || event.stopImmediatePropagation()">
+                                                <i class="align-middle text-warning" data-feather="key"></i>
+                                            </button>
+
+                                            <!-- Edit -->
                                             <button wire:click="editUser({{ $user->id }})" class="btn btn-sm btn-light border shadow-sm" title="Editar">
                                                 <i class="align-middle text-dark" data-feather="edit-2"></i>
+                                            </button>
+
+                                            <!-- Delete -->
+                                            <button wire:click="confirmDeleteUser({{ $user->id }})" 
+                                                    class="btn btn-sm btn-light border shadow-sm text-danger" 
+                                                    title="Eliminar"
+                                                    @if(auth()->id() === $user->id) disabled @endif>
+                                                <i class="align-middle" data-feather="trash-2"></i>
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center py-5 text-muted italic">No hay usuarios administrativos registrados.</td>
+                                    <td colspan="5" class="text-center py-5 text-muted italic">No hay usuarios administrativos registrados.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -132,12 +186,63 @@
                                 </select>
                                 @error('role_id') <div class="text-danger xsmall mt-1">{{ $message }}</div> @enderror
                             </div>
+                            
+                            <!-- Opción Generación de Contraseña -->
+                            @if(!$is_editing)
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="autoGeneratePassword" wire:model.live="auto_generate_password">
+                                        <label class="form-check-label fw-bold text-dark small" for="autoGeneratePassword">
+                                            Generar contraseña automáticamente
+                                        </label>
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            <!-- Input Contraseña (oculto si se auto-genera) -->
+                            @if($is_editing || !$auto_generate_password)
+                                <div class="col-12">
+                                    <label class="form-label font-black text-uppercase small text-muted">
+                                        {{ $is_editing ? 'Nueva Contraseña (Opcional)' : 'Contraseña' }}
+                                    </label>
+                                    <input type="password" wire:model="password" class="form-control border-2">
+                                    @error('password') <div class="text-danger xsmall mt-1">{{ $message }}</div> @enderror
+                                    @if($is_editing)
+                                        <div class="text-muted xsmall mt-1">Deja este campo en blanco si no deseas cambiar la contraseña.</div>
+                                    @endif
+                                </div>
+                            @endif
+                            
+                            <!-- Enviar credenciales por correo -->
+                            @if(!$is_editing || $password)
+                                <div class="col-12">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="sendCredentialsEmail" wire:model="send_credentials_email">
+                                        <label class="form-check-label fw-bold text-dark small" for="sendCredentialsEmail">
+                                            Enviar credenciales por correo electrónico
+                                        </label>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Forzar cambio de contraseña -->
                             <div class="col-12">
-                                <label class="form-label font-black text-uppercase small text-muted">
-                                    {{ $is_editing ? 'Nueva Contraseña (Opcional)' : 'Contraseña' }}
-                                </label>
-                                <input type="password" wire:model="password" class="form-control border-2">
-                                @error('password') <div class="text-danger xsmall mt-1">{{ $message }}</div> @enderror
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="mustChangePassword" wire:model="must_change_password">
+                                    <label class="form-check-label fw-bold text-dark small" for="mustChangePassword">
+                                        Forzar cambio de contraseña en el primer inicio
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Estado Activo/Inactivo -->
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="isActive" wire:model="is_active" @if($is_editing && auth()->id() === $selected_user_id) disabled @endif>
+                                    <label class="form-check-label fw-bold text-dark small" for="isActive">
+                                        Usuario Activo (Permite el inicio de sesión)
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -152,12 +257,39 @@
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 1rem;">
+                <div class="modal-header bg-danger text-white py-3">
+                    <h5 class="modal-title fw-black text-uppercase small text-white">Eliminar Colaborador</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <i data-feather="alert-triangle" class="text-danger mb-3" style="width: 48px; height: 48px;"></i>
+                    <p class="mb-0 fw-bold">¿Estás seguro de que deseas eliminar a este colaborador de manera permanente?</p>
+                    <p class="text-muted small mt-2">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer bg-light p-3 justify-content-center">
+                    <button type="button" class="btn btn-light border fw-bold" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" wire:click="deleteUser" class="btn btn-danger fw-black">ELIMINAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         window.addEventListener('open-user-modal', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('userModal')).show();
         });
         window.addEventListener('close-user-modal', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('userModal')).hide();
+        });
+        window.addEventListener('open-delete-modal', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteModal')).show();
+        });
+        window.addEventListener('close-delete-modal', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteModal')).hide();
         });
     </script>
 </div>

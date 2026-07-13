@@ -104,6 +104,11 @@ class FortifyServiceProvider extends ServiceProvider
                 // 2. Verificar contraseña
                 if (\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
 
+                    // 2.5 Verificar si el usuario está activo
+                    if (!$user->is_active) {
+                        continue; // Si no está activo, no puede iniciar sesión (o saltar al siguiente si hay duplicados por tenant)
+                    }
+
                     // 3. Si entramos por un link de agencia específico, validar integridad
                     if ($sessionTenantId && $user->tenant_id && (int)$user->tenant_id !== (int)$sessionTenantId) {
                         continue; // Podría haber otro usuario con el mismo email en esta agencia
