@@ -4,8 +4,13 @@ namespace App\Livewire\Billing;
 
 use Livewire\Component;
 use App\Models\DriverTrip;
+use App\Models\Tenant;
+use App\Exports\DriverTripExport;
 use Livewire\WithPagination;
 use App\Traits\WithSorting;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 class DriverTripList extends Component
 {
@@ -55,6 +60,78 @@ class DriverTripList extends Component
     {
         $this->sortField = 'date';
         $this->sortDirection = 'desc';
+
+        // Default: filtrar por mes corriente si no hay filtros en query string
+        if (empty($this->filter_date_from) && empty($this->filter_date_to)) {
+            $this->filter_date_from = now()->startOfMonth()->format('Y-m-d');
+            $this->filter_date_to = now()->endOfMonth()->format('Y-m-d');
+        }
+    }
+
+    public function clearFilters()
+    {
+        $this->search = '';
+        $this->filter_invoice_status = '';
+        $this->filter_driver_payment_status = '';
+        $this->filter_date_from = now()->startOfMonth()->format('Y-m-d');
+        $this->filter_date_to = now()->endOfMonth()->format('Y-m-d');
+        $this->resetPage();
+    }
+
+    public function exportExcel()
+    {
+        $query = $this->getFilteredQuery();
+        $trips = $this->applySorting($query)->get();
+        $tenant = Tenant::find(session('tenant_id'));
+        $currency = $tenant->settings_json['currency'] ?? 'USD';
+
+        return Excel::download(
+            new DriverTripExport($trips, $currency),
+            'Fletes_' . now()->format('Y-m-d') . '.xlsx'
+        );
+    }
+
+    public function exportPdf()
+    {
+        $query = $this->getFilteredQuery();
+        $trips = $this->applySorting($query)->get();
+        $tenant = Tenant::find(session('tenant_id'));
+        $currency = $tenant->settings_json['currency'] ?? 'USD';
+
+        $stats = [
+            'total_outsourcing' => (float) $trips->sum('outsourcing_cost'),
+            'total_client' => (float) $trips->sum('final_client_price'),
+            'total_revenue' => (float) $trips->sum('revenue'),
+        ];
+
+        $dateRange = ($this->filter_date_from && $this->filter_date_to)
+            ? Carbon::parse($this->filter_date_from)->format('d/m/Y') . ' - ' . Carbon::parse($this->filter_date_to)->format('d/m/Y')
+            : 'Todos los períodos';
+
+        // Logo en base64 para DomPDF
+        $logoBase64 = null;
+        try {
+            $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
+            if ($logoUrl) {
+                $logoData = @file_get_contents($logoUrl);
+                if ($logoData) {
+                    $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
+                    $logoBase64 = 'data:image/' . ($type ?: 'png') . ';base64,' . base64_encode($logoData);
+                }
+            }
+        } catch (\Exception $e) {
+            // Logo opcional, continuar sin él
+        }
+
+        $pdf = Pdf::loadView('billing.driver-trip-report-pdf', compact(
+            'trips', 'stats', 'currency', 'dateRange', 'tenant', 'logoBase64'
+        ));
+        $pdf->setPaper('letter', 'landscape');
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            'Reporte_Fletes_' . now()->format('Y-m-d') . '.pdf'
+        );
     }
 
     public function initForm()
@@ -180,13 +257,31 @@ class DriverTripList extends Component
 
         $trips = $this->applySorting($baseQuery)->paginate(15);
 
-        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $tenant = Tenant::find(session('tenant_id'));
         $currency = $tenant->settings_json['currency'] ?? 'USD';
+
+        // Etiqueta del período activo para mostrar en la UI
+        $isCurrentMonth = ($this->filter_date_from === now()->startOfMonth()->format('Y-m-d')
+            && $this->filter_date_to === now()->endOfMonth()->format('Y-m-d'));
+
+        if ($isCurrentMonth) {
+            $dateRangeLabel = ucfirst(now()->translatedFormat('F Y'));
+        } elseif ($this->filter_date_from && $this->filter_date_to) {
+            $dateRangeLabel = Carbon::parse($this->filter_date_from)->format('d/m/Y') . ' — ' . Carbon::parse($this->filter_date_to)->format('d/m/Y');
+        } elseif ($this->filter_date_from) {
+            $dateRangeLabel = 'Desde ' . Carbon::parse($this->filter_date_from)->format('d/m/Y');
+        } elseif ($this->filter_date_to) {
+            $dateRangeLabel = 'Hasta ' . Carbon::parse($this->filter_date_to)->format('d/m/Y');
+        } else {
+            $dateRangeLabel = 'Todos los períodos';
+        }
 
         return view('livewire.billing.driver-trip-list', [
             'trips' => $trips,
             'stats' => $stats,
             'currency' => $currency,
+            'dateRangeLabel' => $dateRangeLabel,
+            'isCurrentMonth' => $isCurrentMonth,
         ])->layout('components.layouts.app');
     }
 }

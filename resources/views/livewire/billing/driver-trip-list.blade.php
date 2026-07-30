@@ -58,20 +58,54 @@
     <div class="card border-0 shadow-sm" style="border-radius: 12px;">
         <div class="card-header bg-white border-bottom py-3">
             <div class="row g-3 align-items-center">
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <h5 class="card-title mb-0 uppercase font-black small text-muted" style="letter-spacing: 0.05em;">Planilla de Control de Fletes y Viajes</h5>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <button wire:click="openCreateModal" class="btn btn-primary fw-black text-uppercase font-bold small">
-                        <i class="align-middle me-1" data-feather="plus"></i> Nuevo Flete / Viaje
-                    </button>
+                <div class="col-md-7 text-md-end">
+                    <div class="d-inline-flex align-items-center gap-2">
+                        {{-- Indicador del período activo --}}
+                        <span class="badge bg-primary bg-opacity-10 text-primary font-bold d-none d-lg-inline-block" style="font-size: 0.72rem; padding: 6px 12px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1" style="vertical-align: -1px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            {{ $dateRangeLabel }}
+                        </span>
+
+                        @if(!$isCurrentMonth)
+                            <button wire:click="clearFilters" class="btn btn-sm btn-outline-secondary text-uppercase font-bold" style="font-size: 0.65rem;" title="Restablecer al mes actual">
+                                <i class="align-middle" data-feather="rotate-ccw" style="width: 12px; height: 12px;"></i> Mes Actual
+                            </button>
+                        @endif
+
+                        {{-- Dropdown de exportación --}}
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-dark text-uppercase font-bold dropdown-toggle" style="font-size: 0.65rem;" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="align-middle me-1" data-feather="download" style="width: 13px; height: 13px;"></i> Exportar
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                <li>
+                                    <a class="dropdown-item small fw-bold" href="#" wire:click.prevent="exportExcel">
+                                        <i class="align-middle me-2 text-success" data-feather="file-text" style="width: 14px; height: 14px;"></i> Excel (.xlsx)
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item small fw-bold" href="#" wire:click.prevent="exportPdf">
+                                        <i class="align-middle me-2 text-danger" data-feather="file" style="width: 14px; height: 14px;"></i> PDF Reporte
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button wire:click="openCreateModal" class="btn btn-primary fw-black text-uppercase font-bold small">
+                            <i class="align-middle me-1" data-feather="plus"></i> Nuevo Flete / Viaje
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Filters Section -->
         <div class="card-body bg-light border-bottom p-3">
-            <div class="row g-3">
+            <div class="row g-2 align-items-center">
                 <div class="col-md-3">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text bg-white border-0"><i data-feather="search" style="width: 14px;"></i></span>
@@ -101,6 +135,17 @@
                         <input type="date" wire:model.live="filter_date_to" class="form-control border-0">
                     </div>
                 </div>
+            </div>
+            {{-- Indicador móvil del período (visible solo en pantallas pequeñas) --}}
+            <div class="d-lg-none mt-2">
+                <span class="badge bg-primary bg-opacity-10 text-primary font-bold" style="font-size: 0.7rem; padding: 5px 10px;">
+                    📅 {{ $dateRangeLabel }}
+                </span>
+                @if(!$isCurrentMonth)
+                    <button wire:click="clearFilters" class="btn btn-sm btn-outline-secondary text-uppercase font-bold ms-1" style="font-size: 0.6rem;">
+                        <i class="align-middle" data-feather="rotate-ccw" style="width: 11px; height: 11px;"></i> Mes Actual
+                    </button>
+                @endif
             </div>
         </div>
 
