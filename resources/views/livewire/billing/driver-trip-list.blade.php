@@ -64,7 +64,7 @@
                 <div class="col-md-7 text-md-end">
                     <div class="d-inline-flex align-items-center gap-2">
                         {{-- Indicador del período activo --}}
-                        <span class="badge bg-primary bg-opacity-10 text-primary font-bold d-none d-lg-inline-block" style="font-size: 0.72rem; padding: 6px 12px;">
+                        <span class="badge bg-dark text-white font-bold d-none d-lg-inline-block" style="font-size: 0.72rem; padding: 6px 12px;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1" style="vertical-align: -1px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                             {{ $dateRangeLabel }}
                         </span>
@@ -138,7 +138,7 @@
             </div>
             {{-- Indicador móvil del período (visible solo en pantallas pequeñas) --}}
             <div class="d-lg-none mt-2">
-                <span class="badge bg-primary bg-opacity-10 text-primary font-bold" style="font-size: 0.7rem; padding: 5px 10px;">
+                <span class="badge bg-dark text-white font-bold" style="font-size: 0.7rem; padding: 5px 10px;">
                     📅 {{ $dateRangeLabel }}
                 </span>
                 @if(!$isCurrentMonth)
