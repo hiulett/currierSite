@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class QuotationSent extends Mailable implements ShouldQueue
+class QuotationSent extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -21,6 +21,7 @@ class QuotationSent extends Mailable implements ShouldQueue
      */
     public function __construct(\App\Models\Quotation $quotation)
     {
+        $quotation->loadMissing(['customer.user', 'tenant', 'items']);
         $this->quotation = $quotation;
     }
 
@@ -94,14 +95,25 @@ class QuotationSent extends Mailable implements ShouldQueue
         try {
             $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
             if ($logoUrl) {
-                $logoData = file_get_contents($logoUrl);
+                $logoData = null;
+                if (str_contains($logoUrl, 'localhost') || str_contains($logoUrl, '127.0.0.1')) {
+                    $parsed = parse_url($logoUrl, PHP_URL_PATH);
+                    $localPath = public_path($parsed);
+                    if ($parsed && file_exists($localPath)) {
+                        $logoData = file_get_contents($localPath);
+                    }
+                }
+                if (!$logoData) {
+                    $logoData = @file_get_contents($logoUrl);
+                }
                 if ($logoData) {
                     $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
                     $logoBase64 = 'data:image/' . ($type ?: 'png') . ';base64,' . base64_encode($logoData);
                 }
             }
-        } catch (\Exception $e) {}
-            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Could not convert logo to base64 for email: ' . $e->getMessage());
+        }
 
         $currency = $tenant->settings_json['currency'] ?? 'USD';
         

@@ -45,7 +45,7 @@ class QuotationList extends Component
 
     public function sendEmail($quotationId)
     {
-        $quotation = Quotation::with('customer.user', 'tenant')->find($quotationId);
+        $quotation = Quotation::with(['customer.user', 'tenant', 'items'])->find($quotationId);
         if (!$quotation) {
             session()->flash('error', 'Cotización no encontrada.');
             return;
