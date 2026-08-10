@@ -86,12 +86,14 @@ class CreateQuotation extends Component
 
     public function updatedSearchCustomer()
     {
+        $this->customer_id = null;
         $this->searchCustomers();
     }
 
     public function updatedIsRegistered($value)
     {
         $this->is_registered = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+        $this->resetValidation();
     }
 
     public function searchCustomers()
@@ -111,6 +113,7 @@ class CreateQuotation extends Component
         $this->customer_id = $id;
         $this->search_customer = $name;
         $this->customers = [];
+        $this->resetValidation('customer_id');
     }
 
     public function addItem()
@@ -130,7 +133,8 @@ class CreateQuotation extends Component
 
     private function getCurrentRate()
     {
-        $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
+        $tenantId = session('tenant_id') ?? \App\Models\Tenant::first()?->id;
+        $tenant = \App\Models\Tenant::find($tenantId) ?? \App\Models\Tenant::first();
         $settings = $tenant->settings_json ?? [];
         return $this->service_type === 'maritime' ? ($settings['maritime_rate'] ?? 1.50) : ($settings['air_rate'] ?? 2.50);
     }
@@ -178,6 +182,8 @@ class CreateQuotation extends Component
 
     public function save()
     {
+        $this->is_registered = filter_var($this->is_registered, FILTER_VALIDATE_BOOLEAN);
+
         $rules = [
             'items' => 'required|array|min:1',
             'items.*.description' => 'required|string|max:255',
@@ -193,10 +199,22 @@ class CreateQuotation extends Component
             $rules['client_email'] = 'required|email|max:255';
         }
 
-        $this->validate($rules);
+        $messages = [
+            'customer_id.required' => 'Por favor busca y selecciona un cliente registrado de la lista desplegable.',
+            'customer_id.exists' => 'El cliente seleccionado no es válido.',
+            'client_name.required' => 'El nombre del cliente o empresa es obligatorio.',
+            'client_email.required' => 'El correo electrónico del cliente es obligatorio.',
+            'client_email.email' => 'Ingrese una dirección de correo electrónico válida.',
+            'items.required' => 'Debe agregar al menos un artículo a la cotización.',
+            'items.min' => 'Debe agregar al menos un artículo a la cotización.',
+            'items.*.description.required' => 'La descripción del artículo es obligatoria en todos los renglones.',
+            'items.*.quantity.min' => 'La cantidad de cada artículo debe ser mayor a 0.',
+        ];
+
+        $this->validate($rules, $messages);
 
         DB::transaction(function () {
-            $tenantId = session('tenant_id');
+            $tenantId = session('tenant_id') ?? \App\Models\Tenant::first()?->id;
             $fullName = $this->is_registered ? null : trim($this->client_name . ' ' . $this->client_lastname);
 
             if ($this->quotation_id) {
@@ -214,9 +232,26 @@ class CreateQuotation extends Component
                 QuotationItem::where('quotation_id', $quotation->id)->delete();
             } else {
                 $prefix = 'COT-';
-                $lastQuotation = Quotation::where('tenant_id', $tenantId)->latest('id')->first();
-                $nextNumber = $lastQuotation ? intval(str_replace($prefix, '', $lastQuotation->number)) + 1 : 1;
+                
+                // Find latest number starting with COT- that has a numeric suffix
+                $lastQuotation = Quotation::withoutGlobalScopes()
+                    ->where('tenant_id', $tenantId)
+                    ->where('number', 'like', $prefix . '%')
+                    ->latest('id')
+                    ->first();
+
+                $nextNumber = 1;
+                if ($lastQuotation && preg_match('/COT-(\d+)/', $lastQuotation->number, $matches)) {
+                    $nextNumber = intval($matches[1]) + 1;
+                }
+
                 $number = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+
+                // Collision guard: ensure unique number
+                while (Quotation::withoutGlobalScopes()->where('number', $number)->exists()) {
+                    $nextNumber++;
+                    $number = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+                }
 
                 $quotation = Quotation::create([
                     'tenant_id' => $tenantId,

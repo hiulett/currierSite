@@ -1,5 +1,16 @@
 <div>
     <div class="p-4 p-md-5">
+        @if ($errors->any())
+            <div class="alert alert-danger shadow-sm mb-4 border-0 rounded-3">
+                <div class="fw-bold mb-1"><i data-feather="alert-circle" class="me-1"></i> No se pudo guardar la cotización. Por favor corrige los siguientes errores:</div>
+                <ul class="mb-0 ps-3 small">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form wire:submit.prevent="save">
             <!-- Header Section -->
             <div class="row mb-5">
@@ -41,6 +52,11 @@
                                             No se encontraron coincidencias.
                                         </div>
                                     @endforelse
+                                </div>
+                            @endif
+                            @if($customer_id)
+                                <div class="mt-2 text-success small fw-bold d-flex align-items-center">
+                                    <i data-feather="check-circle" class="me-1" style="width: 14px;"></i> Cliente seleccionado correctamente
                                 </div>
                             @endif
                             @error('customer_id') <div class="text-danger small mt-2 fw-bold"><i data-feather="alert-circle" style="width: 14px;"></i> {{ $message }}</div> @enderror
