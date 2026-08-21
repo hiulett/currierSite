@@ -6,10 +6,10 @@ class DatabaseHelper
 {
     /**
      * Returns a database-specific date format string for raw queries.
-     * Supports SQLite (strftime) and MySQL (DATE_FORMAT).
+     * Supports SQLite (strftime), MySQL/MariaDB (DATE_FORMAT) and PostgreSQL.
      *
      * @param string $column The column name
-     * @param string $format 'm' for month, 'Y-m' for year-month, etc.
+     * @param string $format SQLite style format: 'm' for month, 'Y-m' for year-month, etc.
      * @return string
      */
     public static function formatMonth($column = 'created_at', $format = '%m')
@@ -20,8 +20,13 @@ class DatabaseHelper
             return "strftime('{$format}', $column)";
         }
 
-        // MySQL equivalent
-        $mysqlFormat = str_replace('%', '', $format); // Convert %m to m
-        return "DATE_FORMAT($column, '%{$mysqlFormat}')";
+        if ($driver === 'pgsql' || $driver === 'postgres') {
+            // Convert SQLite specifiers to PostgreSQL (to_char)
+            $pgFormat = str_replace(['%Y', '%m', '%d'], ['YYYY', 'MM', 'DD'], $format);
+            return "to_char($column, '$pgFormat')";
+        }
+
+        // MySQL / MariaDB use DATE_FORMAT with the same % specifiers
+        return "DATE_FORMAT($column, '{$format}')";
     }
 }

@@ -120,8 +120,9 @@ class QuotationList extends Component
 
         // Prepare monthly data for Bar Chart (Last 6 months)
         $sixMonthsAgo = now()->subMonths(5)->startOfMonth();
+        $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%Y-%m');
         $monthlyData = Quotation::where('created_at', '>=', $sixMonthsAgo)
-            ->selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, COUNT(*) as count')
+            ->selectRaw("$monthFormat as month, COUNT(*) as count")
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('count', 'month')->toArray();

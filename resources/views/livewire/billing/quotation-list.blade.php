@@ -280,11 +280,15 @@
             myModal.show();
         }
 
-            window.addEventListener('quotation-saved', event => {
-                bootstrap.Modal.getOrCreateInstance(document.getElementById('modalCreateQuotation')).hide();
-            });
-
             document.addEventListener('livewire:initialized', () => {
+                // Close the create/edit modal when a quotation is saved
+                Livewire.on('quotation-saved', () => {
+                    const modalEl = document.getElementById('modalCreateQuotation');
+                    if (modalEl) {
+                        bootstrap.Modal.getOrCreateInstance(modalEl).hide();
+                    }
+                });
+
                 const initCharts = () => {
                     const ctxBar = document.getElementById('barChart');
                     const ctxPie = document.getElementById('pieChart');
