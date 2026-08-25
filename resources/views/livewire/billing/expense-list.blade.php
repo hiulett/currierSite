@@ -6,7 +6,7 @@
             <p class="text-muted small">Controle los costos fijos, variables y operativos de la empresa.</p>
         </div>
         <div class="col-12 col-md-6 text-md-end d-flex justify-content-md-end gap-2 align-items-center">
-            <button wire:click="$toggle('managing_categories')" class="btn btn-sm btn-light border shadow-sm fw-bold">
+            <button wire:click="openCategoryManager" class="btn btn-sm btn-light border shadow-sm fw-bold">
                 <i class="align-middle me-1" data-feather="settings"></i> CATEGORÍAS
             </button>
             <button wire:click="openCreateModal" class="btn btn-sm btn-danger shadow-sm fw-black uppercase">
@@ -163,7 +163,7 @@
                                     <button wire:click="editExpense({{ $exp->id }})" class="btn btn-sm btn-light border shadow-sm" title="Editar">
                                         <i class="align-middle text-primary" data-feather="edit-2"></i>
                                     </button>
-                                    <button onclick="confirm('¿Está seguro de eliminar este egreso?') || event.stopImmediatePropagation()" wire:click="deleteExpense({{ $exp->id }})" class="btn btn-sm btn-light border shadow-sm" title="Eliminar">
+                                    <button wire:click="deleteExpense({{ $exp->id }})" wire:confirm="¿Está seguro de eliminar este egreso?" class="btn btn-sm btn-light border shadow-sm" title="Eliminar">
                                         <i class="align-middle text-danger" data-feather="trash-2"></i>
                                     </button>
                                 </div>
@@ -185,14 +185,13 @@
     </div>
 
     <!-- Category Settings Panel (Modal) -->
-    @if($managing_categories)
-        <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
-                    <div class="modal-header bg-dark text-white p-4">
-                        <h5 class="modal-title uppercase font-black tracking-widest text-white">Gestionar Categorías de Gastos</h5>
-                        <button type="button" class="btn-close btn-close-white" wire:click="$set('managing_categories', false)"></button>
-                    </div>
+    <div class="modal fade" id="categoryModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
+                <div class="modal-header bg-dark text-white p-4">
+                    <h5 class="modal-title uppercase font-black tracking-widest text-white">Gestionar Categorías de Gastos</h5>
+                    <button type="button" class="btn-close btn-close-white" wire:click="closeCategoryModal"></button>
+                </div>
                     <div class="modal-body p-4 bg-light">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h6 class="fw-bold uppercase mb-0 small text-muted">Listado de Categorías</h6>
@@ -246,7 +245,7 @@
                                         <button wire:click="editCategory({{ $cat->id }})" class="btn btn-xs btn-light border py-0 px-2" title="Editar">
                                             <i class="align-middle text-primary" data-feather="edit-2" style="width: 12px;"></i>
                                         </button>
-                                        <button onclick="confirm('¿Desea eliminar esta categoría?') || event.stopImmediatePropagation()" wire:click="deleteCategory({{ $cat->id }})" class="btn btn-xs btn-light border py-0 px-2" title="Eliminar">
+                                        <button wire:click="deleteCategory({{ $cat->id }})" wire:confirm="¿Desea eliminar esta categoría?" class="btn btn-xs btn-light border py-0 px-2" title="Eliminar">
                                             <i class="align-middle text-danger" data-feather="trash-2" style="width: 12px;"></i>
                                         </button>
                                     </div>
@@ -255,22 +254,20 @@
                         </div>
                     </div>
                     <div class="modal-footer bg-white border-top-0 p-4 pt-0 d-flex justify-content-end">
-                        <button type="button" class="btn btn-dark fw-bold px-4" wire:click="$set('managing_categories', false)">CERRAR</button>
+                        <button type="button" class="btn btn-dark fw-bold px-4" wire:click="closeCategoryModal">CERRAR</button>
                     </div>
                 </div>
             </div>
         </div>
-    @endif
 
     <!-- Expense Modal (Create/Edit) -->
-    @if($creating_or_editing)
-        <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
-                    <div class="modal-header bg-danger text-white p-4">
-                        <h5 class="modal-title uppercase font-black tracking-widest text-white">{{ $expense_id ? 'Editar Egreso/Gasto' : 'Registrar Nuevo Egreso/Gasto' }}</h5>
-                        <button type="button" class="btn-close btn-close-white" wire:click="$set('creating_or_editing', false)"></button>
-                    </div>
+    <div class="modal fade" id="expenseModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
+                <div class="modal-header bg-danger text-white p-4">
+                    <h5 class="modal-title uppercase font-black tracking-widest text-white">{{ $expense_id ? 'Editar Egreso/Gasto' : 'Registrar Nuevo Egreso/Gasto' }}</h5>
+                    <button type="button" class="btn-close btn-close-white" wire:click="closeExpenseModal"></button>
+                </div>
                     <form wire:submit="saveExpense">
                         <div class="modal-body p-4 bg-light">
                             <div class="row g-3">
@@ -346,12 +343,26 @@
                             </div>
                         </div>
                         <div class="modal-footer bg-white border-top-0 p-4 pt-0 d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-light fw-bold" wire:click="$set('creating_or_editing', false)">CANCELAR</button>
+                            <button type="button" class="btn btn-light fw-bold" wire:click="closeExpenseModal">CANCELAR</button>
                             <button type="submit" class="btn btn-danger px-4 shadow-lg fw-black">GUARDAR GASTO</button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-    @endif
+
+    <script>
+        window.addEventListener('open-category-modal', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('categoryModal')).show();
+        });
+        window.addEventListener('close-category-modal', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('categoryModal')).hide();
+        });
+        window.addEventListener('open-expense-modal', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('expenseModal')).show();
+        });
+        window.addEventListener('close-expense-modal', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('expenseModal')).hide();
+        });
+    </script>
 </div>

@@ -73,10 +73,15 @@
                                 <input type="text" class="form-control bg-light border-0" wire:model="client_lastname" placeholder="Opcional">
                                 @error('client_lastname') <span class="text-danger xsmall fw-bold">{{ $message }}</span> @enderror
                             </div>
-                            <div class="col-12">
+                            <div class="col-md-6">
                                 <label class="form-label small text-muted fw-bold">Correo Electrónico</label>
                                 <input type="email" class="form-control bg-light border-0" wire:model="client_email" placeholder="correo@ejemplo.com">
                                 @error('client_email') <span class="text-danger xsmall fw-bold">{{ $message }}</span> @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted fw-bold">Teléfono / WhatsApp</label>
+                                <input type="text" class="form-control bg-light border-0" wire:model="client_phone" placeholder="+5076XXXXXXX">
+                                @error('client_phone') <span class="text-danger xsmall fw-bold">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     @endif

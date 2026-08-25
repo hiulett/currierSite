@@ -82,6 +82,22 @@
                 </div>
             </div>
 
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="card-title mb-0 uppercase font-black small"><i class="align-middle me-2 text-success" data-feather="message-circle"></i> Notificaciones WhatsApp</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="whatsappPdfEnabled" wire:model="whatsapp_pdf_enabled" style="width: 40px; height: 20px;">
+                        <label class="form-check-label fw-bold text-dark" for="whatsappPdfEnabled">Habilitar envío de PDF por WhatsApp (todos los tenants)</label>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        <strong>Desactivado (por defecto):</strong> las facturas y cotizaciones se envían como texto con enlace al portal del cliente.<br>
+                        <strong>Activado:</strong> se adjunta el documento PDF. Si la ventana de 24h de conversación está cerrada, el sistema cae automáticamente a la plantilla aprobada del tenant.
+                    </p>
+                </div>
+            </div>
+
             <div class="card bg-dark text-white shadow-lg">
                 <div class="card-body p-4 text-center">
                     <div class="mb-3">

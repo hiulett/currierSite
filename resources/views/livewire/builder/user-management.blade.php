@@ -122,7 +122,7 @@
                                             <button wire:click="resetAndSendPassword({{ $user->id }})" 
                                                     class="btn btn-sm btn-light border shadow-sm" 
                                                     title="Restablecer y enviar contraseña por correo"
-                                                    onclick="confirm('¿Estás seguro de que deseas restablecer la contraseña de este usuario y enviársela por correo?') || event.stopImmediatePropagation()">
+                                                    wire:confirm="¿Estás seguro de que deseas restablecer la contraseña de este usuario y enviársela por correo?">
                                                 <i class="align-middle text-warning" data-feather="key"></i>
                                             </button>
 

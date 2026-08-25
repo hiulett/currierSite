@@ -118,6 +118,8 @@
         $totalNavAlerts = $totalNavAlerts ?? 0;
     @endphp
 	<div class="wrapper">
+        @livewire('logistics.global-search')
+
 		<nav id="sidebar" class="sidebar js-sidebar">
 			<div class="sidebar-content js-simplebar">
 				<a class='sidebar-brand d-flex flex-column align-items-center py-4' href='{{ route('dashboard') }}'>
@@ -649,6 +651,11 @@
 
 				<div class="navbar-collapse collapse">
 					<ul class="navbar-nav navbar-align">
+						<li class="nav-item d-none d-md-block">
+							<a class="nav-icon" href="#" onclick="event.preventDefault(); Livewire.dispatch('global-search-toggle');" title="Búsqueda rápida (Ctrl+K)" aria-label="Búsqueda rápida">
+								<i class="align-middle" data-feather="search"></i>
+							</a>
+						</li>
 						<li class="nav-item dropdown">
 							<a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
 								<div class="position-relative">
@@ -832,6 +839,16 @@
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             })
+        });
+
+        // Global search shortcut (Ctrl/Cmd + K)
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                if (typeof Livewire !== 'undefined') {
+                    Livewire.dispatch('global-search-toggle');
+                }
+            }
         });
 
         // Locked feature interactive notice

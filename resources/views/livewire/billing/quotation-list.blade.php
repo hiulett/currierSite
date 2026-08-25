@@ -199,6 +199,7 @@
                                         'invoiced'   => 'Facturada',
                                     ][$quotation->status] ?? $quotation->status;
                                 @endphp
+                                <div class="d-flex align-items-center gap-1">
                                 <div class="dropdown">
                                     <button class="btn btn-sm text-white text-uppercase" style="background-color: {{ $statusColor }}; font-size: 0.65rem;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         {{ $statusLabel }} <i class="align-middle ms-1" data-feather="chevron-down" style="width: 12px; height: 12px;"></i>
@@ -214,6 +215,10 @@
                                         <li><a class="dropdown-item" href="#" wire:click.prevent="markAsStatus({{ $quotation->id }}, 'email_sent')"><i class="align-middle me-1" data-feather="mail" style="color: #0d9488; width: 14px;"></i> ✉ Correo Enviado</a></li>
                                     </ul>
                                 </div>
+                                @if($quotation->whatsapp_sent_at)
+                                    <span title="WhatsApp enviado el {{ $quotation->whatsapp_sent_at->format('d/m/Y H:i') }}" class="badge" style="font-size: 0.65rem; background-color: #25D366;">✆ Enviado</span>
+                                @endif
+                                </div>
                             </td>
                             <td class="pe-4 text-end">
                                 <div class="btn-group shadow-none">
@@ -222,6 +227,9 @@
                                     </a>
                                     <button wire:click="sendEmail({{ $quotation->id }})" class="btn btn-sm btn-light border" title="Enviar Email al Cliente">
                                         <i class="align-middle text-info" data-feather="mail" style="width: 14px;"></i>
+                                    </button>
+                                    <button wire:click="sendWhatsApp({{ $quotation->id }})" class="btn btn-sm btn-light border" title="Enviar por WhatsApp" aria-label="Enviar cotización {{ $quotation->number }} por WhatsApp">
+                                        <i class="align-middle text-success" data-feather="message-circle" style="width: 14px;"></i>
                                     </button>
                                     <button onclick="openQuotationModal({{ $quotation->id }})" class="btn btn-sm btn-light border" title="Editar Cotización">
                                         <i class="align-middle text-warning" data-feather="edit-2" style="width: 14px;"></i>

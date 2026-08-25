@@ -2,17 +2,20 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
-use App\Models\Tenant;
-use App\Models\Package;
-use App\Models\Invoice;
+use App\Helpers\DatabaseHelper;
 use App\Models\Customer;
+use App\Models\Invoice;
+use App\Models\Package;
+use App\Models\Tenant;
 use App\Models\Warehouse;
+use Livewire\Component;
 
 class ReportCenter extends Component
 {
     public $active_report = null;
+
     public $available_reports = [];
+
     public $report_data = [];
 
     public function mount()
@@ -51,7 +54,7 @@ class ReportCenter extends Component
     {
         switch ($slug) {
             case 'inventory_stock':
-                $this->report_data = Warehouse::withCount(['packages' => function($q) {
+                $this->report_data = Warehouse::withCount(['packages' => function ($q) {
                     $q->whereNotIn('status', ['delivered', 'cancelled']);
                 }])->get();
                 break;
@@ -89,7 +92,7 @@ class ReportCenter extends Component
                     ->get();
                 break;
             case 'volume_weight':
-                $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%Y-%m');
+                $monthFormat = DatabaseHelper::formatMonth('created_at', '%Y-%m');
                 $this->report_data = Package::selectRaw("$monthFormat as month, sum(weight) as total_weight, sum(volumetric_weight) as total_vlb")
                     ->groupBy('month')
                     ->orderBy('month', 'desc')
@@ -97,6 +100,94 @@ class ReportCenter extends Component
                     ->get();
                 break;
         }
+    }
+
+    public function exportReport()
+    {
+        if (! $this->active_report || empty($this->report_data)) {
+            session()->flash('error', 'Selecciona un reporte con datos para exportar.');
+
+            return;
+        }
+
+        $rows = $this->buildExportRows($this->active_report);
+        if (empty($rows)) {
+            session()->flash('error', 'No hay datos para exportar en este reporte.');
+
+            return;
+        }
+
+        $headings = array_keys($rows[0]);
+        $filename = 'Reporte_'.$this->active_report.'_'.now()->format('Y-m-d').'.csv';
+
+        return response()->streamDownload(function () use ($headings, $rows) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF"); // UTF-8 BOM para que Excel lo abra correctamente
+            fputcsv($handle, $headings);
+            foreach ($rows as $row) {
+                fputcsv($handle, array_values($row));
+            }
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
+    protected function buildExportRows($slug)
+    {
+        $rows = [];
+
+        foreach ($this->report_data as $item) {
+            switch ($slug) {
+                case 'inventory_stock':
+                    $rows[] = [
+                        'Bodega' => $item->name,
+                        'Paquetes en stock' => $item->packages_count,
+                    ];
+                    break;
+                case 'revenue_daily':
+                    $rows[] = [
+                        'Fecha' => $item->date,
+                        'Total recaudado' => number_format((float) $item->total, 2),
+                    ];
+                    break;
+                case 'customer_debt':
+                    $rows[] = [
+                        'Cliente' => $item->user?->name ?? '—',
+                        'Casillero' => $item->box_number,
+                        'Saldo pendiente' => number_format((float) $item->balance, 2),
+                    ];
+                    break;
+                case 'package_status':
+                    $dummy = new Package(['status' => $item->status]);
+                    $rows[] = [
+                        'Estado' => $dummy->getStatusLabel(),
+                        'Cantidad' => $item->count,
+                    ];
+                    break;
+                case 'stagnant_cargo':
+                    $rows[] = [
+                        'Tracking' => $item->tracking_number,
+                        'Cliente' => $item->customer?->user?->name ?? '—',
+                        'Bodega' => $item->warehouse?->code ?? '—',
+                        'Días en stock' => now()->diffInDays($item->created_at),
+                    ];
+                    break;
+                case 'tax_collection':
+                    $rows[] = [
+                        'Fecha' => $item->date,
+                        'Impuestos recaudados' => number_format((float) $item->total_tax, 2),
+                    ];
+                    break;
+                case 'volume_weight':
+                    $rows[] = [
+                        'Mes' => $item->month,
+                        'Peso real total' => number_format((float) $item->total_weight, 2),
+                        'Peso volumétrico' => number_format((float) $item->total_vlb, 2),
+                    ];
+                    break;
+            }
+        }
+
+        return $rows;
     }
 
     public function render()

@@ -2,42 +2,54 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
 use App\Models\Manifest;
 use App\Models\ManifestItem;
 use App\Models\Package;
+use App\Models\Warehouse;
+use App\Services\Logistics\ManifestParserService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Livewire\WithPagination;
-
+use Livewire\Component;
 use Livewire\WithFileUploads;
-use App\Services\Logistics\ManifestParserService;
+use Livewire\WithPagination;
 
 class ReceiveManifest extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     public $manifest_id;
+
     public $carrier_invoice;
+
     public $tracking_input; // For bulk input
+
     public $scanner_input;  // For single scan matching
+
     public $manifest_file;  // New: For PDF upload
 
     // Management & Search
     public $search = '';
+
     public $status_filter = '';
 
     // CRUD fields for header editing
     public $number;
+
     public $carrier_name;
+
     public $description;
+
     public $status;
+
     public $isEditModalOpen = false;
 
     // Pre-review management
     public $extracted_trackings = [];
+
     public $editing_index = null;
+
     public $editing_value = '';
+
     public $new_tracking = '';
 
     // Detail view item filter
@@ -61,7 +73,7 @@ class ReceiveManifest extends Component
         }
 
         // Cargar bodega por defecto si existe alguna
-        $defaultWarehouse = \App\Models\Warehouse::first();
+        $defaultWarehouse = Warehouse::first();
         if ($defaultWarehouse) {
             $this->warehouse_id = $defaultWarehouse->id;
         }
@@ -92,17 +104,19 @@ class ReceiveManifest extends Component
         $this->status = $manifest->status;
 
         $this->isEditModalOpen = true;
+        $this->dispatch('open-manifest-edit-modal');
     }
 
     public function closeEditModal()
     {
         $this->isEditModalOpen = false;
+        $this->dispatch('close-manifest-edit-modal');
     }
 
     public function saveManifestHeader()
     {
         $this->validate([
-            'number' => 'required|unique:manifests,number,' . $this->manifest_id,
+            'number' => 'required|unique:manifests,number,'.$this->manifest_id,
             'carrier_invoice' => 'required|string',
             'status' => 'required|in:pending,processing,reconciled,closed',
         ]);
@@ -141,11 +155,11 @@ class ReceiveManifest extends Component
             'manifest_file' => 'mimes:pdf|max:10240', // Max 10MB
         ]);
 
-        $parser = new ManifestParserService();
+        $parser = new ManifestParserService;
         $path = $this->manifest_file->getRealPath();
         $extractedData = $parser->parsePdf($path);
 
-        if (!empty($extractedData['trackings'])) {
+        if (! empty($extractedData['trackings'])) {
             $this->extracted_trackings = $extractedData['trackings'];
 
             if ($extractedData['invoice_number']) {
@@ -153,22 +167,24 @@ class ReceiveManifest extends Component
             }
 
             $this->view_mode = 'review';
-            session()->flash('ocr_message', "✅ Se detectaron " . count($this->extracted_trackings) . " trackings con sus dimensiones.");
+            session()->flash('ocr_message', '✅ Se detectaron '.count($this->extracted_trackings).' trackings con sus dimensiones.');
         } else {
-            session()->flash('ocr_error', "❌ No se pudieron detectar trackings en este PDF.");
+            session()->flash('ocr_error', '❌ No se pudieron detectar trackings en este PDF.');
         }
     }
 
     public function addManualTracking()
     {
-        if (empty($this->new_tracking)) return;
+        if (empty($this->new_tracking)) {
+            return;
+        }
 
         $this->extracted_trackings[] = [
             'tracking' => strtoupper(trim($this->new_tracking)),
             'weight' => 0,
             'length' => 1,
             'width' => 1,
-            'height' => 1
+            'height' => 1,
         ];
         $this->new_tracking = '';
     }
@@ -198,7 +214,8 @@ class ReceiveManifest extends Component
     public function confirmReview()
     {
         if (empty($this->extracted_trackings)) {
-            session()->flash('review_error', "Debes tener al menos un tracking para continuar.");
+            session()->flash('review_error', 'Debes tener al menos un tracking para continuar.');
+
             return;
         }
 
@@ -219,7 +236,7 @@ class ReceiveManifest extends Component
 
             $manifest = Manifest::create([
                 'tenant_id' => session('tenant_id'),
-                'number' => 'MAN-' . date('Ymd-His'),
+                'number' => 'MAN-'.date('Ymd-His'),
                 'carrier_invoice_number' => $this->carrier_invoice,
                 'file_path' => $filePath,
                 'status' => 'processing',
@@ -264,7 +281,7 @@ class ReceiveManifest extends Component
                 'weight' => 0,
                 'length' => 1,
                 'width' => 1,
-                'height' => 1
+                'height' => 1,
             ];
         }
 
@@ -289,7 +306,9 @@ class ReceiveManifest extends Component
 
     public function processScan()
     {
-        if (empty($this->scanner_input)) return;
+        if (empty($this->scanner_input)) {
+            return;
+        }
 
         $tracking = trim($this->scanner_input);
 
@@ -317,7 +336,7 @@ class ReceiveManifest extends Component
                         'height' => $item->height ?: 0,
                         'warehouse_id' => $this->warehouse_id,
                         'status' => 'arrived',
-                        'description' => 'Ingresado por manifiesto ' . $tracking,
+                        'description' => 'Ingresado por manifiesto '.$tracking,
                     ]);
                 }
 
@@ -325,7 +344,7 @@ class ReceiveManifest extends Component
                 $item->update([
                     'status' => 'received',
                     'scanned_at' => now(),
-                    'package_id' => $package->id
+                    'package_id' => $package->id,
                 ]);
 
                 session()->flash('scan_message', "✅ Tracking $tracking recibido y agregado al inventario.");
@@ -407,9 +426,9 @@ class ReceiveManifest extends Component
     {
         $query = Manifest::where('tenant_id', session('tenant_id'))
             ->with('creator')
-            ->where(function($q) {
-                $q->where('number', 'like', '%' . $this->search . '%')
-                  ->orWhere('carrier_invoice_number', 'like', '%' . $this->search . '%');
+            ->where(function ($q) {
+                $q->where('number', 'like', '%'.$this->search.'%')
+                    ->orWhere('carrier_invoice_number', 'like', '%'.$this->search.'%');
             });
 
         if ($this->status_filter) {

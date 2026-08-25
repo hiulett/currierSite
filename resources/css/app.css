@@ -102,6 +102,14 @@
 
 [x-cloak] { display: none !important; }
 
+/* Utility fixes: clases usadas en todo el panel pero nunca definidas */
+.fw-black { font-weight: 900; }
+.xsmall { font-size: 0.75rem; }
+
+/* Hover lift pretendido por las cards (Tailwind no tiene scale-102) */
+.hover\:scale-102:hover { transform: scale(1.02); }
+.hover\:scale-102 { transition: transform 0.2s ease; }
+
 /* Custom Animations */
 @keyframes shine {
   0% { left: -100%; }

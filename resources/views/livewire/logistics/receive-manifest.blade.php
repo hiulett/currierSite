@@ -126,8 +126,7 @@
     @endif
 
     <!-- CRUD MODAL (UNIFICADO) -->
-    @if($isEditModalOpen)
-        <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);">
+    <div class="modal fade" id="manifestEditModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow-lg">
                     <div class="modal-header bg-dark text-white py-3">
@@ -178,7 +177,6 @@
                 </div>
             </div>
         </div>
-    @endif
 
     <!-- VIEW: REVIEW EXTRACTED TRACKINGS -->
     @if($view_mode === 'review')
@@ -592,6 +590,13 @@
                     scannerField.focus();
                 }
             });
+        });
+
+        window.addEventListener('open-manifest-edit-modal', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('manifestEditModal')).show();
+        });
+        window.addEventListener('close-manifest-edit-modal', () => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('manifestEditModal')).hide();
         });
     </script>
 </div>

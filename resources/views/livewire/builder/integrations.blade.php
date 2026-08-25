@@ -90,6 +90,88 @@
                     </form>
                 </div>
             </div>
+
+            <!-- WhatsApp Business API -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0 uppercase font-black small"><i class="align-middle me-2 text-success" data-feather="message-circle"></i> WhatsApp Business API</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="whatsappEnabled" wire:model="whatsapp_enabled" style="width: 40px; height: 20px;">
+                        <label class="form-check-label small fw-bold text-muted" for="whatsappEnabled">Habilitar envío</label>
+                    </div>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <form wire:submit.prevent="saveWhatsapp">
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="stat bg-success-light text-success me-3"><i data-feather="send"></i></div>
+                                <div>
+                                    <h6 class="fw-black text-dark uppercase small mb-0">Meta WhatsApp Cloud API</h6>
+                                    <p class="text-muted xsmall mb-0">Envía facturas y cotizaciones a tus clientes por WhatsApp.</p>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label xsmall font-black uppercase text-muted">Phone Number ID</label>
+                                    <input type="text" wire:model="whatsapp_phone_number_id" class="form-control font-bold" placeholder="Ej: 123456789012345">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label xsmall font-black uppercase text-muted">Token de Acceso</label>
+                                    <input type="password" wire:model="whatsapp_token" class="form-control font-bold" placeholder="EAAG...">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label xsmall font-black uppercase text-muted">Número Emisor (con código de país)</label>
+                                    <input type="text" wire:model="whatsapp_business_number" class="form-control font-bold" placeholder="Ej: +5076XXXXXXX">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label xsmall font-black uppercase text-muted">Número de Prueba</label>
+                                    <div class="input-group">
+                                        <input type="text" wire:model="whatsapp_test_number" class="form-control font-bold" placeholder="Ej: +5076XXXXXXX">
+                                        <button type="button" wire:click="testConnection" class="btn btn-outline-success fw-bold">Probar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label xsmall font-black uppercase text-muted">Plantilla aprobada (Factura)</label>
+                                <input type="text" wire:model="whatsapp_template_invoice" class="form-control font-bold" placeholder="factura_whatsapp">
+                                <div class="form-text xsmall">Usada como respaldo fuera de la ventana de 24h.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label xsmall font-black uppercase text-muted">Plantilla aprobada (Cotización)</label>
+                                <input type="text" wire:model="whatsapp_template_quotation" class="form-control font-bold" placeholder="cotizacion_whatsapp">
+                                <div class="form-text xsmall">Usada como respaldo fuera de la ventana de 24h.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label xsmall font-black uppercase text-muted">Mensaje de Factura</label>
+                                <textarea wire:model="whatsapp_invoice_template" rows="5" class="form-control"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label xsmall font-black uppercase text-muted">Mensaje de Cotización</label>
+                                <textarea wire:model="whatsapp_quotation_template" rows="5" class="form-control"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="alert bg-light border-0 small">
+                                <i class="align-middle me-1 text-info" data-feather="info" style="width: 14px;"></i>
+                                Variables disponibles: <code>{nombre_cliente}</code> <code>{numero_documento}</code> <code>{monto_total}</code> <code>{fecha_vencimiento}</code> <code>{nombre_empresa}</code> <code>{link_documento}</code>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-success btn-lg px-5 fw-black uppercase shadow-lg">
+                                Guardar Configuración de WhatsApp <i class="align-middle ms-2" data-feather="save"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- Widgets & Side Info -->

@@ -103,11 +103,11 @@
                             <td class="small text-muted">{{ $ticket->created_at->format('d M, Y') }}</td>
                             <td class="pe-4 text-end">
                                 <div class="btn-group">
-                                    <button class="btn btn-sm btn-light border" title="Responder">
-                                        <i class="align-middle text-primary" data-feather="message-circle"></i>
+                                    <button type="button" disabled class="btn btn-sm btn-light border" title="La respuesta por correo se habilitará próximamente">
+                                        <i class="align-middle text-primary opacity-50" data-feather="message-circle"></i>
                                     </button>
                                     @if($ticket->status !== 'closed')
-                                        <button wire:click="closeTicket({{ $ticket->id }})" class="btn btn-sm btn-light border" title="Cerrar Ticket">
+                                        <button wire:click="closeTicket({{ $ticket->id }})" class="btn btn-sm btn-light border" title="Cerrar Ticket" aria-label="Cerrar ticket #{{ $ticket->id }}">
                                             <i class="align-middle text-danger" data-feather="check-square"></i>
                                         </button>
                                     @endif

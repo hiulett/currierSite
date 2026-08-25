@@ -198,6 +198,12 @@
 						</a>
 					</li>
 
+                    <li class="sidebar-item {{ request()->routeIs('customer.quotations*') ? 'active' : '' }}">
+						<a class='sidebar-link' href='{{ route('customer.quotations') }}'>
+							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">{{ __('Cotizaciones') }}</span>
+						</a>
+					</li>
+
                     <li class="sidebar-item {{ request()->routeIs('customer.tickets.*') ? 'active' : '' }}">
 						<a class='sidebar-link' href='{{ route('customer.tickets.index') }}'>
 							<i class="align-middle" data-feather="help-circle"></i> <span class="align-middle">{{ __('Soporte') }}</span>

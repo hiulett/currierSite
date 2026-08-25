@@ -2,25 +2,37 @@
 
 namespace App\Livewire\Billing;
 
-use Livewire\Component;
+use App\Models\Customer;
 use App\Models\Quotation;
 use App\Models\QuotationItem;
-use App\Models\Customer;
+use App\Models\Tenant;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class CreateQuotation extends Component
 {
     public $is_registered = true;
+
     public $customer_id;
+
     public $search_customer = '';
+
     public $customers = [];
+
     public $client_name = '';
+
     public $client_lastname = '';
+
     public $client_email = '';
+
+    public $client_phone = '';
+
     public $notes = '';
+
     public $service_type = 'air';
 
     public $items = [];
+
     public $quotation_id = null;
 
     protected $listeners = ['openCreateQuotationModal' => 'initForm'];
@@ -32,19 +44,19 @@ class CreateQuotation extends Component
 
     public function initForm($quotationId = null)
     {
-        $this->reset(['quotation_id', 'customer_id', 'search_customer', 'notes', 'customers', 'client_name', 'client_lastname', 'client_email', 'service_type']);
+        $this->reset(['quotation_id', 'customer_id', 'search_customer', 'notes', 'customers', 'client_name', 'client_lastname', 'client_email', 'client_phone', 'service_type']);
         $this->is_registered = true;
-        
+
         if (is_array($quotationId) && isset($quotationId['quotationId'])) {
             $quotationId = $quotationId['quotationId'];
         }
-        
+
         if ($quotationId) {
             $this->loadQuotation($quotationId);
         } else {
             $this->service_type = 'air';
             $this->items = [
-                ['item_number' => '', 'description' => '', 'quantity' => 1, 'price' => $this->getCurrentRate(), 'handling_price' => 0, 'total' => 0]
+                ['item_number' => '', 'description' => '', 'quantity' => 1, 'price' => $this->getCurrentRate(), 'handling_price' => 0, 'total' => 0],
             ];
             $this->searchCustomers();
         }
@@ -53,12 +65,14 @@ class CreateQuotation extends Component
     private function loadQuotation($id)
     {
         $quotation = Quotation::with('items', 'customer.user')->find($id);
-        if (!$quotation) return;
+        if (! $quotation) {
+            return;
+        }
 
         $this->quotation_id = $quotation->id;
         $this->service_type = $quotation->service_type ?? 'air';
         $this->notes = $quotation->notes;
-        
+
         if ($quotation->customer_id) {
             $this->is_registered = true;
             $this->customer_id = $quotation->customer_id;
@@ -69,6 +83,7 @@ class CreateQuotation extends Component
             $this->client_name = $parts[0] ?? '';
             $this->client_lastname = $parts[1] ?? '';
             $this->client_email = $quotation->client_email;
+            $this->client_phone = $quotation->client_phone;
         }
 
         $this->items = [];
@@ -99,11 +114,11 @@ class CreateQuotation extends Component
     public function searchCustomers()
     {
         $query = Customer::with('user');
-        if (!empty($this->search_customer)) {
+        if (! empty($this->search_customer)) {
             $query->whereHas('user', function ($q) {
-                $q->where('name', 'like', '%' . $this->search_customer . '%')
-                  ->orWhere('email', 'like', '%' . $this->search_customer . '%');
-            })->orWhere('box_number', 'like', '%' . $this->search_customer . '%');
+                $q->where('name', 'like', '%'.$this->search_customer.'%')
+                    ->orWhere('email', 'like', '%'.$this->search_customer.'%');
+            })->orWhere('box_number', 'like', '%'.$this->search_customer.'%');
         }
         $this->customers = $query->take(10)->get();
     }
@@ -133,9 +148,10 @@ class CreateQuotation extends Component
 
     private function getCurrentRate()
     {
-        $tenantId = session('tenant_id') ?? \App\Models\Tenant::first()?->id;
-        $tenant = \App\Models\Tenant::find($tenantId) ?? \App\Models\Tenant::first();
+        $tenantId = session('tenant_id') ?? Tenant::first()?->id;
+        $tenant = Tenant::find($tenantId) ?? Tenant::first();
         $settings = $tenant->settings_json ?? [];
+
         return $this->service_type === 'maritime' ? ($settings['maritime_rate'] ?? 1.50) : ($settings['air_rate'] ?? 2.50);
     }
 
@@ -197,6 +213,7 @@ class CreateQuotation extends Component
         } else {
             $rules['client_name'] = 'required|string|max:255';
             $rules['client_email'] = 'required|email|max:255';
+            $rules['client_phone'] = 'nullable|string|max:20';
         }
 
         $messages = [
@@ -214,8 +231,8 @@ class CreateQuotation extends Component
         $this->validate($rules, $messages);
 
         DB::transaction(function () {
-            $tenantId = session('tenant_id') ?? \App\Models\Tenant::first()?->id;
-            $fullName = $this->is_registered ? null : trim($this->client_name . ' ' . $this->client_lastname);
+            $tenantId = session('tenant_id') ?? Tenant::first()?->id;
+            $fullName = $this->is_registered ? null : trim($this->client_name.' '.$this->client_lastname);
 
             if ($this->quotation_id) {
                 $quotation = Quotation::findOrFail($this->quotation_id);
@@ -223,6 +240,7 @@ class CreateQuotation extends Component
                     'customer_id' => $this->is_registered ? $this->customer_id : null,
                     'client_name' => $fullName,
                     'client_email' => $this->is_registered ? null : $this->client_email,
+                    'client_phone' => $this->is_registered ? null : $this->client_phone,
                     'subtotal' => $this->getSubtotalProperty(),
                     'handling_total' => $this->getHandlingTotalProperty(),
                     'total' => $this->getTotalProperty(),
@@ -232,11 +250,11 @@ class CreateQuotation extends Component
                 QuotationItem::where('quotation_id', $quotation->id)->delete();
             } else {
                 $prefix = 'COT-';
-                
+
                 // Find latest number starting with COT- that has a numeric suffix
                 $lastQuotation = Quotation::withoutGlobalScopes()
                     ->where('tenant_id', $tenantId)
-                    ->where('number', 'like', $prefix . '%')
+                    ->where('number', 'like', $prefix.'%')
                     ->latest('id')
                     ->first();
 
@@ -245,12 +263,12 @@ class CreateQuotation extends Component
                     $nextNumber = intval($matches[1]) + 1;
                 }
 
-                $number = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+                $number = $prefix.str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
 
                 // Collision guard: ensure unique number
                 while (Quotation::withoutGlobalScopes()->where('number', $number)->exists()) {
                     $nextNumber++;
-                    $number = $prefix . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+                    $number = $prefix.str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
                 }
 
                 $quotation = Quotation::create([
@@ -258,6 +276,7 @@ class CreateQuotation extends Component
                     'customer_id' => $this->is_registered ? $this->customer_id : null,
                     'client_name' => $fullName,
                     'client_email' => $this->is_registered ? null : $this->client_email,
+                    'client_phone' => $this->is_registered ? null : $this->client_phone,
                     'number' => $number,
                     'subtotal' => $this->getSubtotalProperty(),
                     'handling_total' => $this->getHandlingTotalProperty(),
@@ -289,7 +308,7 @@ class CreateQuotation extends Component
 
     public function render()
     {
-        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $tenant = Tenant::find(session('tenant_id'));
         $currency = $tenant->settings_json['currency'] ?? 'USD';
 
         return view('livewire.billing.create-quotation', [

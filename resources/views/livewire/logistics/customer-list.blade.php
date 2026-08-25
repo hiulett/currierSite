@@ -1,24 +1,5 @@
 <div>
-    <!-- Flash Messages -->
-    @if (session()->has('message'))
-        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 mb-4 rounded-xl" role="alert">
-            <div class="d-flex align-items-center">
-                <i data-feather="check-circle" class="me-2"></i>
-                <div>{{ session('message') }}</div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-
-    @if (session()->has('error'))
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 mb-4 rounded-xl" role="alert">
-            <div class="d-flex align-items-center">
-                <i data-feather="alert-octagon" class="me-2"></i>
-                <div>{{ session('error') }}</div>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
+    <x-app.flash />
 
     <div class="row mb-4">
         <div class="col-12 col-sm-6 col-xxl-3 d-flex">
@@ -104,6 +85,9 @@
                         <button wire:click="$toggle('is_importing')" class="btn btn-outline-primary shadow-sm fw-black rounded-pill px-3">
                             <i class="align-middle me-1" data-feather="upload-cloud"></i> IMPORTAR CSV
                         </button>
+                        <button wire:click="exportCustomers" class="btn btn-outline-success shadow-sm fw-black rounded-pill px-3">
+                            <i class="align-middle me-1" data-feather="download"></i> EXPORTAR CSV
+                        </button>
                         <select wire:model.live="filter_level" class="form-select form-select-sm border-0 bg-light rounded-pill px-3" style="width: 150px;">
                             <option value="">Todos Niveles</option>
                             @foreach($loyaltyLevels as $level)
@@ -123,7 +107,10 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="bg-light bg-opacity-50">
                             <tr>
-                                <th class="ps-4" style="width: 50px;">#</th>
+                                <th class="ps-4" style="width: 40px;">
+                                    <input type="checkbox" class="form-check-input" wire:model.live="selectAll" aria-label="Seleccionar todos los clientes de esta página">
+                                </th>
+                                <th style="width: 50px;">#</th>
                                 <th>Casillero</th>
                                 <th>Información</th>
                                 <th class="hidden md:table-cell">Contacto</th>
@@ -133,8 +120,11 @@
                             </tr>
                         </thead>
                         @foreach($customers as $index => $c)
-                            <tbody x-data="{ expanded: false }" class="border-0" wire:key="customer-row-{{ $c->id }}">
+                            <tbody x-data="{ expanded: false }" class="border-0 {{ in_array((string) $c->id, $selected_customers) ? 'bg-primary bg-opacity-5' : '' }}" wire:key="customer-row-{{ $c->id }}">
                                 <tr class="border-top">
+                                    <td class="ps-4">
+                                        <input type="checkbox" class="form-check-input" value="{{ $c->id }}" wire:model.live="selected_customers" aria-label="Seleccionar a {{ $c->user->name }}">
+                                    </td>
                                     <td class="ps-4">
                                         <span class="text-muted xsmall fw-bold">{{ ($customers->currentPage() - 1) * $customers->perPage() + $loop->iteration }}</span>
                                     </td>
@@ -146,15 +136,15 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="fw-black text-dark" style="font-size: 0.95rem;">{{ $c->user->name }}</div>
+                                        <a href="{{ route('logistics.customers.detail', $c) }}" class="fw-black text-dark text-decoration-none" style="font-size: 0.95rem;">{{ $c->user->name }}</a>
                                         <div class="d-flex align-items-center gap-2">
                                             <div class="text-muted" style="font-size: 0.75rem;">ID: {{ $c->identification_number ?? 'S/N' }}</div>
                                             @if($c->user->email_verified_at)
                                                 <span class="text-success" title="Verificado"><i data-feather="check-circle" style="width: 11px;"></i></span>
                                             @endif
                                             @if($c->temporary_password)
-                                                <span class="badge bg-light text-danger border xsmall font-black" style="font-size: 0.65rem;" title="Contraseña visible para Admin">
-                                                    PASS: {{ $c->temporary_password }}
+                                                <span class="badge bg-light text-muted border xsmall font-black" style="font-size: 0.65rem;" title="Se asignó una contraseña temporal. Ver detalles para mostrarla.">
+                                                    CLAVE ASIGNADA
                                                 </span>
                                             @endif
                                         </div>
@@ -181,7 +171,7 @@
                                         <div class="btn-group">
                                             <button @click="expanded = !expanded" class="btn btn-sm btn-light border shadow-none" title="Ver Detalles">
                                                 <i x-show="!expanded" data-feather="eye" style="width:14px;"></i>
-                                                <i x-show="expanded" data-feather="chevron-up" style="width:14px; display:none;"></i>
+                                                <i x-show="expanded" data-feather="chevron-up" style="width:14px;" x-cloak></i>
                                             </button>
                                             <button wire:click="openEditModal({{ $c->id }})" class="btn btn-sm btn-light border shadow-none" title="Editar">
                                                 <i data-feather="edit-2" style="width:14px;"></i>
@@ -199,7 +189,7 @@
                                     </td>
                                 </tr>
                                 <tr x-show="expanded" x-cloak class="bg-light bg-opacity-30 border-0">
-                                    <td colspan="5" class="p-3 border-0">
+                                    <td colspan="8" class="p-3 border-0">
                                         <div class="card border shadow-sm mb-0">
                                             <div class="card-body py-3">
                                                 <div class="row text-start">
@@ -222,12 +212,23 @@
                                                         <div class="text-uppercase xsmall font-black text-muted mb-2">Cuenta e Identificadores</div>
                                                         <div class="small"><strong>Nivel:</strong>
                                                             @if($c->level)
-                                                                <span class="badge" style="background-color: {{ $c->level->color }}">{{ $c->level->name }}</span>
+                                                                <x-app.status-badge :label="$c->level->name" :color="$c->level->color" :uppercase="false" />
                                                             @else
                                                                 <span class="text-muted">Bronce (Auto)</span>
                                                             @endif
                                                         </div>
                                                         <div class="small mt-1"><strong>Puntos:</strong> {{ number_format($c->points) }} pts</div>
+                                                        @if($c->temporary_password)
+                                                        <div class="mt-2 pt-2 border-top" x-data="{ showPwd: false }">
+                                                            <span class="xsmall text-muted"><strong>Clave admin:</strong></span>
+                                                            <span class="xsmall text-danger font-black" x-show="!showPwd">••••••••</span>
+                                                            <span class="xsmall text-danger font-black" x-show="showPwd" x-cloak>{{ $c->temporary_password }}</span>
+                                                            <button type="button" class="btn btn-xs btn-light border shadow-none p-0 px-1 ms-1 align-middle" x-on:click="showPwd = !showPwd" title="Mostrar u ocultar la contraseña temporal" aria-label="Mostrar u ocultar la contraseña temporal">
+                                                                <i x-show="!showPwd" data-feather="eye" style="width: 12px; height: 12px;"></i>
+                                                                <i x-show="showPwd" data-feather="eye-off" style="width: 12px; height: 12px;" x-cloak></i>
+                                                            </button>
+                                                        </div>
+                                                        @endif
                                                         <div class="mt-2 pt-2 border-top">
                                                             @if($airEnabled) <div class="xsmall"><strong>Aéreo:</strong> {{ $c->box_number_air ?: 'N/A' }}</div> @endif
                                                             @if($maritimeEnabled) <div class="xsmall"><strong>Marítimo:</strong> {{ $c->box_number_maritime ?: 'N/A' }}</div> @endif
@@ -252,6 +253,22 @@
         </div>
     </div>
 
+    <!-- Floating Action Bar for Bulk Operations -->
+    @if(!empty($selected_customers))
+        <div class="position-fixed bottom-0 start-50 translate-middle-x mb-4 z-3" style="width: auto;">
+            <div class="bg-dark text-white rounded-pill px-4 py-3 shadow-lg d-flex align-items-center gap-4 border border-white border-opacity-10">
+                <div class="fw-black uppercase small tracking-widest">
+                    {{ count($selected_customers) }} Cliente(s) Seleccionado(s)
+                </div>
+                <div class="vr"></div>
+                <button wire:click="sendBulkPasswords" wire:confirm="Se enviarán nuevas contraseñas a los clientes seleccionados. ¿Continuar?" class="btn btn-warning btn-sm rounded-pill fw-black px-4">
+                    <i class="align-middle ms-1" data-feather="key"></i> ENVIAR CREDENCIALES
+                </button>
+                <button wire:click="$set('selected_customers', [])" class="btn btn-link text-white-50 btn-sm p-0 text-decoration-none fw-bold">Cancelar</button>
+            </div>
+        </div>
+    @endif
+
     <!-- Modals Section -->
     <div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
         <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -269,20 +286,35 @@
                             <div class="col-md-6">
                                 <label class="form-label xsmall font-black text-uppercase text-muted">Nombre Completo <span class="text-danger">*</span></label>
                                 <input type="text" wire:model="name" class="form-control fw-bold border-2">
+                                @error('name') <div class="text-danger xsmall mt-1">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label xsmall font-black text-uppercase text-muted">Email <span class="text-danger">*</span></label>
-                                <input type="email" wire:model="email" class="form-control border-2">
+                                <input type="email" wire:model.blur="email" class="form-control border-2">
+                                @error('email') <div class="text-danger xsmall mt-1">{{ $message }}</div> @enderror
                             </div>
                         </div>
+                        @if($duplicate_warning)
+                            <div class="alert alert-warning xsmall py-2 mb-4 d-flex align-items-start" role="alert">
+                                <i data-feather="alert-triangle" class="me-2 mt-1" style="width: 14px; height: 14px; flex-shrink: 0;"></i>
+                                <div>
+                                    Posible cliente duplicado:
+                                    @foreach($duplicate_warning as $dup)
+                                        <a href="{{ route('logistics.customers.detail', $dup['id']) }}" target="_blank" class="fw-bold text-decoration-underline">{{ $dup['name'] }} ({{ $dup['box_number'] }})</a>{{ !$loop->last ? ', ' : '' }}
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                         <div class="row g-3 mb-4">
                             <div class="col-md-3">
                                 <label class="form-label xsmall font-black text-uppercase text-muted">Identificación <span class="text-danger">*</span></label>
-                                <input type="text" wire:model="identification_number" class="form-control border-2">
+                                <input type="text" wire:model.blur="identification_number" class="form-control border-2">
+                                @error('identification_number') <div class="text-danger xsmall mt-1">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label xsmall font-black text-uppercase text-muted">Teléfono <span class="text-danger">*</span></label>
                                 <input type="text" wire:model="phone" class="form-control border-2">
+                                @error('phone') <div class="text-danger xsmall mt-1">{{ $message }}</div> @enderror
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label xsmall font-black text-uppercase text-muted">Casillero Físico</label>
@@ -359,53 +391,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="passwordResetModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
-                <div class="modal-header bg-dark text-white">
-                    <h5 class="modal-title uppercase font-black xsmall text-white">Nueva Contraseña</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <form wire:submit.prevent="resetPassword">
-                    <div class="modal-body p-4 text-center">
-                        <div class="input-group mb-2">
-                            <input type="text" wire:model="new_password" class="form-control border-2 text-center fw-bold" placeholder="Contraseña...">
-                            <button class="btn btn-outline-dark border-2" type="button" wire:click="generateRandomPassword" title="Generar Aleatoria">
-                                <i data-feather="refresh-cw" style="width: 14px;"></i>
-                            </button>
-                        </div>
-                        <p class="xsmall text-muted mb-0">Esta clave será visible para ti y se enviará al cliente.</p>
-                        @error('new_password') <div class="text-danger xsmall mt-2">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="modal-footer bg-light p-2">
-                        <button type="submit" class="btn btn-danger w-100 fw-black">ACTUALIZAR Y ENVIAR</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Confirm Send Password Modal -->
-    <div class="modal fade" id="confirmPasswordModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
-                <div class="modal-body p-4 text-center">
-                    <div class="mb-3 text-warning">
-                        <i data-feather="mail" style="width: 48px; height: 48px;"></i>
-                    </div>
-                    <h5 class="fw-black uppercase small">¿Enviar credenciales?</h5>
-                    <p class="text-muted xsmall">Se enviará un correo con la contraseña actual al cliente.</p>
-                </div>
-                <div class="modal-footer bg-light p-2 gap-2 border-0">
-                    <button type="button" class="btn btn-light border fw-bold flex-grow-1" data-bs-dismiss="modal">CANCELAR</button>
-                    <button type="button" wire:click="sendPasswordEmail" wire:loading.attr="disabled" class="btn btn-warning fw-black flex-grow-1">
-                        <span wire:loading.remove wire:target="sendPasswordEmail">ENVIAR</span>
-                        <span wire:loading wire:target="sendPasswordEmail" class="spinner-border spinner-border-sm" role="status"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('livewire.logistics.partials.customer-credential-modals')
 
     <script>
         window.addEventListener('open-customer-modal', () => {

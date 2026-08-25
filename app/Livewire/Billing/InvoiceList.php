@@ -2,30 +2,42 @@
 
 namespace App\Livewire\Billing;
 
-use Livewire\Component;
+use App\Jobs\SendInvoiceWhatsApp;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
-use App\Models\Customer;
-use App\Models\Package;
-use Illuminate\Support\Facades\DB;
-use Livewire\WithPagination;
+use App\Models\Tenant;
+use App\Notifications\InvoiceSent;
+use App\Services\WhatsAppService;
 use App\Traits\WithSorting;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class InvoiceList extends Component
 {
     use WithPagination, WithSorting;
 
     public $search = '';
+
     public $filter_status = '';
+
     public $filter_date_from = '';
+
     public $filter_date_to = '';
+
     public $selected_invoices = [];
+
     public $selectAll = false;
 
     // Payment Modal State
     public $is_paying = false;
+
     public $payment_method = 'cash';
+
     public $payment_reference = '';
+
     public $single_invoice_id = null;
 
     protected $queryString = [
@@ -40,7 +52,7 @@ class InvoiceList extends Component
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selected_invoices = $this->getInvoicesQuery()->pluck('id')->map(fn($id) => (string)$id)->toArray();
+            $this->selected_invoices = $this->getInvoicesQuery()->pluck('id')->map(fn ($id) => (string) $id)->toArray();
         } else {
             $this->selected_invoices = [];
         }
@@ -49,8 +61,9 @@ class InvoiceList extends Component
     public function openPaymentModal($invoiceId = null)
     {
         $this->single_invoice_id = $invoiceId;
-        if (!$invoiceId && empty($this->selected_invoices)) {
+        if (! $invoiceId && empty($this->selected_invoices)) {
             session()->flash('error', 'Seleccione al menos una factura.');
+
             return;
         }
         $this->is_paying = true;
@@ -75,7 +88,7 @@ class InvoiceList extends Component
         }
 
         $this->reset(['is_paying', 'selected_invoices', 'selectAll', 'single_invoice_id', 'payment_reference']);
-        session()->flash('message', count($invoices) . ' factura(s) procesadas como pagadas.');
+        session()->flash('message', count($invoices).' factura(s) procesadas como pagadas.');
     }
 
     public function voidInvoice($invoiceId)
@@ -88,7 +101,7 @@ class InvoiceList extends Component
             }
 
             $invoice->update(['status' => 'cancelled']);
-            session()->flash('message', 'Factura ' . $invoice->number . ' ha sido anulada.');
+            session()->flash('message', 'Factura '.$invoice->number.' ha sido anulada.');
         }
     }
 
@@ -111,14 +124,40 @@ class InvoiceList extends Component
         $invoice = Invoice::with('customer.user', 'tenant')->find($invoiceId);
         if ($invoice && $invoice->customer && $invoice->customer->user) {
             try {
-                $invoice->customer->user->notify(new \App\Notifications\InvoiceSent($invoice));
+                $invoice->customer->user->notify(new InvoiceSent($invoice));
                 $invoice->update(['email_sent_at' => now()]);
-                session()->flash('message', '✉️ Correo de factura encolado para ' . $invoice->customer->user->email . '. El mensaje se enviará en breve.');
+                session()->flash('message', '✉️ Correo de factura encolado para '.$invoice->customer->user->email.'. El mensaje se enviará en breve.');
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Error dispatching invoice email: ' . $e->getMessage());
-                session()->flash('error', 'Error al encolar el correo. Configure el SMTP en Ajustes de Correo. Detalle: ' . $e->getMessage());
+                Log::error('Error dispatching invoice email: '.$e->getMessage());
+                session()->flash('error', 'Error al encolar el correo. Configure el SMTP en Ajustes de Correo. Detalle: '.$e->getMessage());
             }
         }
+    }
+
+    public function sendWhatsApp($invoiceId)
+    {
+        $invoice = Invoice::with(['customer.user', 'tenant'])->find($invoiceId);
+        if (! $invoice) {
+            session()->flash('error', 'Factura no encontrada.');
+
+            return;
+        }
+
+        $tenant = $invoice->tenant;
+        if (! $tenant || ! app(WhatsAppService::class)->isConfigured($tenant)) {
+            session()->flash('error', 'WhatsApp no está configurado. Configúralo en Configuración → Pagos e Integraciones.');
+
+            return;
+        }
+
+        if (! $invoice->customer?->phone) {
+            session()->flash('error', 'El cliente no tiene un teléfono registrado.');
+
+            return;
+        }
+
+        SendInvoiceWhatsApp::dispatch($invoice);
+        session()->flash('message', 'Envío de la factura #'.$invoice->number.' por WhatsApp encolado.');
     }
 
     /**
@@ -129,12 +168,13 @@ class InvoiceList extends Component
         // Seguridad: Solo permitir a administradores
         if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'superadmin') {
             session()->flash('error', 'No tiene permisos para realizar esta acción.');
+
             return;
         }
 
         $tenantId = session('tenant_id');
 
-        DB::transaction(function() use ($tenantId) {
+        DB::transaction(function () use ($tenantId) {
             // 1. Resetear balances de clientes (opcional, pero recomendado para fresh start)
             Customer::where('tenant_id', $tenantId)->update(['balance' => 0]);
 
@@ -150,19 +190,19 @@ class InvoiceList extends Component
     protected function getInvoicesQuery()
     {
         $query = Invoice::with('customer.user')
-            ->where(function($query) {
-                $query->where('number', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('customer', function($q) {
-                          $q->where('box_number', 'like', '%' . $this->search . '%')
-                            ->orWhereHas('user', function($u) {
-                                $u->where('name', 'like', '%' . $this->search . '%');
+            ->where(function ($query) {
+                $query->where('number', 'like', '%'.$this->search.'%')
+                    ->orWhereHas('customer', function ($q) {
+                        $q->where('box_number', 'like', '%'.$this->search.'%')
+                            ->orWhereHas('user', function ($u) {
+                                $u->where('name', 'like', '%'.$this->search.'%');
                             });
-                      });
+                    });
             });
 
         if ($this->filter_status === 'overdue') {
             $query->where('status', 'unpaid')
-                  ->where('due_date', '<', now()->today());
+                ->where('due_date', '<', now()->today());
         } elseif ($this->filter_status === 'email_sent') {
             $query->whereNotNull('email_sent_at');
         } elseif ($this->filter_status) {
@@ -193,7 +233,7 @@ class InvoiceList extends Component
             'cancelled_count' => Invoice::where('status', 'cancelled')->count(),
         ];
 
-        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $tenant = Tenant::find(session('tenant_id'));
         $currency = $tenant->settings_json['currency'] ?? 'USD';
 
         return view('livewire.billing.invoice-list', [

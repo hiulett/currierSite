@@ -39,7 +39,7 @@
         <div class="card-header bg-light d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 border-bottom">
             <h5 class="card-title mb-0 uppercase font-black small">Control de Inventario de Casilleros</h5>
             <div class="d-flex gap-2 w-100 w-md-auto">
-                <button onclick="openLockerModal()" class="btn btn-primary shadow-lg transform transition hover:scale-105 fw-black">
+                <button wire:click="openCreateLockerModal" class="btn btn-primary shadow-lg transform transition hover:scale-105 fw-black">
                     <i class="align-middle me-1" data-feather="plus-circle"></i> NUEVO CASILLERO
                 </button>
                 <div class="input-group input-group-sm flex-grow-1" style="min-width: 200px;">
@@ -100,7 +100,7 @@
                             @endif
                         </td>
                         <td class="pe-4 text-end">
-                            <button class="btn btn-sm btn-light border shadow-sm" title="Editar Casillero">
+                            <button wire:click="openEditModal({{ $locker->id }})" class="btn btn-sm btn-light border shadow-sm" title="Editar Casillero" aria-label="Editar casillero {{ $locker->code }}">
                                 <i class="align-middle text-dark" data-feather="edit-2"></i>
                                 <span class="ms-1 d-none d-md-inline fw-bold text-uppercase" style="font-size: 0.65rem;">Editar</span>
                             </button>
@@ -122,11 +122,11 @@
             <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
                 <div class="modal-header bg-primary text-white p-4">
                     <h5 class="modal-title uppercase font-black tracking-widest text-white">
-                        <i class="align-middle me-2" data-feather="grid"></i> Nuevo Casillero Físico
+                        <i class="align-middle me-2" data-feather="{{ $editing_id ? 'edit-3' : 'grid' }}"></i> {{ $editing_id ? 'Editar Casillero Físico' : 'Nuevo Casillero Físico' }}
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form wire:submit.prevent="createLocker">
+                <form wire:submit.prevent="{{ $editing_id ? 'updateLocker' : 'createLocker' }}">
                     <div class="modal-body bg-light p-4">
                         <div class="mb-3">
                             <label class="form-label small font-black text-uppercase text-muted">Código de Ubicación</label>
@@ -164,7 +164,7 @@
                     </div>
                     <div class="modal-footer bg-white border-top-0 p-4 pt-0 d-flex justify-content-end gap-2">
                         <button type="button" class="btn btn-light fw-bold" data-bs-dismiss="modal">CANCELAR</button>
-                        <button type="submit" class="btn btn-primary px-4 shadow-lg transform transition hover:scale-105 fw-black">GUARDAR CASILLERO</button>
+                        <button type="submit" class="btn btn-primary px-4 shadow-lg transform transition hover:scale-105 fw-black">{{ $editing_id ? 'GUARDAR CAMBIOS' : 'GUARDAR CASILLERO' }}</button>
                     </div>
                 </form>
             </div>
@@ -172,11 +172,9 @@
     </div>
 
     <script>
-        function openLockerModal() {
-            var el = document.getElementById('modalAddLocker');
-            var myModal = bootstrap.Modal.getOrCreateInstance(el);
-            myModal.show();
-        }
+        window.addEventListener('open-locker-modal', event => {
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('modalAddLocker')).show();
+        });
 
         window.addEventListener('locker-saved', event => {
              bootstrap.Modal.getOrCreateInstance(document.getElementById('modalAddLocker')).hide();

@@ -2,37 +2,76 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
 use App\Models\Customer;
-use App\Models\User;
 use App\Models\Locker;
-use Livewire\WithPagination;
+use App\Models\LoyaltyLevel;
+use App\Models\Tenant;
+use App\Models\User;
+use App\Notifications\TemporaryPasswordNotification;
 use App\Traits\WithSorting;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class CustomerList extends Component
 {
-    use WithPagination, WithSorting, \Livewire\WithFileUploads;
+    use WithFileUploads, WithPagination, WithSorting;
 
     public $search = '';
+
     public $filter = '';
+
     public $filter_level = '';
-    public $name, $email, $phone, $box_number, $locker_id, $identification_number, $address, $loyalty_level_id, $admin_notes;
-    public $box_number_air, $box_number_maritime;
+
+    public $name;
+
+    public $email;
+
+    public $phone;
+
+    public $box_number;
+
+    public $locker_id;
+
+    public $identification_number;
+
+    public $address;
+
+    public $loyalty_level_id;
+
+    public $admin_notes;
+
+    public $box_number_air;
+
+    public $box_number_maritime;
 
     public $is_editing = false;
+
     public $customer_id;
+
     public $send_credentials_now = true;
+
+    // Detección de duplicados (validación en vivo)
+    public $duplicate_warning = null;
 
     // Password Management Properties (RE-DECLARED FOR SAFETY)
     public $selected_customer_id = null;
+
     public $new_password = '';
 
     // CSV Import
     public $csv_file;
+
     public $is_importing = false;
+
+    // Bulk selection
+    public $selected_customers = [];
+
+    public $selectAll = false;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -53,13 +92,13 @@ class CustomerList extends Component
     public function openPasswordModal($customerId)
     {
         $this->selected_customer_id = $customerId;
-        $this->new_password = \Illuminate\Support\Str::random(8); // Generar una por defecto
+        $this->new_password = Str::random(8); // Generar una por defecto
         $this->dispatch('open-password-modal');
     }
 
     public function generateRandomPassword()
     {
-        $this->new_password = \Illuminate\Support\Str::random(8);
+        $this->new_password = Str::random(8);
     }
 
     public function resetPassword()
@@ -70,28 +109,28 @@ class CustomerList extends Component
 
         $customer = Customer::find($this->selected_customer_id);
         if ($customer && $customer->user) {
-            $tenant = \App\Models\Tenant::find(session('tenant_id'));
+            $tenant = Tenant::find(session('tenant_id'));
             $mustChange = $tenant->settings_json['force_password_change'] ?? false;
 
             $customer->user->update([
                 'password' => Hash::make($this->new_password),
-                'must_change_password' => $mustChange
+                'must_change_password' => $mustChange,
             ]);
 
             // Guardar en texto plano para el admin (bajo responsabilidad del admin)
             $customer->update([
-                'temporary_password' => $this->new_password
+                'temporary_password' => $this->new_password,
             ]);
             try {
                 // Enviar notificación al correo
-                $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($this->new_password, $customer->user->name, $tenant));
+                $customer->user->notify(new TemporaryPasswordNotification($this->new_password, $customer->user->name, $tenant));
 
                 $customer->update(['password_sent_at' => now()]);
 
-                session()->flash('message', 'Contraseña actualizada y enviada por correo a: ' . $customer->user->name);
+                session()->flash('message', 'Contraseña actualizada y enviada por correo a: '.$customer->user->name);
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Error enviando correo de reset de contraseña: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-                session()->flash('error', 'Contraseña actualizada, pero NO se pudo enviar el correo. Error interno: ' . $e->getMessage());
+                Log::error('Error enviando correo de reset de contraseña: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                session()->flash('error', 'Contraseña actualizada, pero NO se pudo enviar el correo. Error interno: '.$e->getMessage());
             }
         }
 
@@ -101,35 +140,44 @@ class CustomerList extends Component
 
     public function sendBulkPasswords()
     {
-        $customers = Customer::where('tenant_id', session('tenant_id'))->get();
+        // Si hay selección, se envía solo a los seleccionados; si no, a todos (comportamiento original).
+        $query = ! empty($this->selected_customers)
+            ? Customer::whereIn('id', $this->selected_customers)
+            : Customer::where('tenant_id', session('tenant_id'));
+
+        $customers = $query->get();
         $count = 0;
 
         foreach ($customers as $customer) {
-            if (!$customer->user) continue;
+            if (! $customer->user) {
+                continue;
+            }
 
             // Generar clave aleatoria de 8 caracteres (alfanumérico)
             $plainPassword = Str::random(8);
 
             // Actualizar cuenta de usuario
             $customer->user->update([
-                'password' => Hash::make($plainPassword)
+                'password' => Hash::make($plainPassword),
             ]);
 
             // Guardar para vista del administrador
             $customer->update([
-                'temporary_password' => $plainPassword
+                'temporary_password' => $plainPassword,
             ]);
 
             try {
                 // Enviar notificación
-                $tenant = \App\Models\Tenant::find(session('tenant_id'));
-                $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($plainPassword, $customer->user->name, $tenant));
+                $tenant = Tenant::find(session('tenant_id'));
+                $customer->user->notify(new TemporaryPasswordNotification($plainPassword, $customer->user->name, $tenant));
                 $count++;
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Error enviando correo bulk para ' . $customer->user->email . ': ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                Log::error('Error enviando correo bulk para '.$customer->user->email.': '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
             }
         }
 
+        $this->selected_customers = [];
+        $this->selectAll = false;
         session()->flash('message', "Operación masiva completada. Se enviaron $count correos con nuevas contraseñas.");
     }
 
@@ -141,9 +189,10 @@ class CustomerList extends Component
 
     public function sendPasswordEmail()
     {
-        if (!$this->selected_customer_id) {
+        if (! $this->selected_customer_id) {
             session()->flash('error', 'No se ha seleccionado ningún cliente.');
             $this->dispatch('close-confirm-password-modal');
+
             return;
         }
 
@@ -151,39 +200,90 @@ class CustomerList extends Component
             $customer = Customer::findOrFail($this->selected_customer_id);
 
             // If no temporary password exists, generate one now
-            if (!$customer->temporary_password) {
+            if (! $customer->temporary_password) {
                 $newPass = Str::random(8);
-                $tenant = \App\Models\Tenant::find(session('tenant_id'));
+                $tenant = Tenant::find(session('tenant_id'));
                 $mustChange = $tenant->settings_json['force_password_change'] ?? false;
 
                 $customer->update(['temporary_password' => $newPass]);
                 if ($customer->user) {
                     $customer->user->update([
                         'password' => Hash::make($newPass),
-                        'must_change_password' => $mustChange
+                        'must_change_password' => $mustChange,
                     ]);
                 }
             }
 
             if ($customer->user) {
-                $notifTenant = \App\Models\Tenant::find(session('tenant_id'));
-                $customer->user->notify(new \App\Notifications\TemporaryPasswordNotification($customer->temporary_password, $customer->user->name, $notifTenant));
+                $notifTenant = Tenant::find(session('tenant_id'));
+                $customer->user->notify(new TemporaryPasswordNotification($customer->temporary_password, $customer->user->name, $notifTenant));
                 $customer->update(['password_sent_at' => now()]);
-                session()->flash('message', 'Credenciales enviadas correctamente a: ' . $customer->user->email);
+                session()->flash('message', 'Credenciales enviadas correctamente a: '.$customer->user->email);
             } else {
                 session()->flash('error', 'El cliente no tiene un usuario asociado.');
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error enviando correo de contraseña: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            session()->flash('error', 'No se pudo enviar el correo. Error interno: ' . $e->getMessage());
+            Log::error('Error enviando correo de contraseña: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            session()->flash('error', 'No se pudo enviar el correo. Error interno: '.$e->getMessage());
         }
 
         $this->dispatch('close-confirm-password-modal');
     }
 
+    public function updatedEmail($value)
+    {
+        $this->validateOnly('email', ['email' => ['nullable', 'email']]);
+        $this->detectDuplicates();
+    }
+
+    public function updatedIdentificationNumber($value)
+    {
+        $this->detectDuplicates();
+    }
+
+    protected function detectDuplicates()
+    {
+        $this->duplicate_warning = null;
+
+        $email = trim((string) $this->email);
+        $identification = trim((string) $this->identification_number);
+
+        if ($email === '' && $identification === '') {
+            return;
+        }
+
+        $query = Customer::with('user');
+
+        // Al editar, excluir el cliente actual
+        if ($this->is_editing && $this->customer_id) {
+            $query->where('id', '!=', $this->customer_id);
+        }
+
+        $query->where(function ($q) use ($email, $identification) {
+            if ($email !== '') {
+                $q->orWhereHas('user', function ($u) use ($email) {
+                    $u->where('email', $email);
+                });
+            }
+            if ($identification !== '') {
+                $q->orWhere('identification_number', $identification);
+            }
+        });
+
+        $matches = $query->take(5)->get();
+
+        if ($matches->isNotEmpty()) {
+            $this->duplicate_warning = $matches->map(fn ($c) => [
+                'id' => $c->id,
+                'name' => $c->user?->name ?? '—',
+                'box_number' => $c->box_number,
+            ])->all();
+        }
+    }
+
     public function resetFields()
     {
-        $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'loyalty_level_id', 'identification_number', 'address', 'admin_notes', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id']);
+        $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'loyalty_level_id', 'identification_number', 'address', 'admin_notes', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id', 'duplicate_warning']);
         $this->send_credentials_now = true;
     }
 
@@ -221,7 +321,7 @@ class CustomerList extends Component
             'name' => 'required|string|max:255',
             'email' => [
                 'required', 'email',
-                'unique:users,email,' . $targetUserId
+                'unique:users,email,'.$targetUserId,
             ],
             'locker_id' => 'nullable|exists:lockers,id',
             'loyalty_level_id' => 'nullable|exists:loyalty_levels,id',
@@ -258,13 +358,13 @@ class CustomerList extends Component
 
             session()->flash('message', 'Cliente actualizado exitosamente.');
         } else {
-            $tenant = \App\Models\Tenant::find(session('tenant_id'));
+            $tenant = Tenant::find(session('tenant_id'));
             $settings = $tenant->settings_json ?? [];
-            
+
             // Generar Casillero Automáticamente
             $nextId = ($settings['box_number_counter'] ?? 1000) + 1;
             $prefix = $settings['box_prefix'] ?? 'LGX';
-            $generatedBoxNumber = $prefix . $nextId;
+            $generatedBoxNumber = $prefix.$nextId;
 
             // Actualizar el contador en la configuración del tenant
             $settings['box_number_counter'] = $nextId;
@@ -300,11 +400,11 @@ class CustomerList extends Component
 
             if ($this->send_credentials_now) {
                 try {
-                    $user->notify(new \App\Notifications\TemporaryPasswordNotification($plainPassword, $user->name, $tenant));
+                    $user->notify(new TemporaryPasswordNotification($plainPassword, $user->name, $tenant));
                     $customer->update(['password_sent_at' => now()]);
                     session()->flash('message', 'Cliente registrado y credenciales enviadas.');
                 } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error('Error enviando credenciales nuevo cliente: ' . $e->getMessage());
+                    Log::error('Error enviando credenciales nuevo cliente: '.$e->getMessage());
                     session()->flash('message', 'Cliente registrado. No se pudo enviar el correo de credenciales automáticamente.');
                 }
             } else {
@@ -326,6 +426,7 @@ class CustomerList extends Component
 
         if ($customer->packages()->count() > 0) {
             session()->flash('error', 'No se puede eliminar el cliente porque tiene paquetes registrados.');
+
             return;
         }
 
@@ -347,8 +448,8 @@ class CustomerList extends Component
 
         // Auto-detect delimiter
         $fileContent = file_get_contents($path);
-        $delimiters = [",", ";", "\t"];
-        $delimiter = ",";
+        $delimiters = [',', ';', "\t"];
+        $delimiter = ',';
         foreach ($delimiters as $d) {
             if (strpos($fileContent, $d) !== false) {
                 $delimiter = $d;
@@ -366,10 +467,11 @@ class CustomerList extends Component
         $skipped = 0;
         $tenantId = session('tenant_id') ?? 1;
 
-        while (($row = fgetcsv($file, 0, $delimiter)) !== FALSE) {
+        while (($row = fgetcsv($file, 0, $delimiter)) !== false) {
             // Basic sanity check: row must have at least name and email
             if (count($row) < 2 || empty($row[1])) {
                 $skipped++;
+
                 continue;
             }
 
@@ -378,13 +480,14 @@ class CustomerList extends Component
             $phone = isset($row[2]) ? trim($row[2]) : '';
             $id_num = isset($row[3]) ? trim($row[3]) : '';
 
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $skipped++;
+
                 continue;
             }
 
             try {
-                DB::transaction(function() use ($email, $tenantId, $name, $phone, $id_num, &$count) {
+                DB::transaction(function () use ($email, $tenantId, $name, $phone, $id_num, &$count) {
                     // 1. Create/Update User
                     $user = User::updateOrCreate(
                         ['email' => $email],
@@ -399,12 +502,12 @@ class CustomerList extends Component
 
                     // 2. Determine Box Number
                     $customer = Customer::where('user_id', $user->id)->first();
-                    if (!$customer) {
-                        $tenant = \App\Models\Tenant::find($tenantId);
+                    if (! $customer) {
+                        $tenant = Tenant::find($tenantId);
                         $settings = $tenant->settings_json;
                         $nextId = ($settings['box_number_counter'] ?? 1000) + 1;
 
-                        $boxNumber = 'LGX' . $nextId;
+                        $boxNumber = 'LGX'.$nextId;
 
                         Customer::create([
                             'tenant_id' => $tenantId,
@@ -430,7 +533,7 @@ class CustomerList extends Component
                     $count++;
                 });
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Error importing CSV row for $email: " . $e->getMessage());
+                Log::error("Error importing CSV row for $email: ".$e->getMessage());
                 $skipped++;
             }
         }
@@ -439,13 +542,13 @@ class CustomerList extends Component
         $this->reset(['csv_file', 'is_importing']);
 
         if ($count > 0) {
-            session()->flash('message', "Importación finalizada: $count clientes procesados." . ($skipped > 0 ? " ($skipped filas omitidas por formato incorrecto)" : ""));
+            session()->flash('message', "Importación finalizada: $count clientes procesados.".($skipped > 0 ? " ($skipped filas omitidas por formato incorrecto)" : ''));
         } else {
-            session()->flash('error', "No se pudo cargar ningún cliente. Verifique que el archivo use comas (,) o puntos y comas (;) y que la segunda columna sea un email válido.");
+            session()->flash('error', 'No se pudo cargar ningún cliente. Verifique que el archivo use comas (,) o puntos y comas (;) y que la segunda columna sea un email válido.');
         }
     }
 
-    public function render()
+    protected function buildQuery()
     {
         $query = Customer::with(['user', 'locker', 'level'])
             ->withCount(['packages', 'invoices'])
@@ -454,35 +557,85 @@ class CustomerList extends Component
         if ($this->filter === 'new') {
             $query->where('customers.created_at', '>=', now()->subHours(48));
         } elseif ($this->filter === 'unverified') {
-            $query->whereHas('user', function($q) {
+            $query->whereHas('user', function ($q) {
                 $q->whereNull('email_verified_at');
             });
         } elseif ($this->filter === 'inactive') {
             $query->whereDoesntHave('packages')
-                  ->where('customers.created_at', '<=', now()->subDays(7));
+                ->where('customers.created_at', '<=', now()->subDays(7));
         }
 
         if ($this->filter_level) {
             $query->where('loyalty_level_id', $this->filter_level);
         }
 
-        if (!empty(trim($this->search))) {
-            $searchTerm = '%' . str_replace(' ', '%', trim($this->search)) . '%';
+        if (! empty(trim($this->search))) {
+            $searchTerm = '%'.str_replace(' ', '%', trim($this->search)).'%';
 
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('box_number', 'like', $searchTerm)
-                  ->orWhere('identification_number', 'like', $searchTerm)
-                  ->orWhere('phone', 'like', $searchTerm)
-                  ->orWhereHas('user', function($u) use ($searchTerm) {
-                      $u->where(function($sub) use ($searchTerm) {
-                          $sub->where('name', 'like', $searchTerm)
-                              ->orWhere('email', 'like', $searchTerm);
-                      });
-                  });
+                    ->orWhere('identification_number', 'like', $searchTerm)
+                    ->orWhere('phone', 'like', $searchTerm)
+                    ->orWhereHas('user', function ($u) use ($searchTerm) {
+                        $u->where(function ($sub) use ($searchTerm) {
+                            $sub->where('name', 'like', $searchTerm)
+                                ->orWhere('email', 'like', $searchTerm);
+                        });
+                    });
             });
         }
 
-        $customers = $this->applySorting($query)->paginate(10);
+        return $query;
+    }
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            $this->selected_customers = $this->applySorting($this->buildQuery())
+                ->paginate(10)
+                ->pluck('id')
+                ->map(fn ($id) => (string) $id)
+                ->all();
+        } else {
+            $this->selected_customers = [];
+        }
+    }
+
+    public function exportCustomers()
+    {
+        $customers = $this->applySorting($this->buildQuery())->get();
+
+        if ($customers->isEmpty()) {
+            session()->flash('error', 'No hay clientes para exportar con los filtros actuales.');
+
+            return;
+        }
+
+        $filename = 'Clientes_'.now()->format('Y-m-d').'.csv';
+
+        return response()->streamDownload(function () use ($customers) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF"); // UTF-8 BOM para Excel
+            fputcsv($handle, ['Casillero', 'Nombre', 'Email', 'Teléfono', 'Identificación', 'Dirección', 'Saldo', 'Puntos']);
+            foreach ($customers as $c) {
+                fputcsv($handle, [
+                    $c->box_number,
+                    $c->user?->name ?? '',
+                    $c->user?->email ?? '',
+                    $c->phone ?? '',
+                    $c->identification_number ?? '',
+                    $c->address ?? '',
+                    number_format((float) $c->balance, 2),
+                    (int) $c->points,
+                ]);
+            }
+            fclose($handle);
+        }, $filename, ['Content-Type' => 'text/csv']);
+    }
+
+    public function render()
+    {
+        $customers = $this->applySorting($this->buildQuery())->paginate(10);
 
         $availableLockers = Locker::where('status', 'available')->get();
 
@@ -493,7 +646,7 @@ class CustomerList extends Component
             'active_lockers' => Customer::whereNotNull('locker_id')->count(),
         ];
 
-        $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
+        $tenant = Tenant::find(session('tenant_id')) ?? Tenant::first();
         $settings = $tenant->settings_json ?? [];
         $airEnabled = $settings['service_air_enabled'] ?? true;
         $maritimeEnabled = $settings['service_maritime_enabled'] ?? true;
@@ -501,7 +654,7 @@ class CustomerList extends Component
         return view('livewire.logistics.customer-list', [
             'customers' => $customers,
             'availableLockers' => $availableLockers,
-            'loyaltyLevels' => \App\Models\LoyaltyLevel::all(),
+            'loyaltyLevels' => LoyaltyLevel::all(),
             'stats' => $stats,
             'airEnabled' => $airEnabled,
             'maritimeEnabled' => $maritimeEnabled,

@@ -167,25 +167,16 @@
                                 <div class="text-muted xsmall">Sub: {{ $currency }} {{ number_format($invoice->subtotal, 2) }}</div>
                             </td>
                             <td>
-                                @php
-                                    $isOverdue = $invoice->status === 'unpaid' && $invoice->due_date && $invoice->due_date < now()->today();
-                                    $statusColor = [
-                                        'paid'      => '#1cbb8c',
-                                        'unpaid'    => ($isOverdue ? '#dc3545' : '#fcb92c'),
-                                        'cancelled' => '#6c757d',
-                                    ][$invoice->status] ?? '#6c757d';
-                                    $statusLabel = [
-                                        'paid'      => 'Pagada',
-                                        'unpaid'    => ($isOverdue ? 'Vencida' : 'Pendiente'),
-                                        'cancelled' => 'Anulada',
-                                    ][$invoice->status] ?? ucfirst($invoice->status);
-                                @endphp
+                                @php $isOverdue = $invoice->isOverdue(); @endphp
                                 <div class="d-flex align-items-center gap-1">
-                                    <span class="badge text-uppercase" style="font-size: 0.65rem; background-color: {{ $statusColor }}">
-                                        {{ $statusLabel }}
+                                    <span class="badge text-uppercase" style="font-size: 0.65rem; background-color: {{ $invoice->getStatusColor() }}">
+                                        {{ $invoice->getStatusLabel() }}
                                     </span>
                                     @if($invoice->email_sent_at)
                                         <span title="Correo enviado el {{ $invoice->email_sent_at->format('d/m/Y H:i') }}" class="badge" style="font-size: 0.65rem; background-color: #0d9488;">✉ Enviado</span>
+                                    @endif
+                                    @if($invoice->whatsapp_sent_at)
+                                        <span title="WhatsApp enviado el {{ $invoice->whatsapp_sent_at->format('d/m/Y H:i') }}" class="badge" style="font-size: 0.65rem; background-color: #25D366;">✆ Enviado</span>
                                     @endif
                                 </div>
                             </td>
@@ -196,6 +187,9 @@
                                     </a>
                                     <button wire:click="sendEmail({{ $invoice->id }})" class="btn btn-sm btn-light border" title="Enviar Email">
                                         <i class="align-middle text-info" data-feather="mail" style="width: 14px;"></i>
+                                    </button>
+                                    <button wire:click="sendWhatsApp({{ $invoice->id }})" class="btn btn-sm btn-light border" title="Enviar por WhatsApp" aria-label="Enviar factura {{ $invoice->number }} por WhatsApp">
+                                        <i class="align-middle text-success" data-feather="message-circle" style="width: 14px;"></i>
                                     </button>
                                     @if($invoice->status !== 'cancelled')
                                         <a href="{{ route('billing.edit', $invoice) }}" class="btn btn-sm btn-light border" title="Editar Factura">

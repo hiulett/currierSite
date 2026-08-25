@@ -44,12 +44,12 @@
                         <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-3">
                             <h5 class="card-title mb-0 uppercase font-black small">{{ $available_reports[$active_report]['name'] }}</h5>
                             @tenantSubFeature('download_reports')
-                            <button class="btn btn-sm btn-success fw-black text-uppercase tracking-tighter">
-                                <i class="align-middle me-1" data-feather="download"></i> Exportar Excel
+                            <button wire:click="exportReport" class="btn btn-sm btn-success fw-black text-uppercase tracking-tighter">
+                                <i class="align-middle me-1" data-feather="download"></i> Exportar CSV
                             </button>
                             @else
                             <button class="btn btn-sm btn-success fw-black text-uppercase tracking-tighter" disabled data-bs-toggle="tooltip" title="La descarga de reportes está desactivada para su empresa. Contacte al administrador.">
-                                <i class="align-middle me-1" data-feather="lock"></i> Exportar Excel
+                                <i class="align-middle me-1" data-feather="lock"></i> Exportar CSV
                             </button>
                             @endtenantSubFeature
                         </div>

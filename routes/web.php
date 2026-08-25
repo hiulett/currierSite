@@ -30,6 +30,7 @@ use App\Livewire\Customer\Dashboard as CustomerDashboard;
 use App\Livewire\Customer\PackageList as CustomerPackageList;
 use App\Livewire\Customer\PreAlert as CustomerPreAlert;
 use App\Livewire\Customer\InvoiceList as CustomerInvoiceList;
+use App\Livewire\Customer\QuotationList as CustomerQuotationList;
 use App\Livewire\Customer\TicketList as CustomerTicketList;
 use App\Livewire\Customer\TicketDetail as CustomerTicketDetail;
 use App\Livewire\Customer\WhatsappBot as CustomerWhatsappBot;
@@ -123,6 +124,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/logistica/reportes', ReportCenter::class)->name('logistics.reports')->middleware('can:logistics.reports');
         Route::get('/logistica/soporte', SupportTickets::class)->name('logistics.tickets')->middleware('can:tickets.manage');
         Route::get('/logistica/clientes', CustomerList::class)->name('logistics.customers')->middleware('can:customers.view');
+        Route::get('/logistica/clientes/{customer}', \App\Livewire\Logistics\CustomerDetail::class)->name('logistics.customers.detail')->middleware('can:customers.view');
         Route::get('/logistica/casilleros', LockerList::class)->name('logistics.lockers')->middleware('can:logistics.inventory');
         Route::get('/logistica/rastreo-global', \App\Livewire\Logistics\GlobalTracking::class)->name('logistics.tracking')->middleware('can:access-admin');
         Route::get('/logistica/etiqueta/{package}', [LabelController::class, 'print'])->name('logistics.label')->middleware('can:logistics.receive');
@@ -186,6 +188,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/rastreo', \App\Livewire\Customer\Tracking::class)->name('customer.tracking');
         Route::get('/prealertar', CustomerPreAlert::class)->name('customer.pre-alert');
         Route::get('/facturas', CustomerInvoiceList::class)->name('customer.invoices');
+        Route::get('/cotizaciones', CustomerQuotationList::class)->name('customer.quotations');
+        Route::get('/cotizaciones/{quotation}/download', [\App\Http\Controllers\Billing\QuotationController::class, 'download'])->name('customer.quotations.download');
         Route::get('/perfil', CustomerProfileSettings::class)->name('customer.profile');
         Route::get('/calculadora', CustomerShippingCalculator::class)->name('customer.calculator');
         Route::get('/facturas/{invoice}/download', [InvoiceController::class, 'download'])->name('customer.invoices.download');

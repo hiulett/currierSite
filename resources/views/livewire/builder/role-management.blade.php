@@ -53,7 +53,7 @@
                                                 <i class="align-middle text-dark" data-feather="edit-2"></i>
                                             </button>
                                             @if(!$role->is_system)
-                                                <button wire:click="deleteRole({{ $role->id }})" onclick="confirm('¿Estás seguro de eliminar este rol?') || event.stopImmediatePropagation()" class="btn btn-sm btn-light border shadow-sm text-danger" title="Eliminar">
+                                                <button wire:click="deleteRole({{ $role->id }})" wire:confirm="¿Estás seguro de eliminar este rol?" class="btn btn-sm btn-light border shadow-sm text-danger" title="Eliminar">
                                                     <i class="align-middle" data-feather="trash-2"></i>
                                                 </button>
                                             @endif

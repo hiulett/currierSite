@@ -2,42 +2,58 @@
 
 namespace App\Livewire\Billing;
 
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\WithFileUploads;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\Tenant;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class ExpenseList extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     // Filters
     public $search = '';
+
     public $category_filter = '';
+
     public $date_from = '';
+
     public $date_to = '';
 
     // Expense Form State
     public $expense_id = null;
+
     public $expense_category_id;
+
     public $amount;
+
     public $description;
+
     public $expense_date;
+
     public $payment_method = 'transferencia';
+
     public $reference_number;
+
     public $attachment;
+
     public $current_attachment_path;
+
     public $creating_or_editing = false;
 
     // Category Form State
     public $category_id = null;
+
     public $category_name;
+
     public $category_icon = 'tag';
+
     public $managing_categories = false;
+
     public $creating_or_editing_category = false;
 
     protected $paginationTheme = 'bootstrap';
@@ -58,7 +74,7 @@ class ExpenseList extends Component
     public function mount()
     {
         $tenant = Tenant::current();
-        if (!$tenant) {
+        if (! $tenant) {
             return;
         }
 
@@ -81,7 +97,7 @@ class ExpenseList extends Component
                 ExpenseCategory::create([
                     'tenant_id' => $tenant->id,
                     'name' => $def['name'],
-                    'icon' => $def['icon']
+                    'icon' => $def['icon'],
                 ]);
             }
         }
@@ -115,6 +131,14 @@ class ExpenseList extends Component
         $this->resetForm();
         $this->expense_category_id = ExpenseCategory::first()?->id;
         $this->creating_or_editing = true;
+        $this->dispatch('open-expense-modal');
+    }
+
+    public function closeExpenseModal()
+    {
+        $this->creating_or_editing = false;
+        $this->resetForm();
+        $this->dispatch('close-expense-modal');
     }
 
     public function editExpense($id)
@@ -132,6 +156,7 @@ class ExpenseList extends Component
         $this->current_attachment_path = $expense->attachment_path;
 
         $this->creating_or_editing = true;
+        $this->dispatch('open-expense-modal');
     }
 
     public function saveExpense()
@@ -139,7 +164,9 @@ class ExpenseList extends Component
         $this->validate();
 
         $tenant = Tenant::current();
-        if (!$tenant) return;
+        if (! $tenant) {
+            return;
+        }
 
         $data = [
             'tenant_id' => $tenant->id,
@@ -154,18 +181,19 @@ class ExpenseList extends Component
         // Attachment Upload
         if ($this->attachment) {
             try {
-                $filename = 'expense_' . $tenant->id . '_' . time() . '.' . $this->attachment->getClientOriginalExtension();
-                $disk = !empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
-                
+                $filename = 'expense_'.$tenant->id.'_'.time().'.'.$this->attachment->getClientOriginalExtension();
+                $disk = ! empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
+
                 $path = $this->attachment->storeAs('expenses', $filename, [
                     'disk' => $disk,
-                    'visibility' => 'public'
+                    'visibility' => 'public',
                 ]);
 
                 $data['attachment_path'] = Storage::disk($disk)->url($path);
             } catch (\Exception $e) {
-                Log::error("Error subiendo comprobante de egreso: " . $e->getMessage());
+                Log::error('Error subiendo comprobante de egreso: '.$e->getMessage());
                 session()->flash('error', 'Error al subir el archivo comprobante.');
+
                 return;
             }
         }
@@ -181,20 +209,21 @@ class ExpenseList extends Component
 
         $this->creating_or_editing = false;
         $this->resetForm();
+        $this->dispatch('close-expense-modal');
     }
 
     public function deleteExpense($id)
     {
         $expense = Expense::findOrFail($id);
-        
+
         // Remove attachment if exists
         if ($expense->attachment_path) {
             try {
-                $disk = !empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
+                $disk = ! empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
                 $relativePath = str_replace(Storage::disk($disk)->url(''), '', $expense->attachment_path);
                 Storage::disk($disk)->delete($relativePath);
             } catch (\Exception $e) {
-                Log::error("Error eliminando adjunto de egreso: " . $e->getMessage());
+                Log::error('Error eliminando adjunto de egreso: '.$e->getMessage());
             }
         }
 
@@ -215,6 +244,19 @@ class ExpenseList extends Component
     }
 
     // Category CRUD
+    public function openCategoryManager()
+    {
+        $this->managing_categories = true;
+        $this->dispatch('open-category-modal');
+    }
+
+    public function closeCategoryModal()
+    {
+        $this->managing_categories = false;
+        $this->creating_or_editing_category = false;
+        $this->dispatch('close-category-modal');
+    }
+
     public function openCategoryCreate()
     {
         $this->category_id = null;
@@ -240,7 +282,9 @@ class ExpenseList extends Component
         ]);
 
         $tenant = Tenant::current();
-        if (!$tenant) return;
+        if (! $tenant) {
+            return;
+        }
 
         if ($this->category_id) {
             $category = ExpenseCategory::findOrFail($this->category_id);
@@ -266,10 +310,11 @@ class ExpenseList extends Component
     public function deleteCategory($id)
     {
         $category = ExpenseCategory::findOrFail($id);
-        
+
         // Prevent deleting if it has expenses, or re-assign to 'Otros'
         if ($category->expenses()->count() > 0) {
             session()->flash('error', 'No se puede eliminar la categoría porque contiene gastos asociados.');
+
             return;
         }
 
@@ -311,9 +356,9 @@ class ExpenseList extends Component
         $query = Expense::with('category');
 
         if ($this->search) {
-            $query->where(function($q) {
-                $q->where('description', 'like', '%' . $this->search . '%')
-                  ->orWhere('reference_number', 'like', '%' . $this->search . '%');
+            $query->where(function ($q) {
+                $q->where('description', 'like', '%'.$this->search.'%')
+                    ->orWhere('reference_number', 'like', '%'.$this->search.'%');
             });
         }
 
@@ -340,7 +385,7 @@ class ExpenseList extends Component
             'expenses' => $expenses,
             'categories' => $categories,
             'stats' => $stats,
-            'currency' => $currency
+            'currency' => $currency,
         ])->layout('components.layouts.app');
     }
 }

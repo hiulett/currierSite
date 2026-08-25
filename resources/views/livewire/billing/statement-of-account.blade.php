@@ -258,15 +258,7 @@
                                         </td>
                                         <td class="fw-black text-primary">{{ $currency }} {{ number_format($inv->total, 2) }}</td>
                                         <td>
-                                            @php
-                                                $isOverdue = $inv->status === 'unpaid' && $inv->due_date && $inv->due_date < now()->today();
-                                                $badgeClass = match($inv->status) {
-                                                    'paid' => 'bg-success',
-                                                    'unpaid' => $isOverdue ? 'bg-danger' : 'bg-warning',
-                                                    default => 'bg-secondary'
-                                                };
-                                            @endphp
-                                            <span class="badge {{ $badgeClass }} text-uppercase">{{ $isOverdue ? 'VENCIDA' : $inv->status }}</span>
+                                            <span class="badge {{ $inv->getStatusBadgeClass() }} text-uppercase">{{ $inv->getStatusLabel() }}</span>
                                         </td>
                                         <td class="pe-4 text-end">
                                             <a href="{{ route('billing.download', $inv) }}" target="_blank" class="btn btn-sm btn-light border">
