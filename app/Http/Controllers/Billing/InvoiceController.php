@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Billing;
 
 use App\Http\Controllers\Controller;
-use App\Models\Invoice;
 use App\Models\Customer;
+use App\Models\Invoice;
 use App\Models\Package;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class InvoiceController extends Controller
 {
@@ -31,15 +31,16 @@ class InvoiceController extends Controller
                 $logoData = file_get_contents($logoUrl);
                 if ($logoData) {
                     $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
-                    $logoBase64 = 'data:image/' . ($type ?: 'png') . ';base64,' . base64_encode($logoData);
+                    $logoBase64 = 'data:image/'.($type ?: 'png').';base64,'.base64_encode($logoData);
                 }
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning("Could not convert logo to base64: " . $e->getMessage());
+            Log::warning('Could not convert logo to base64: '.$e->getMessage());
         }
 
         $pdf = Pdf::loadView('billing.invoice-pdf', compact('invoice', 'logoBase64'));
-        return $pdf->stream('Factura_' . $invoice->number . '.pdf');
+
+        return $pdf->stream('Factura_'.$invoice->number.'.pdf');
     }
 
     public function downloadStatement(Customer $customer)
@@ -60,11 +61,11 @@ class InvoiceController extends Controller
                 $logoData = file_get_contents($logoUrl);
                 if ($logoData) {
                     $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
-                    $logoBase64 = 'data:image/' . ($type ?: 'png') . ';base64,' . base64_encode($logoData);
+                    $logoBase64 = 'data:image/'.($type ?: 'png').';base64,'.base64_encode($logoData);
                 }
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning("Could not convert logo to base64: " . $e->getMessage());
+            Log::warning('Could not convert logo to base64: '.$e->getMessage());
         }
 
         $invoices = Invoice::where('customer_id', $customer->id)
@@ -79,6 +80,6 @@ class InvoiceController extends Controller
 
         $pdf = Pdf::loadView('billing.statement-pdf', compact('customer', 'invoices', 'packages', 'logoBase64'));
 
-        return $pdf->stream('Estado_Cuenta_' . $customer->box_number . '.pdf');
+        return $pdf->stream('Estado_Cuenta_'.$customer->box_number.'.pdf');
     }
 }

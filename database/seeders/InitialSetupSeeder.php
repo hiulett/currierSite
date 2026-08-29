@@ -2,8 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customer;
+use App\Models\Package;
+use App\Models\Plan;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Models\Warehouse;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -14,14 +18,14 @@ class InitialSetupSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Plan::create([
+        Plan::create([
             'name' => 'Starter',
             'price' => 99.00,
             'limit_users' => 5,
             'limit_packages_month' => 500,
         ]);
 
-        \App\Models\Plan::create([
+        Plan::create([
             'name' => 'Professional',
             'price' => 249.00,
             'limit_users' => 20,
@@ -47,7 +51,7 @@ class InitialSetupSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        $warehouse = \App\Models\Warehouse::create([
+        $warehouse = Warehouse::create([
             'tenant_id' => $tenant->id,
             'name' => 'Miami Air Hub',
             'code' => 'MIA-AIR',
@@ -59,7 +63,7 @@ class InitialSetupSeeder extends Seeder
             'service_type' => 'air',
         ]);
 
-        \App\Models\Warehouse::create([
+        Warehouse::create([
             'tenant_id' => $tenant->id,
             'name' => 'Miami Sea Port',
             'code' => 'MIA-SEA',
@@ -71,14 +75,14 @@ class InitialSetupSeeder extends Seeder
             'service_type' => 'maritime',
         ]);
 
-        $customer = \App\Models\Customer::create([
+        $customer = Customer::create([
             'tenant_id' => $tenant->id,
             'user_id' => $user->id,
             'box_number' => 'PTY-1001',
             'phone' => '507-6666-6666',
         ]);
 
-        \App\Models\Package::create([
+        Package::create([
             'tenant_id' => $tenant->id,
             'customer_id' => $customer->id,
             'warehouse_id' => $warehouse->id,

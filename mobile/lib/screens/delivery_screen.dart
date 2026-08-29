@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
-import 'dart:typed_data';
 
 class DeliveryScreen extends StatefulWidget {
   const DeliveryScreen({super.key});
@@ -33,13 +32,22 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Datos del Recibo", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text(
+              "Datos del Recibo",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
             const TextField(
-              decoration: InputDecoration(labelText: "Nombre de quien recibe", border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                labelText: "Nombre de quien recibe",
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 24),
-            const Text("Firma Digital", style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              "Firma Digital",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             Container(
               decoration: BoxDecoration(
@@ -63,7 +71,7 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
                     _controller.clear();
                     setState(() => _isSigned = false);
                   },
-                  child: const Text("Limpiar Firma")
+                  child: const Text("Limpiar Firma"),
                 ),
               ],
             ),
@@ -72,18 +80,25 @@ class _DeliveryScreenState extends State<DeliveryScreen> {
               width: double.infinity,
               height: 54,
               child: ElevatedButton(
-                onPressed: !_isSigned ? null : () async {
-                  // Uint8List? signature = await _controller.toPngBytes();
-                  // TODO: Submit to API
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Entrega registrada con éxito"))
-                  );
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue.shade800, foregroundColor: Colors.white),
+                onPressed: !_isSigned
+                    ? null
+                    : () async {
+                        // Uint8List? signature = await _controller.toPngBytes();
+                        // TODO: Submit to API
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Entrega registrada con éxito"),
+                          ),
+                        );
+                        Navigator.pop(context);
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade800,
+                  foregroundColor: Colors.white,
+                ),
                 child: const Text("CONFIRMAR ENTREGA"),
               ),
-            )
+            ),
           ],
         ),
       ),

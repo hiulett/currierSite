@@ -2,14 +2,16 @@
 
 namespace App\Livewire\SuperAdmin;
 
-use Livewire\Component;
-use App\Models\Tenant;
-use App\Models\Package;
+use App\Helpers\DatabaseHelper;
 use App\Models\Customer;
 use App\Models\Invoice;
-use App\Models\User;
+use App\Models\Package;
 use App\Models\Plan;
 use App\Models\SubscriptionInvoice;
+use App\Models\Tenant;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class Dashboard extends Component
 {
@@ -41,7 +43,7 @@ class Dashboard extends Component
             ->count();
 
         // Online Users (Activity in last 15 mins from sessions table)
-        $online_users = \Illuminate\Support\Facades\DB::table('sessions')
+        $online_users = DB::table('sessions')
             ->where('last_activity', '>=', now()->subMinutes(15)->getTimestamp())
             ->whereNotNull('user_id')
             ->count();
@@ -61,7 +63,7 @@ class Dashboard extends Component
             ->count();
 
         // Package growth (last 12 months)
-        $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%m');
+        $monthFormat = DatabaseHelper::formatMonth('created_at', '%m');
         $package_growth = Package::withoutGlobalScope('tenant')
             ->selectRaw("$monthFormat as month, count(*) as count")
             ->where('created_at', '>=', now()->startOfYear())
@@ -72,9 +74,9 @@ class Dashboard extends Component
             ->toArray();
 
         // Top 5 Tenants by package volume
-        $top_tenants = Tenant::withCount(['packages' => function($query) {
-                $query->withoutGlobalScope('tenant');
-            }])
+        $top_tenants = Tenant::withCount(['packages' => function ($query) {
+            $query->withoutGlobalScope('tenant');
+        }])
             ->orderBy('packages_count', 'desc')
             ->take(5)
             ->get();

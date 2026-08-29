@@ -2,17 +2,16 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
-use Livewire\WithFileUploads;
 use App\Models\Customer;
-use App\Models\Package;
-use App\Models\Warehouse;
 use App\Models\Manifest;
 use App\Models\ManifestItem;
+use App\Models\Package;
+use App\Models\Warehouse;
 use App\Services\Logistics\AIParserService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class SmartReceptionHub extends Component
 {
@@ -20,22 +19,33 @@ class SmartReceptionHub extends Component
 
     // OCR / File Upload
     public $invoiceFile;
+
     public $ocrResults = [];
+
     public $isProcessing = false;
+
     public $invoiceNumber;
 
     // Manual Reception Fields (Keep for individual registration)
     public $tracking_number;
+
     public $box_number;
+
     public $weight = 0;
+
     public $warehouse_id;
+
     public $found_customer = null;
+
     public $customer_search = '';
+
     public $search_results = [];
 
     // Dashboard State
     public $mode = 'manual'; // 'manual', 'ocr'
+
     public $auto_invoice = true;
+
     public $isModal = false;
 
     public function mount($isModal = false)
@@ -59,17 +69,17 @@ class SmartReceptionHub extends Component
 
         try {
             $fullPath = $this->invoiceFile->getRealPath();
-            $parser = new AIParserService();
+            $parser = new AIParserService;
             $result = $parser->parseGlobalExpressInvoice($fullPath);
 
             $this->ocrResults = $result['items'];
-            $this->invoiceNumber = $result['invoice_number'] ?? 'FAC-' . date('His');
+            $this->invoiceNumber = $result['invoice_number'] ?? 'FAC-'.date('His');
             $this->mode = 'ocr';
 
-            session()->flash('message', 'Factura analizada. Se detectaron ' . count($this->ocrResults) . ' ítems de carga esperada.');
+            session()->flash('message', 'Factura analizada. Se detectaron '.count($this->ocrResults).' ítems de carga esperada.');
         } catch (\Exception $e) {
-            Log::error("Error en SmartReception OCR: " . $e->getMessage());
-            session()->flash('error', 'Error al procesar la factura: ' . $e->getMessage());
+            Log::error('Error en SmartReception OCR: '.$e->getMessage());
+            session()->flash('error', 'Error al procesar la factura: '.$e->getMessage());
         }
 
         $this->isProcessing = false;
@@ -77,16 +87,18 @@ class SmartReceptionHub extends Component
 
     public function saveAllOCRItems()
     {
-        if (empty($this->ocrResults)) return;
+        if (empty($this->ocrResults)) {
+            return;
+        }
 
         $count = count($this->ocrResults);
 
         try {
-            DB::transaction(function() use ($count) {
+            DB::transaction(function () use ($count) {
                 // 1. Crear Manifiesto de Carga Esperada (Sin afectar inventario)
                 $manifest = Manifest::create([
                     'tenant_id' => session('tenant_id') ?? auth()->user()->tenant_id ?? 1,
-                    'number' => 'MAN-' . date('Ymd-His'),
+                    'number' => 'MAN-'.date('Ymd-His'),
                     'carrier_invoice_number' => $this->invoiceNumber,
                     'status' => 'pending',
                     'created_by' => auth()->id(),
@@ -112,8 +124,8 @@ class SmartReceptionHub extends Component
             session()->flash('message', "¡Éxito! Se ha generado el Manifiesto con $count ítems. La carga ya figura como 'Esperada' y podrá ser recibida físicamente al llegar a bodega.");
 
         } catch (\Exception $e) {
-            Log::error("Error al confirmar lote OCR: " . $e->getMessage());
-            session()->flash('error', 'Error al guardar el manifiesto: ' . $e->getMessage());
+            Log::error('Error al confirmar lote OCR: '.$e->getMessage());
+            session()->flash('error', 'Error al guardar el manifiesto: '.$e->getMessage());
         }
     }
 
@@ -122,7 +134,7 @@ class SmartReceptionHub extends Component
     {
         $this->found_customer = Customer::with('user')->find($customerId);
         $this->box_number = $this->found_customer->box_number;
-        $this->customer_search = $this->found_customer->user->name . ' (' . $this->found_customer->box_number . ')';
+        $this->customer_search = $this->found_customer->user->name.' ('.$this->found_customer->box_number.')';
         $this->search_results = [];
     }
 
@@ -130,13 +142,14 @@ class SmartReceptionHub extends Component
     {
         if (strlen($value) < 2) {
             $this->search_results = [];
+
             return;
         }
 
         $this->search_results = Customer::with('user')
-            ->where('box_number', 'like', '%' . $value . '%')
-            ->orWhereHas('user', function($q) use ($value) {
-                $q->where('name', 'like', '%' . $value . '%');
+            ->where('box_number', 'like', '%'.$value.'%')
+            ->orWhereHas('user', function ($q) use ($value) {
+                $q->where('name', 'like', '%'.$value.'%');
             })->take(5)->get();
     }
 
@@ -150,7 +163,7 @@ class SmartReceptionHub extends Component
         ]);
 
         try {
-            DB::transaction(function() {
+            DB::transaction(function () {
                 Package::create([
                     'tenant_id' => session('tenant_id') ?? auth()->user()->tenant_id ?? 1,
                     'customer_id' => $this->found_customer->id,
@@ -159,14 +172,13 @@ class SmartReceptionHub extends Component
                     'weight' => $this->weight,
                     'status' => 'received',
                 ]);
-                $this->found_customer->increment('points', ceil($this->weight));
             });
 
             session()->flash('message', 'Paquete registrado exitosamente.');
             $this->reset(['tracking_number', 'customer_search', 'weight', 'found_customer', 'box_number']);
             $this->dispatch('package-saved');
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            Log::error('Exception in '.__CLASS__.'::'.__FUNCTION__.' - '.$e->getMessage()."\n".$e->getTraceAsString());
             session()->flash('error', 'Error al guardar el paquete.');
         }
     }

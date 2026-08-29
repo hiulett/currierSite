@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LoyaltyLevel extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use BelongsToTenant, HasFactory;
 
     protected $fillable = [
         'tenant_id',
@@ -16,9 +16,16 @@ class LoyaltyLevel extends Model
         'min_points',
         'max_points',
         'multiplier',
+        'free_pounds',
         'icon',
         'color',
         'priority',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'free_pounds' => 'integer',
+        'is_active' => 'boolean',
     ];
 
     public function customers()

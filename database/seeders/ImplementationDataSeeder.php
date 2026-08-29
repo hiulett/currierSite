@@ -2,24 +2,25 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Tenant;
 use App\Models\Customer;
-use App\Models\LoyaltyLevel;
 use App\Models\Invoice;
-use App\Models\PaymentProof;
+use App\Models\LoyaltyLevel;
 use App\Models\Manifest;
 use App\Models\ManifestItem;
+use App\Models\PaymentProof;
 use App\Models\Promotion;
+use App\Models\Tenant;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Seeder;
 
 class ImplementationDataSeeder extends Seeder
 {
     public function run(): void
     {
         $tenant = Tenant::where('subdomain', 'logiexpress')->first() ?? Tenant::first();
-        if (!$tenant) return;
+        if (! $tenant) {
+            return;
+        }
 
         // 1. Loyalty Levels
         $bronze = LoyaltyLevel::updateOrCreate(['tenant_id' => $tenant->id, 'name' => 'Bronze'], [
@@ -27,7 +28,7 @@ class ImplementationDataSeeder extends Seeder
             'multiplier' => 1.00,
             'color' => '#cd7f32',
             'icon' => 'award',
-            'priority' => 1
+            'priority' => 1,
         ]);
 
         $silver = LoyaltyLevel::updateOrCreate(['tenant_id' => $tenant->id, 'name' => 'Silver'], [
@@ -35,7 +36,7 @@ class ImplementationDataSeeder extends Seeder
             'multiplier' => 1.10,
             'color' => '#c0c0c0',
             'icon' => 'zap',
-            'priority' => 2
+            'priority' => 2,
         ]);
 
         $gold = LoyaltyLevel::updateOrCreate(['tenant_id' => $tenant->id, 'name' => 'Gold'], [
@@ -43,7 +44,7 @@ class ImplementationDataSeeder extends Seeder
             'multiplier' => 1.25,
             'color' => '#ffd700',
             'icon' => 'star',
-            'priority' => 3
+            'priority' => 3,
         ]);
 
         // 2. Assign Points to Customers and update their levels

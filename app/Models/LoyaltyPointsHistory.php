@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class LoyaltyPointsHistory extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use BelongsToTenant, HasFactory;
 
     protected $table = 'loyalty_points_history';
 

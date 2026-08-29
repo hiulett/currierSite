@@ -2,16 +2,19 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
+use App\Models\Customer;
 use App\Models\Package;
 use App\Services\ExternalTrackingService;
-use App\Models\Customer;
+use Livewire\Component;
 
 class GlobalTracking extends Component
 {
     public $search_tracking = '';
+
     public $package = null;
+
     public $external_data = null;
+
     public $searched = false;
 
     // Optional: for quick linking
@@ -22,7 +25,7 @@ class GlobalTracking extends Component
     public function mount()
     {
         if ($this->search_tracking) {
-            $this->search(new ExternalTrackingService());
+            $this->search(new ExternalTrackingService);
         }
     }
 
@@ -36,9 +39,9 @@ class GlobalTracking extends Component
         $this->external_data = null;
 
         // 1. Local Search (Our DB)
-        $this->package = Package::with(['customer.user', 'trackingEvents' => function($q) {
-                $q->orderBy('created_at', 'desc');
-            }])
+        $this->package = Package::with(['customer.user', 'trackingEvents' => function ($q) {
+            $q->orderBy('created_at', 'desc');
+        }])
             ->where('tracking_number', trim($this->search_tracking))
             ->orWhere('internal_tracking', trim($this->search_tracking))
             ->first();
@@ -54,11 +57,11 @@ class GlobalTracking extends Component
                 'status' => $localPanama['status'] ?? ($international['status'] ?? 'IN TRANSIT'),
                 'origin' => $international['origin'] ?? 'USA Hub',
                 'destination' => $international['destination'] ?? 'Panama',
-                'history' => array_merge($localPanama['history'] ?? [], $international['history'] ?? [])
+                'history' => array_merge($localPanama['history'] ?? [], $international['history'] ?? []),
             ];
 
             // Sort merged history by date descending
-            usort($this->external_data['history'], function($a, $b) {
+            usort($this->external_data['history'], function ($a, $b) {
                 return strtotime($b['date']) - strtotime($a['date']);
             });
         }
@@ -69,7 +72,7 @@ class GlobalTracking extends Component
     public function render()
     {
         return view('livewire.logistics.global-tracking', [
-            'customers' => Customer::with('user')->get()
+            'customers' => Customer::with('user')->get(),
         ])->layout('components.layouts.app');
     }
 }

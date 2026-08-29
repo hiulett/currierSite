@@ -16,7 +16,7 @@
                     <button wire:click="setFilter(30)" class="dropdown-item">{{ __('Último Mes') }}</button>
                     <button wire:click="setFilter(90)" class="dropdown-item">{{ __('Últimos 90 días') }}</button>
                 </div>
-                <button wire:click="refresh" class="btn btn-primary fw-black">
+                <button type="button" onclick="window.location.reload()" class="btn btn-primary fw-black">
                     <i class="align-middle me-1" data-feather="refresh-cw"></i> {{ __('ACTUALIZAR') }}
                 </button>
             </div>
@@ -71,76 +71,63 @@
     @endif
 
     <!-- Quick Stats -->
-    <div class="row mb-4">
-        <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <a href="{{ route('logistics.inventory') }}" class="card flex-fill border-0 shadow-sm overflow-hidden transform transition hover:scale-102 text-decoration-none bg-primary text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-2 fw-black text-white">{{ number_format($total_packages) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75 d-flex align-items-center">
-                                {{ __('Paquetes Totales') }}
-                                <i class="align-middle ms-1 text-white opacity-75" data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Total de paquetes recibidos en bodega que están en proceso de entrega."></i>
-                            </p>
-                        </div>
-                        <div class="stat bg-white bg-opacity-25 text-white">
-                            <i class="align-middle" data-feather="package"></i>
-                        </div>
-                    </div>
+    <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <a href="{{ route('logistics.inventory') }}" class="flex flex-col rounded-2xl bg-blue-600 p-5 text-white shadow-sm transition hover:scale-[1.02] hover:shadow-md">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-extrabold leading-none">{{ number_format($total_packages) }}</h3>
+                    <p class="mt-2 flex items-center text-xs font-bold uppercase tracking-wide text-white/80">
+                        {{ __('Paquetes Totales') }}
+                        <i data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Total de paquetes recibidos en bodega que están en proceso de entrega." class="ms-1" style="width: 12px; height: 12px;"></i>
+                    </p>
                 </div>
-            </a>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm overflow-hidden bg-success text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-2 text-white fw-black">{{ $currency }} {{ number_format($total_profit, 2) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75 d-flex align-items-center">
-                                {{ __('Ganancia Real Acumulada') }}
-                                <i class="align-middle ms-1 text-white opacity-75" data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Facturación total facturada menos egresos generales (y costo de fletes, según su preferencia en Ajustes Generales)."></i>
-                            </p>
-                        </div>
-                        <div class="stat bg-white bg-opacity-25 text-white">
-                            <i class="align-middle" data-feather="trending-up"></i>
-                        </div>
-                    </div>
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/20">
+                    <i data-feather="package" class="align-middle" style="width: 22px; height: 22px;"></i>
+                </div>
+            </div>
+        </a>
+
+        <div class="flex flex-col rounded-2xl bg-emerald-500 p-5 text-white shadow-sm transition hover:scale-[1.02] hover:shadow-md">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-extrabold leading-none">{{ $currency }} {{ number_format($total_profit, 2) }}</h3>
+                    <p class="mt-2 flex items-center text-xs font-bold uppercase tracking-wide text-white/80">
+                        {{ __('Ganancia Real Acumulada') }}
+                        <i data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Facturación total facturada menos egresos generales (y costo de fletes, según su preferencia en Ajustes Generales)." class="ms-1" style="width: 12px; height: 12px;"></i>
+                    </p>
+                </div>
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/20">
+                    <i data-feather="trending-up" class="align-middle" style="width: 22px; height: 22px;"></i>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm overflow-hidden bg-info text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-2 text-white fw-black">{{ $currency }} {{ number_format($projected_profit, 2) }}</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75 d-flex align-items-center">
-                                {{ __('Ganancia Proyectada (Bodega)') }}
-                                <i class="align-middle ms-1 text-white opacity-75" data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Ingresos estimados para los paquetes actualmente almacenados basándose en su peso y la tarifa por defecto, menos el costo estimado del flete."></i>
-                            </p>
-                        </div>
-                        <div class="stat bg-white bg-opacity-25 text-white">
-                            <i class="align-middle" data-feather="eye"></i>
-                        </div>
-                    </div>
+
+        <div class="flex flex-col rounded-2xl bg-sky-500 p-5 text-white shadow-sm transition hover:scale-[1.02] hover:shadow-md">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-extrabold leading-none">{{ $currency }} {{ number_format($projected_profit, 2) }}</h3>
+                    <p class="mt-2 flex items-center text-xs font-bold uppercase tracking-wide text-white/80">
+                        {{ __('Ganancia Proyectada (Bodega)') }}
+                        <i data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Ingresos estimados para los paquetes actualmente almacenados basándose en su peso y la tarifa por defecto, menos el costo estimado del flete." class="ms-1" style="width: 12px; height: 12px;"></i>
+                    </p>
+                </div>
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/20">
+                    <i data-feather="eye" class="align-middle" style="width: 22px; height: 22px;"></i>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm overflow-hidden bg-dark text-white">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-2 text-white fw-black">{{ number_format($avg_roi, 1) }}%</h3>
-                            <p class="mb-0 text-uppercase font-bold small opacity-75 d-flex align-items-center">
-                                {{ __('ROI Promedio (Retorno)') }}
-                                <i class="align-middle ms-1 text-white opacity-75" data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Margen de retorno promedio basado en los precios de facturación al cliente final contra los costos cobrados por proveedores de flete."></i>
-                            </p>
-                        </div>
-                        <div class="stat bg-white bg-opacity-25 text-white">
-                            <i class="align-middle" data-feather="percent"></i>
-                        </div>
-                    </div>
+
+        <div class="flex flex-col rounded-2xl bg-slate-800 p-5 text-white shadow-sm transition hover:scale-[1.02] hover:shadow-md">
+            <div class="flex items-start justify-between">
+                <div class="flex-1">
+                    <h3 class="text-2xl font-extrabold leading-none">{{ number_format($avg_roi, 1) }}%</h3>
+                    <p class="mt-2 flex items-center text-xs font-bold uppercase tracking-wide text-white/80">
+                        {{ __('ROI Promedio (Retorno)') }}
+                        <i data-feather="help-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Margen de retorno promedio basado en los precios de facturación al cliente final contra los costos cobrados por proveedores de flete." class="ms-1" style="width: 12px; height: 12px;"></i>
+                    </p>
+                </div>
+                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/20">
+                    <i data-feather="percent" class="align-middle" style="width: 22px; height: 22px;"></i>
                 </div>
             </div>
         </div>
@@ -299,8 +286,13 @@
     </div>
 
     <!-- Charts Initialization Script -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    @vite(['resources/js/charts.js'])
     <script>
+        function whenChartReady(fn) {
+            if (window.Chart) { fn(); return; }
+            window.addEventListener('chartjs-ready', () => fn(), { once: true });
+        }
+
         function toggleFullscreen(cardId) {
             const card = document.getElementById(cardId);
             card.classList.toggle('card-fullscreen');
@@ -314,11 +306,15 @@
             }, 100);
         }
 
-        document.addEventListener("livewire:navigated", initDashboardFeatures);
-        document.addEventListener("DOMContentLoaded", initDashboardFeatures);
+        document.addEventListener("livewire:navigated", () => whenChartReady(initDashboardFeatures));
+        whenChartReady(initDashboardFeatures);
 
         function initDashboardFeatures() {
             initDashboardCharts();
+
+            // Sortable se expone desde charts.js. Si aún no está disponible
+            // (p. ej. módulo previo en la sesión del navegador), no romper los charts.
+            if (typeof window.Sortable === 'undefined') return;
 
             ['dashboard-charts', 'dashboard-second-row'].forEach(id => {
                 const el = document.getElementById(id);

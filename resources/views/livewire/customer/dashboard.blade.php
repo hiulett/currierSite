@@ -83,66 +83,10 @@
 
     <!-- Quick Stats Row -->
     <div class="row mb-4">
-        <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm rounded-4 overflow-hidden hover-lift transition-all">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-1 fw-bold text-dark">{{ count($recent_packages) }}</h3>
-                            <p class="mb-0 text-text-uppercase font-bold xsmall text-muted">Paquetes en Bodega</p>
-                        </div>
-                        <div class="stat bg-primary-light text-primary">
-                            <i class="align-middle" data-feather="home"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm rounded-4 overflow-hidden hover-lift transition-all">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-1 fw-bold text-primary">{{ $packages_in_transit_count }}</h3>
-                            <p class="mb-0 text-text-uppercase font-bold xsmall text-muted">Viniendo al País</p>
-                        </div>
-                        <div class="stat bg-info-light text-info">
-                            <i class="align-middle" data-feather="truck"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm rounded-4 overflow-hidden hover-lift transition-all border-start border-danger border-4">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-1 fw-bold text-danger">{{ $unpaid_invoices_count }}</h3>
-                            <p class="mb-0 text-text-uppercase font-bold xsmall text-muted">Facturas por Pagar</p>
-                        </div>
-                        <div class="stat bg-danger-light text-danger">
-                            <i class="align-middle" data-feather="credit-card"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-sm-6 col-xl-3 d-flex">
-            <div class="card flex-fill border-0 shadow-sm rounded-4 overflow-hidden hover-lift transition-all">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-grow-1">
-                            <h3 class="mb-1 fw-bold text-warning">{{ number_format($customer->points) }}</h3>
-                            <p class="mb-0 text-text-uppercase font-bold xsmall text-muted">LogiPuntos VIP</p>
-                        </div>
-                        <div class="stat bg-warning-light text-warning">
-                            <i class="align-middle" data-feather="star"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <x-stat value="{{ count($recent_packages) }}" label="Paquetes en Bodega" icon="home" color="primary" />
+        <x-stat value="{{ $packages_in_transit_count }}" label="Viniendo al País" icon="truck" color="info" />
+        <x-stat value="{{ $unpaid_invoices_count }}" label="Facturas por Pagar" icon="credit-card" color="danger" extraClass="border-start border-danger border-4" />
+        <x-stat value="{{ number_format($customer->points) }}" label="LogiPuntos VIP" icon="star" color="warning" />
     </div>
 
     <div class="row">

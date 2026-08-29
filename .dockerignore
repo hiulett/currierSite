@@ -1,0 +1,43 @@
+# Dependencias y builds
+/vendor
+/node_modules
+/public/build
+/public/hot
+/public/storage
+
+# Entorno y secretos
+.env
+.env.backup
+.env.production
+/auth.json
+
+# Control de versiones e IDE
+.git
+.gitignore
+.idea
+.vscode
+.fleet
+.nova
+.zed
+
+# Logs y estado local
+*.log
+server.log
+.phpunit.result.cache
+/.phpunit.cache
+storage/logs/*
+storage/pail
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+!storage/framework/.gitkeep
+!storage/logs/.gitkeep
+
+# Base de datos local
+/database/*.sqlite
+/database/*.sqlite-journal
+
+# Docs temporales / artefactos locales
+.httrack
+.stitch
+*.gif

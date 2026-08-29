@@ -2,16 +2,19 @@
 
 namespace App\Livewire\Customer;
 
-use Livewire\Component;
 use App\Models\Package;
 use App\Services\ExternalTrackingService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class Tracking extends Component
 {
     public $search_tracking = '';
+
     public $package = null;
+
     public $external_data = null;
+
     public $searched = false;
 
     protected $queryString = ['search_tracking' => ['except' => '']];
@@ -19,7 +22,7 @@ class Tracking extends Component
     public function mount()
     {
         if ($this->search_tracking) {
-            $this->search(new ExternalTrackingService());
+            $this->search(new ExternalTrackingService);
         }
     }
 
@@ -33,13 +36,13 @@ class Tracking extends Component
         $this->external_data = null;
 
         // 1. Local Search (Our DB) - Scoped to the customer
-        $this->package = Package::with(['trackingEvents' => function($q) {
-                $q->orderBy('created_at', 'desc');
-            }])
+        $this->package = Package::with(['trackingEvents' => function ($q) {
+            $q->orderBy('created_at', 'desc');
+        }])
             ->where('customer_id', Auth::user()->customer?->id)
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->where('tracking_number', trim($this->search_tracking))
-                  ->orWhere('internal_tracking', trim($this->search_tracking));
+                    ->orWhere('internal_tracking', trim($this->search_tracking));
             })
             ->first();
 
@@ -55,11 +58,11 @@ class Tracking extends Component
                 'status' => $localPanama['status'] ?? ($international['status'] ?? 'IN TRANSIT'),
                 'origin' => $international['origin'] ?? 'USA Hub',
                 'destination' => $international['destination'] ?? 'Panama',
-                'history' => array_merge($localPanama['history'] ?? [], $international['history'] ?? [])
+                'history' => array_merge($localPanama['history'] ?? [], $international['history'] ?? []),
             ];
 
             // Sort merged history by date descending
-            usort($this->external_data['history'], function($a, $b) {
+            usort($this->external_data['history'], function ($a, $b) {
                 return strtotime($b['date']) - strtotime($a['date']);
             });
         }

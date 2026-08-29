@@ -2,13 +2,14 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
-use App\Models\Shipment;
 use App\Models\Package;
+use App\Models\Shipment;
+use Livewire\Component;
 
 class ShipmentDetail extends Component
 {
     public Shipment $shipment;
+
     public $search_package = '';
 
     public function mount(Shipment $shipment)
@@ -19,7 +20,7 @@ class ShipmentDetail extends Component
     public function addPackage($packageId)
     {
         $package = Package::find($packageId);
-        if ($package && !$package->shipment_id) {
+        if ($package && ! $package->shipment_id) {
             $package->update(['shipment_id' => $this->shipment->id]);
             $this->shipment->load('packages');
         }
@@ -55,17 +56,17 @@ class ShipmentDetail extends Component
     {
         $availablePackages = Package::whereNull('shipment_id')
             ->whereIn('status', ['received', 'prealert'])
-            ->where(function($q) {
-                $q->where('tracking_number', 'like', '%' . $this->search_package . '%')
-                  ->orWhereHas('customer', function($sub) {
-                      $sub->where('box_number', 'like', '%' . $this->search_package . '%');
-                  });
+            ->where(function ($q) {
+                $q->where('tracking_number', 'like', '%'.$this->search_package.'%')
+                    ->orWhereHas('customer', function ($sub) {
+                        $sub->where('box_number', 'like', '%'.$this->search_package.'%');
+                    });
             })
             ->take(5)
             ->get();
 
         return view('livewire.logistics.shipment-detail', [
-            'availablePackages' => $availablePackages
+            'availablePackages' => $availablePackages,
         ])->layout('components.layouts.app');
     }
 }

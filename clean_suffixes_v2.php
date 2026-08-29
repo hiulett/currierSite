@@ -2,10 +2,11 @@
 
 require __DIR__.'/vendor/autoload.php';
 $app = require_once __DIR__.'/bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
 use App\Models\Customer;
+use Illuminate\Contracts\Console\Kernel;
 
 echo "Eliminando sufijos numericos (-1, -2, etc) de los casilleros...\n";
 
@@ -21,7 +22,7 @@ foreach ($customers as $c) {
         $c->update([
             'box_number' => $cleanId,
             'box_number_air' => $cleanId,
-            'box_number_maritime' => $cleanId
+            'box_number_maritime' => $cleanId,
         ]);
         $count++;
     }

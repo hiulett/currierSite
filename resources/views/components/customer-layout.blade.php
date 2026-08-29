@@ -113,7 +113,7 @@
 	<div class="wrapper">
 		<nav id="sidebar" class="sidebar js-sidebar">
 			<div class="sidebar-content js-simplebar">
-				<a class='sidebar-brand d-flex flex-column align-items-center py-4' href='{{ route('customer.dashboard') }}'>
+				<a class='sidebar-brand d-flex flex-column align-items-center py-4' wire:navigate href='{{ route('customer.dashboard') }}'>
                     @php
                         $tenant = \App\Models\Tenant::find(session('tenant_id'));
                         $logoUrl = $tenant ? $tenant->getLogoUrl() : null;
@@ -140,11 +140,11 @@
                                 {{ Auth::user()->name }}
                             </a>
                             <div class="dropdown-menu dropdown-menu-start">
-                                <a class='dropdown-item' href='{{ route('customer.profile') }}'><i class="align-middle me-1" data-feather="user"></i> {{ __('Perfil') }}</a>
+                                <a class='dropdown-item' wire:navigate href='{{ route('customer.profile') }}'><i class="align-middle me-1" data-feather="user"></i> {{ __('Perfil') }}</a>
                                 <div class="dropdown-divider"></div>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="dropdown-item text-danger">{{ __('Cerrar Sesión') }}</button>
+                                    <button type="submit" class="dropdown-item text-danger">{{ __('Cerrar SesiÃ³n') }}</button>
                                 </form>
                             </div>
 
@@ -159,32 +159,38 @@
 					</li>
 
 					<li class="sidebar-item {{ request()->routeIs('customer.dashboard') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('customer.dashboard') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('customer.dashboard') }}'>
 							<i class="align-middle" data-feather="sliders"></i> <span class="align-middle">{{ __('Dashboard') }}</span>
 						</a>
 					</li>
 
 					<li class="sidebar-item {{ request()->routeIs('customer.packages') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('customer.packages') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('customer.packages') }}'>
 							<i class="align-middle" data-feather="box"></i> <span class="align-middle">{{ __('Mis Paquetes') }}</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('customer.tracking') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('customer.tracking') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('customer.tracking') }}'>
 							<i class="align-middle text-info" data-feather="search"></i> <span class="align-middle">Rastrear Paquete (Live)</span>
 						</a>
 					</li>
 
 					<li class="sidebar-item {{ request()->routeIs('customer.pre-alert') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('customer.pre-alert') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('customer.pre-alert') }}'>
 							<i class="align-middle" data-feather="bell"></i> <span class="align-middle">{{ __('Pre-alertar') }}</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('customer.calculator') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('customer.calculator') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('customer.calculator') }}'>
 							<i class="align-middle" data-feather="percent"></i> <span class="align-middle">{{ __('Calculadora') }}</span>
+						</a>
+					</li>
+
+                    <li class="sidebar-item {{ request()->routeIs('customer.rewards') ? 'active' : '' }}">
+						<a class='sidebar-link' wire:navigate href='{{ route('customer.rewards') }}'>
+							<i class="align-middle text-warning" data-feather="gift"></i> <span class="align-middle">Recompensas LOGYPUNTOS</span>
 						</a>
 					</li>
 
@@ -193,19 +199,19 @@
 					</li>
 
 					<li class="sidebar-item {{ request()->routeIs('customer.invoices') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('customer.invoices') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('customer.invoices') }}'>
 							<i class="align-middle" data-feather="credit-card"></i> <span class="align-middle">{{ __('Facturas') }}</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('customer.quotations*') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('customer.quotations') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('customer.quotations') }}'>
 							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">{{ __('Cotizaciones') }}</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('customer.tickets.*') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('customer.tickets.index') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('customer.tickets.index') }}'>
 							<i class="align-middle" data-feather="help-circle"></i> <span class="align-middle">{{ __('Soporte') }}</span>
 						</a>
 					</li>
@@ -215,7 +221,7 @@
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('customer.profile') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('customer.profile') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('customer.profile') }}'>
 							<i class="align-middle" data-feather="user"></i> <span class="align-middle">{{ __('Mi Perfil') }}</span>
 						</a>
 					</li>
@@ -226,10 +232,10 @@
 					<div class="sidebar-cta-content">
 						<strong class="d-inline-block mb-2">Ayuda</strong>
 						<div class="mb-3 text-sm">
-							¿Necesitas ayuda con tu casillero? Contáctanos.
+							Â¿Necesitas ayuda con tu casillero? ContÃ¡ctanos.
 						</div>
 						<div class="d-grid">
-							<a href="#" class="btn btn-outline-primary">Soporte Técnico</a>
+							<a href="#" class="btn btn-outline-primary">Soporte TÃ©cnico</a>
 						</div>
 					</div>
 				</div>
@@ -261,17 +267,17 @@
                                 </div>
 							</a>
 							<div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2">
-								<a class='dropdown-item py-2 px-3 rounded-top-4' href='{{ route('customer.profile') }}'>
+								<a class='dropdown-item py-2 px-3 rounded-top-4' wire:navigate href='{{ route('customer.profile') }}'>
                                     <i class="align-middle me-2 text-primary" data-feather="user"></i> Mi Perfil
                                 </a>
-                                <a class='dropdown-item py-2 px-3' href='{{ route('customer.invoices') }}'>
+                                <a class='dropdown-item py-2 px-3' wire:navigate href='{{ route('customer.invoices') }}'>
                                     <i class="align-middle me-2 text-primary" data-feather="credit-card"></i> Mis Facturas
                                 </a>
 								<div class="dropdown-divider"></div>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="dropdown-item py-2 px-3 text-danger rounded-bottom-4">
-                                        <i class="align-middle me-2" data-feather="log-out"></i> Cerrar Sesión
+                                        <i class="align-middle me-2" data-feather="log-out"></i> Cerrar SesiÃ³n
                                     </button>
                                 </form>
 							</div>
@@ -297,7 +303,7 @@
 						<div class="col-6 text-end">
 							<ul class="list-inline">
 								<li class="list-inline-item">
-									<a class="text-muted" href="#" target="_blank">Términos</a>
+									<a class="text-muted" href="#" target="_blank">TÃ©rminos</a>
 								</li>
 								<li class="list-inline-item">
 									<a class="text-muted" href="#" target="_blank">Privacidad</a>
@@ -310,8 +316,8 @@
 		</div>
 	</div>
 
-	<script src="{{ asset('adminkit/js/app.js') }}"></script>
-    <script>
+	<script src="{{ asset('adminkit/js/app.js') }}" data-navigate-once></script>
+    <script data-navigate-once>
         // Proxy feather.replace to prevent crashes from vendor code
         if (typeof feather !== 'undefined' && feather.replace) {
             const originalReplace = feather.replace;
@@ -348,7 +354,7 @@
         });
     </script>
     @stack('scripts')
-    <script>
+    <script data-navigate-once>
         // Kill any lingering service workers from old PWA packages
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
@@ -357,6 +363,30 @@
                 }
             });
         }
+    </script>
+
+    @livewire('customer.loyalty-alerts')
+
+    <script data-navigate-once>
+        // Persistir scroll del sidebar entre navegaciones
+        (function () {
+            var KEY = 'logysaas.sidebar.scroll';
+            function scroller() {
+                return document.querySelector('.sidebar-content') || document.getElementById('sidebar');
+            }
+            window.addEventListener('beforeunload', function () {
+                var el = scroller();
+                if (el) { try { sessionStorage.setItem(KEY, String(el.scrollTop)); } catch (e) {} }
+            });
+            function restoreSidebarScroll() {
+                var el = scroller();
+                var v = null;
+                try { v = sessionStorage.getItem(KEY); } catch (e) {}
+                if (el && v) { el.scrollTop = parseInt(v, 10) || 0; }
+            }
+            window.addEventListener('DOMContentLoaded', restoreSidebarScroll);
+            document.addEventListener('livewire:navigated', restoreSidebarScroll);
+        })();
     </script>
 </body>
 

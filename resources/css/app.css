@@ -137,3 +137,9 @@
   animation: shine 3s ease-in-out infinite;
   pointer-events: none;
 }
+
+/* Sidebar: scroll interno al expandir submenús (no desborda hacia abajo) */
+#sidebar .sidebar-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+}

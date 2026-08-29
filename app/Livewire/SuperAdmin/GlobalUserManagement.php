@@ -2,18 +2,20 @@
 
 namespace App\Livewire\SuperAdmin;
 
-use Livewire\Component;
-use App\Models\User;
 use App\Models\Tenant;
-use Livewire\WithPagination;
+use App\Models\User;
 use App\Traits\WithSorting;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class GlobalUserManagement extends Component
 {
     use WithPagination, WithSorting;
 
     public $search = '';
+
     public $filter_tenant = '';
+
     public $filter_role = '';
 
     public function updatingSearch()
@@ -26,9 +28,9 @@ class GlobalUserManagement extends Component
         $query = User::withoutGlobalScope('tenant')->with('tenant');
 
         if ($this->search) {
-            $query->where(function($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
+            $query->where(function ($q) {
+                $q->where('name', 'like', '%'.$this->search.'%')
+                    ->orWhere('email', 'like', '%'.$this->search.'%');
             });
         }
 
@@ -42,7 +44,7 @@ class GlobalUserManagement extends Component
 
         return view('livewire.super-admin.global-user-management', [
             'users' => $this->applySorting($query)->paginate(15),
-            'tenants' => Tenant::all()
+            'tenants' => Tenant::all(),
         ])->layout('components.super-admin-layout');
     }
 }

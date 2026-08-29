@@ -2,21 +2,27 @@
 
 namespace App\Livewire\Builder;
 
-use Livewire\Component;
-use App\Models\Tenant;
 use App\Models\LoyaltyLevel;
+use App\Models\Tenant;
+use Livewire\Component;
 
 class LoyaltySettings extends Component
 {
     public $points_per_pound;
+
     public $loyalty_enabled;
 
     // Level form fields
     public $level_id;
+
     public $name;
+
     public $min_points;
+
     public $multiplier = 1.0;
+
     public $color = '#4f46e5';
+
     public $icon = 'star';
 
     public $is_editing = false;
@@ -102,7 +108,7 @@ class LoyaltySettings extends Component
         $levels = LoyaltyLevel::orderBy('min_points', 'asc')->get();
 
         return view('livewire.builder.loyalty-settings', [
-            'levels' => $levels
+            'levels' => $levels,
         ])->layout('components.layouts.app');
     }
 }

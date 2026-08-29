@@ -2,18 +2,20 @@
 
 namespace App\Livewire\SuperAdmin;
 
-use Livewire\Component;
 use App\Models\Invoice;
 use App\Models\Tenant;
-use Livewire\WithPagination;
 use App\Traits\WithSorting;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class GlobalFinanceAudit extends Component
 {
     use WithPagination, WithSorting;
 
     public $search = '';
+
     public $filter_tenant = '';
+
     public $filter_status = '';
 
     public function updatingSearch()
@@ -26,7 +28,7 @@ class GlobalFinanceAudit extends Component
         $query = Invoice::withoutGlobalScope('tenant')->with(['tenant', 'customer.user']);
 
         if ($this->search) {
-            $query->where('number', 'like', '%' . $this->search . '%');
+            $query->where('number', 'like', '%'.$this->search.'%');
         }
 
         if ($this->filter_tenant) {
@@ -39,7 +41,7 @@ class GlobalFinanceAudit extends Component
 
         return view('livewire.super-admin.global-finance-audit', [
             'invoices' => $this->applySorting($query)->paginate(15),
-            'tenants' => Tenant::all()
+            'tenants' => Tenant::all(),
         ])->layout('components.super-admin-layout');
     }
 }

@@ -2,23 +2,31 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
 use App\Models\Delivery;
-use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class DeliveryManifest extends Component
 {
     use WithFileUploads;
 
     public $deliveryId;
+
     public $delivery;
+
     public $photo;
+
     public $signature;
+
     public $notes;
+
     public $latitude;
+
     public $longitude;
+
     public $cod_collected = 0;
+
     public $payment_method_collected = 'cash'; // cash, yappy
 
     public function mount($id)
@@ -69,6 +77,7 @@ class DeliveryManifest extends Component
         }
 
         session()->flash('message', 'Entrega finalizada con éxito.');
+
         return redirect()->route('logistics.delivery');
     }
 

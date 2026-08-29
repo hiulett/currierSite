@@ -2,12 +2,13 @@
 
 namespace App\Livewire\SuperAdmin;
 
-use Livewire\Component;
 use App\Models\Tenant;
+use Livewire\Component;
 
 class ReportConfig extends Component
 {
     public $selected_tenant_id;
+
     public $enabled_reports = [];
 
     public $all_reports = [

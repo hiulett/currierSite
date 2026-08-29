@@ -1,5 +1,12 @@
 <?php
 
+use App\Http\Middleware\CheckPermission;
+use App\Http\Middleware\CheckTenantFeature;
+use App\Http\Middleware\ForcePasswordChange;
+use App\Http\Middleware\IdentifyTenant;
+use App\Http\Middleware\RequiresTenantContext;
+use App\Http\Middleware\RoleRedirect;
+use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,19 +22,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
 
         $middleware->web(append: [
-            \App\Http\Middleware\IdentifyTenant::class,
-            \App\Http\Middleware\ForcePasswordChange::class,
+            IdentifyTenant::class,
+            ForcePasswordChange::class,
+            SecurityHeaders::class,
         ]);
 
         $middleware->alias([
-            'permission' => \App\Http\Middleware\CheckPermission::class,
-            'role' => \App\Http\Middleware\RoleRedirect::class,
-            'tenant.required' => \App\Http\Middleware\RequiresTenantContext::class,
-            'tenant.feature' => \App\Http\Middleware\CheckTenantFeature::class,
+            'permission' => CheckPermission::class,
+            'role' => RoleRedirect::class,
+            'tenant.required' => RequiresTenantContext::class,
+            'tenant.feature' => CheckTenantFeature::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->report(function (\Throwable $e) {
-            file_put_contents('php://stderr', "[" . date('Y-m-d H:i:s') . "] ERROR DIAGNÓSTICO: " . $e->getMessage() . "\n" . $e->getTraceAsString() . "\n");
+        $exceptions->report(function (Throwable $e) {
+            file_put_contents('php://stderr', '['.date('Y-m-d H:i:s').'] ERROR DIAGNÓSTICO: '.$e->getMessage()."\n".$e->getTraceAsString()."\n");
         });
     })->create();

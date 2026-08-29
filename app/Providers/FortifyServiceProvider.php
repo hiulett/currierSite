@@ -6,14 +6,17 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Actions\RedirectIfTwoFactorAuthenticatable;
-use Laravel\Fortify\Fortify;
 use Laravel\Fortify\Contracts\LogoutResponse;
+use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -22,7 +25,8 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse {
+        $this->app->instance(LogoutResponse::class, new class implements LogoutResponse
+        {
             public function toResponse($request)
             {
                 return redirect('/login');
@@ -37,13 +41,13 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::loginView(function () {
             // Si no hay tenant en sesión y no es superadmin, mostrar pantalla de error
-            if (!session()->has('tenant_id')) {
+            if (! session()->has('tenant_id')) {
                 // Intentar resolver tenant por subdominio (para setups con subdominio propio)
                 $host = request()->getHost();
                 $subdomain = explode('.', $host)[0];
                 $tenant = null;
-                if (!in_array($subdomain, ['curriersite-production', 'localhost', '127', 'www'])) {
-                    $tenant = \App\Models\Tenant::where('domain', $host)
+                if (! in_array($subdomain, ['curriersite-production', 'localhost', '127', 'www'])) {
+                    $tenant = Tenant::where('domain', $host)
                         ->orWhere('subdomain', $subdomain)
                         ->first();
                     if ($tenant) {
@@ -51,16 +55,17 @@ class FortifyServiceProvider extends ServiceProvider
                     }
                 }
             }
+
             return view('auth.login');
         });
 
         Fortify::registerView(function () {
             // Si no hay tenant en sesión, no se puede registrar
-            if (!session()->has('tenant_id')) {
+            if (! session()->has('tenant_id')) {
                 $host = request()->getHost();
                 $subdomain = explode('.', $host)[0];
-                if (!in_array($subdomain, ['curriersite-production', 'localhost', '127', 'www'])) {
-                    $tenant = \App\Models\Tenant::where('domain', $host)
+                if (! in_array($subdomain, ['curriersite-production', 'localhost', '127', 'www'])) {
+                    $tenant = Tenant::where('domain', $host)
                         ->orWhere('subdomain', $subdomain)
                         ->first();
                     if ($tenant) {
@@ -68,6 +73,7 @@ class FortifyServiceProvider extends ServiceProvider
                     }
                 }
             }
+
             return view('auth.register');
         });
 
@@ -96,21 +102,21 @@ class FortifyServiceProvider extends ServiceProvider
             $sessionTenantId = session('tenant_id');
 
             // 1. Obtener todos los usuarios con ese email (sin importar el tenant)
-            $users = \App\Models\User::withoutGlobalScope('tenant')
+            $users = User::withoutGlobalScope('tenant')
                 ->where('email', $email)
                 ->get();
 
             foreach ($users as $user) {
                 // 2. Verificar contraseña
-                if (\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                if (Hash::check($request->password, $user->password)) {
 
                     // 2.5 Verificar si el usuario está activo
-                    if (!$user->is_active) {
+                    if (! $user->is_active) {
                         continue; // Si no está activo, no puede iniciar sesión (o saltar al siguiente si hay duplicados por tenant)
                     }
 
                     // 3. Si entramos por un link de agencia específico, validar integridad
-                    if ($sessionTenantId && $user->tenant_id && (int)$user->tenant_id !== (int)$sessionTenantId) {
+                    if ($sessionTenantId && $user->tenant_id && (int) $user->tenant_id !== (int) $sessionTenantId) {
                         continue; // Podría haber otro usuario con el mismo email en esta agencia
                     }
 

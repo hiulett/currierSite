@@ -2,21 +2,24 @@
 
 namespace App\Livewire\Customer;
 
-use Livewire\Component;
 use App\Models\Invoice;
-use App\Models\Package;
 use App\Models\PaymentProof;
-use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class Checkout extends Component
 {
     use WithFileUploads;
 
     public $invoice;
+
     public $delivery_method = 'pickup';
+
     public $payment_method = 'card';
+
     public $payment_proof;
+
     public $notes;
 
     public function mount($invoice_id)
@@ -59,6 +62,7 @@ class Checkout extends Component
             });
 
             session()->flash('message', 'Comprobante subido. Tu pago está en revisión.');
+
             return redirect()->route('customer.invoices');
 
         } elseif ($this->payment_method === 'cod') {
@@ -69,13 +73,16 @@ class Checkout extends Component
             });
 
             session()->flash('message', 'Has seleccionado Pago Contra Entrega. Tu paquete será despachado.');
+
             return redirect()->route('customer.packages');
 
         } elseif ($this->payment_method === 'card') {
             $this->updatePackagesDeliveryMethod();
+
             return redirect()->route('payment.checkout', $this->invoice);
         } elseif ($this->payment_method === 'paypal') {
             $this->updatePackagesDeliveryMethod();
+
             return redirect()->route('payment.paypal', $this->invoice);
         }
     }

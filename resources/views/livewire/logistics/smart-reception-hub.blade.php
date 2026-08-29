@@ -1,8 +1,8 @@
 <div class="container-fluid p-0">
 
-    {{-- ══════════════════════════════════════════
+    {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         MODE SELECTOR HEADER
-    ══════════════════════════════════════════ --}}
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
     @if(!$isModal)
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 px-1">
             <div>
@@ -13,7 +13,7 @@
                     </span>
                     Smart Reception Hub
                 </h4>
-                <p class="text-muted small mb-0 ms-5 ps-1">Registro rápido y automatizado de carga</p>
+                <p class="text-muted small mb-0 ms-5 ps-1">Registro rÃ¡pido y automatizado de carga</p>
             </div>
             <div class="d-inline-flex p-1 gap-1" style="background:#f1f5f9;border-radius:.75rem;">
                 <button wire:click="$set('mode', 'manual')"
@@ -50,7 +50,7 @@
     @endif
 
     <div class="row g-4">
-        {{-- ─── LEFT COLUMN: Action Panel ─── --}}
+        {{-- â”€â”€â”€ LEFT COLUMN: Action Panel â”€â”€â”€ --}}
         <div class="{{ $isModal ? 'col-lg-5' : 'col-xl-5 col-xxl-4' }}">
             @if($mode == 'manual')
                 {{-- Manual Entry Form --}}
@@ -73,10 +73,10 @@
                         <form wire:submit.prevent="saveManual">
                             {{-- Tracking --}}
                             <div class="mb-3">
-                                <label class="form-label xsmall fw-black text-uppercase text-muted" style="letter-spacing:.08em;">Nº de Tracking</label>
+                                <label class="form-label xsmall fw-black text-uppercase text-muted" style="letter-spacing:.08em;">NÂº de Tracking</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border-end-0" style="border-radius:.625rem 0 0 .625rem; border:1.5px solid #e2e8f0; border-right:0;">
-                                        <i data-feather="barcode" style="width:16px;height:16px;color:#64748b;"></i>
+                                        <i data-feather="hash" style="width:16px;height:16px;color:#64748b;"></i>
                                     </span>
                                     <input type="text" wire:model="tracking_number"
                                            class="form-control fw-black border-start-0 @error('tracking_number') is-invalid @enderror"
@@ -224,7 +224,7 @@
             </div>
         </div>
 
-        {{-- ─── RIGHT COLUMN: OCR / Placeholder ─── --}}
+        {{-- â”€â”€â”€ RIGHT COLUMN: OCR / Placeholder â”€â”€â”€ --}}
         <div class="{{ $isModal ? 'col-lg-7' : 'col-xl-7 col-xxl-8' }}">
             @if($mode == 'ocr')
                 <div class="card border-0 overflow-hidden shadow-sm" style="border-radius:1rem; background: white;">
@@ -237,7 +237,7 @@
                                 <i data-feather="cpu" class="me-1 align-middle" style="width:14px; height:14px;"></i> Lote Esperado de Factura
                             </p>
                             <div class="d-flex align-items-center gap-2 mt-1">
-                                <span class="xsmall fw-black text-muted text-uppercase" style="letter-spacing:.08em; font-size: 0.65rem;">Nº Factura:</span>
+                                <span class="xsmall fw-black text-muted text-uppercase" style="letter-spacing:.08em; font-size: 0.65rem;">NÂº Factura:</span>
                                 <input type="text" wire:model="invoiceNumber"
                                        class="form-control form-control-sm fw-black text-primary d-inline"
                                        style="width:140px;border:1.5px solid #e2e8f0;border-radius:.5rem;background:white;padding:.35rem .6rem; font-size: 0.8rem;"
@@ -291,18 +291,18 @@
                                     </div>
                                     <h5 class="fw-black text-dark mb-2" style="font-size: 1.1rem;">Subir Factura de Proveedor</h5>
                                     <p class="text-muted small mb-4" style="max-width: 380px; margin: 0 auto; line-height: 1.4;">
-                                        Sube el documento PDF o imagen de tu manifiesto. Extraeremos automáticamente trackings, pesos y dimensiones.
+                                        Sube el documento PDF o imagen de tu manifiesto. Extraeremos automÃ¡ticamente trackings, pesos y dimensiones.
                                     </p>
                                     <span class="badge fw-black px-3 py-2"
                                           style="background:#eff6ff;color:#3b82f6;border-radius:.5rem;font-size:.7rem; letter-spacing: 0.05em;">
-                                        PDF · JPG · PNG (MÁX. 10MB)
+                                        PDF Â· JPG Â· PNG (MÃX. 10MB)
                                     </span>
                                 </label>
 
                                 <div wire:loading wire:target="invoiceFile" class="py-4">
                                     <div class="spinner-border text-primary mb-3" role="status" style="width:2.5rem;height:2.5rem;"></div>
                                     <h5 class="fw-black text-dark">Analizando Documento...</h5>
-                                    <p class="text-muted small mb-0">Nuestro motor OCR con IA está extrayendo la información</p>
+                                    <p class="text-muted small mb-0">Nuestro motor OCR con IA estÃ¡ extrayendo la informaciÃ³n</p>
                                 </div>
                             </div>
                         @else
@@ -327,7 +327,7 @@
                                                     <span class="fw-black text-dark" style="font-size:0.9rem;">{{ $item['weight'] }} lb</span>
                                                 </td>
                                                 <td class="text-center py-3">
-                                                    <span class="xsmall text-muted font-bold">{{ $item['length'] }} × {{ $item['height'] }} × {{ $item['width'] }}</span>
+                                                    <span class="xsmall text-muted font-bold">{{ $item['length'] }} Ã— {{ $item['height'] }} Ã— {{ $item['width'] }}</span>
                                                 </td>
                                                 <td class="text-center py-3">
                                                     <span class="badge fw-black px-2 py-1"
@@ -353,10 +353,10 @@
                             <i data-feather="zap" style="width:36px;height:36px;color:#60a5fa;"></i>
                         </div>
                         <h4 class="fw-black text-uppercase mb-2" style="letter-spacing:1px;color:rgba(255,255,255,.95); font-size: 1.25rem;">
-                            Hub de Recepción Inteligente 360º
+                            Hub de RecepciÃ³n Inteligente 360Âº
                         </h4>
                         <p class="mb-4 text-white-50 small" style="max-width:400px; line-height: 1.5;">
-                            Agiliza el ingreso de carga. Cambia a <strong class="text-white">FACTURA OCR</strong> arriba para procesar documentos de forma masiva y notificar automáticamente.
+                            Agiliza el ingreso de carga. Cambia a <strong class="text-white">FACTURA OCR</strong> arriba para procesar documentos de forma masiva y notificar automÃ¡ticamente.
                         </p>
 
                         {{-- Flow Steps representation --}}
@@ -371,13 +371,13 @@
                                 <div class="rounded-circle bg-white-10 mx-auto d-flex align-items-center justify-content-center mb-2" style="width:36px; height:36px;">
                                     <i data-feather="message-circle" style="width:16px; height:16px; color:#34d399;"></i>
                                 </div>
-                                <div class="fw-bold xsmall text-white-50" style="font-size:0.7rem;">Notificación WhatsApp</div>
+                                <div class="fw-bold xsmall text-white-50" style="font-size:0.7rem;">NotificaciÃ³n WhatsApp</div>
                             </div>
                             <div class="col-4 text-center">
                                 <div class="rounded-circle bg-white-10 mx-auto d-flex align-items-center justify-content-center mb-2" style="width:36px; height:36px;">
                                     <i data-feather="file-text" style="width:16px; height:16px; color:#facc15;"></i>
                                 </div>
-                                <div class="fw-bold xsmall text-white-50" style="font-size:0.7rem;">Facturación y Cobro Auto</div>
+                                <div class="fw-bold xsmall text-white-50" style="font-size:0.7rem;">FacturaciÃ³n y Cobro Auto</div>
                             </div>
                         </div>
                     </div>

@@ -2,14 +2,15 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Str;
+use App\Livewire\Billing\CreateQuotation;
+use App\Livewire\Billing\QuotationList;
 use App\Models\Customer;
 use App\Models\Quotation;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Livewire\Billing\QuotationList;
-use App\Livewire\Billing\CreateQuotation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -18,7 +19,9 @@ class QuotationReproTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $admin;
+
     protected $customer;
 
     protected function setUp(): void
@@ -143,7 +146,7 @@ class QuotationReproTest extends TestCase
 
         // The billing.view gate is only registered from the DB during app boot,
         // which happens before RefreshDatabase migrates in tests. Define it explicitly.
-        \Illuminate\Support\Facades\Gate::define('billing.view', fn ($user) => true);
+        Gate::define('billing.view', fn ($user) => true);
 
         $response = $this->get(route('billing.quotations.index'));
         $response->assertOk();

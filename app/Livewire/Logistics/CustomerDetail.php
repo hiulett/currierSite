@@ -44,6 +44,10 @@ class CustomerDetail extends Component
 
     public $loyalty_level_id;
 
+    public $rate_type = 'regular';
+
+    public $is_loyalty_eligible = true;
+
     // Credentials (shared partial customer-credential-modals)
     public $selected_customer_id = null;
 
@@ -75,6 +79,8 @@ class CustomerDetail extends Component
         $this->box_number_maritime = $c->box_number_maritime;
         $this->locker_id = $c->locker_id;
         $this->loyalty_level_id = $c->loyalty_level_id;
+        $this->rate_type = $c->rate_type ?? 'regular';
+        $this->is_loyalty_eligible = $c->is_loyalty_eligible ?? true;
 
         $this->dispatch('open-customer-modal');
     }
@@ -89,6 +95,8 @@ class CustomerDetail extends Component
             ],
             'locker_id' => 'nullable|exists:lockers,id',
             'loyalty_level_id' => 'nullable|exists:loyalty_levels,id',
+            'rate_type' => 'required|in:regular,reseller,special',
+            'is_loyalty_eligible' => 'boolean',
             'phone' => 'required|string|max:20',
             'identification_number' => 'required|string|max:50',
             'address' => 'nullable|string|max:500',
@@ -108,6 +116,8 @@ class CustomerDetail extends Component
             'phone' => $this->phone,
             'locker_id' => $this->locker_id,
             'loyalty_level_id' => $this->loyalty_level_id,
+            'rate_type' => $this->rate_type,
+            'is_loyalty_eligible' => $this->is_loyalty_eligible,
             'identification_number' => $this->identification_number,
             'address' => $this->address,
             'admin_notes' => $this->admin_notes,

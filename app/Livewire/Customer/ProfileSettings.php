@@ -2,24 +2,30 @@
 
 namespace App\Livewire\Customer;
 
-use Livewire\Component;
-use App\Models\User;
-use App\Models\Customer;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Livewire\Component;
 
 class ProfileSettings extends Component
 {
     public $name;
+
     public $email;
+
     public $phone;
+
     public $identification_number;
+
     public $address;
+
     public $latitude;
+
     public $longitude;
 
     public $current_password;
+
     public $new_password;
+
     public $new_password_confirmation;
 
     public function mount()
@@ -90,14 +96,14 @@ class ProfileSettings extends Component
 
         $user->update([
             'password' => Hash::make($this->new_password),
-            'must_change_password' => false
+            'must_change_password' => false,
         ]);
 
         $this->reset(['current_password', 'new_password', 'new_password_confirmation']);
 
         session()->flash('password_message', 'Contraseña actualizada correctamente.');
 
-        if (!$user->must_change_password) {
+        if (! $user->must_change_password) {
             return redirect()->route('customer.dashboard');
         }
     }

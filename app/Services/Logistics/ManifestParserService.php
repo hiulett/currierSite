@@ -2,8 +2,8 @@
 
 namespace App\Services\Logistics;
 
-use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\Log;
+use Smalot\PdfParser\Parser;
 
 class ManifestParserService
 {
@@ -11,7 +11,7 @@ class ManifestParserService
 
     public function __construct()
     {
-        $this->parser = new Parser();
+        $this->parser = new Parser;
     }
 
     /**
@@ -22,12 +22,12 @@ class ManifestParserService
         try {
             $pdf = $this->parser->parseFile($filePath);
             $pages = $pdf->getPages();
-            $fullText = "";
+            $fullText = '';
             $allData = [];
 
             foreach ($pages as $page) {
                 $text = $page->getText();
-                $fullText .= $text . "\n";
+                $fullText .= $text."\n";
 
                 // Procesar página por página para mantener contexto de tablas
                 $pageData = $this->extractDataFromTable($text);
@@ -36,13 +36,14 @@ class ManifestParserService
 
             return [
                 'trackings' => collect($allData)->unique('tracking')->values()->toArray(),
-                'invoice_number' => $this->extractInvoiceNumber($fullText)
+                'invoice_number' => $this->extractInvoiceNumber($fullText),
             ];
         } catch (\Exception $e) {
-            Log::error("Error al procesar PDF de manifiesto: " . $e->getMessage());
+            Log::error('Error al procesar PDF de manifiesto: '.$e->getMessage());
+
             return [
                 'trackings' => [],
-                'invoice_number' => null
+                'invoice_number' => null,
             ];
         }
     }
@@ -80,7 +81,7 @@ class ManifestParserService
                     'height' => $nums[1] ?? 0,
                     'width' => $nums[2] ?? 0,
                     'weight' => $nums[3] ?? 0,
-                    'carrier_guess' => 'Auto'
+                    'carrier_guess' => 'Auto',
                 ];
             }
         }
@@ -96,7 +97,7 @@ class ManifestParserService
             'USPS' => '/\b(9[0-9]{19,33})\b/',
             'Internal' => '/\b(WH[0-9]{6}\s+[0-9]-[0-9])\b/i',
             'Courier' => '/\b(TBA[A-Z0-9]{10,20})\b/i',
-            'Long' => '/\b(420331[0-9]{20,30})\b/'
+            'Long' => '/\b(420331[0-9]{20,30})\b/',
         ];
 
         foreach ($patterns as $pattern) {

@@ -2,35 +2,51 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
 use App\Models\Customer;
-use App\Models\Package;
-use App\Models\Warehouse;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Package;
+use App\Models\Tenant;
+use App\Models\Warehouse;
 use App\Notifications\PackageReceived;
-use Illuminate\Support\Facades\Log;
+use App\Services\Loyalty\LoyaltyService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Livewire\Component;
 
 class ReceivePackage extends Component
 {
     public $tracking_number;
+
     public $box_number;
+
     public $weight = 0;
+
     public $length = 0;
+
     public $width = 0;
+
     public $height = 0;
+
     public $volumetric_weight = 0;
+
     public $description;
+
     public $warehouse_id;
+
     public $last_package_id = null;
+
     public $auto_invoice = true;
+
     public $service_type = 'air';
 
     public $found_customer = null;
+
     public $customer_search = '';
+
     public $search_results = [];
+
     public $recent_customer_ids = [];
 
     public function mount()
@@ -57,14 +73,15 @@ class ReceivePackage extends Component
     {
         if (strlen($value) < 2) {
             $this->search_results = [];
+
             return;
         }
 
         $this->search_results = Customer::with('user')
-            ->where('box_number', 'like', '%' . $value . '%')
-            ->orWhereHas('user', function($q) use ($value) {
-                $q->where('name', 'like', '%' . $value . '%')
-                  ->orWhere('email', 'like', '%' . $value . '%');
+            ->where('box_number', 'like', '%'.$value.'%')
+            ->orWhereHas('user', function ($q) use ($value) {
+                $q->where('name', 'like', '%'.$value.'%')
+                    ->orWhere('email', 'like', '%'.$value.'%');
             })
             ->take(5)
             ->get();
@@ -74,14 +91,14 @@ class ReceivePackage extends Component
     {
         $this->found_customer = Customer::with('user')->find($customerId);
         $this->box_number = $this->found_customer->box_number;
-        $this->customer_search = $this->found_customer->user->name . ' (' . $this->found_customer->box_number . ')';
+        $this->customer_search = $this->found_customer->user->name.' ('.$this->found_customer->box_number.')';
         $this->search_results = [];
 
         // Auto-detect service type based on customer box number match
-        $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
+        $tenant = Tenant::find(session('tenant_id')) ?? Tenant::first();
         $settings = $tenant->settings_json ?? [];
         $maritime_prefix = $settings['box_number_prefix_maritime'] ?? 'SEA';
-        
+
         if (str_starts_with(strtoupper($this->box_number), strtoupper($maritime_prefix)) || $this->box_number === $this->found_customer->box_number_maritime) {
             $this->service_type = 'maritime';
         } else {
@@ -103,7 +120,7 @@ class ReceivePackage extends Component
 
         $package = null;
 
-        DB::transaction(function() use (&$package) {
+        DB::transaction(function () use (&$package) {
             $package = Package::create([
                 'tenant_id' => session('tenant_id'),
                 'customer_id' => $this->found_customer->id,
@@ -121,13 +138,13 @@ class ReceivePackage extends Component
 
             // Auto-invoice logic
             if ($this->auto_invoice && $this->weight > 0) {
-                $tenant = \App\Models\Tenant::find(session('tenant_id'));
+                $tenant = Tenant::find(session('tenant_id'));
                 $settings = $tenant->settings_json ?? [];
 
-                $rate = $this->service_type === 'maritime' 
-                    ? ($settings['maritime_rate'] ?? 1.50) 
+                $rate = $this->service_type === 'maritime'
+                    ? ($settings['maritime_rate'] ?? 1.50)
                     : ($settings['air_rate'] ?? 2.50);
-                    
+
                 $tax_percent = $settings['default_tax'] ?? 7;
 
                 $subtotal = $this->weight * $rate;
@@ -137,50 +154,39 @@ class ReceivePackage extends Component
                 $invoice = Invoice::create([
                     'tenant_id' => session('tenant_id'),
                     'customer_id' => $this->found_customer->id,
-                    'number' => 'INV-' . date('Ym') . strtoupper(Str::random(4)),
+                    'number' => 'INV-'.date('Ym').strtoupper(Str::random(4)),
                     'subtotal' => $subtotal,
                     'tax' => $tax,
                     'total' => $total,
                     'status' => 'unpaid',
                     'due_date' => now()->addDays(7),
-                    'notes' => 'Factura automática por recepción de paquete ' . $this->tracking_number,
+                    'notes' => 'Factura automática por recepción de paquete '.$this->tracking_number,
                 ]);
 
                 $serviceLabel = $this->service_type === 'maritime' ? 'Marítimo' : 'Aéreo';
                 InvoiceItem::create([
                     'tenant_id' => session('tenant_id'),
                     'invoice_id' => $invoice->id,
-                    'description' => 'Flete ' . $serviceLabel . ' (Libras) - ' . $this->tracking_number,
+                    'description' => 'Flete '.$serviceLabel.' (Libras) - '.$this->tracking_number,
                     'quantity' => $this->weight,
                     'unit_price' => $rate,
                     'total' => $subtotal,
                 ]);
 
                 $this->found_customer->increment('balance', $total);
+
+                // LOGYPUNTOS: acumulación automática al emitir la factura
+                app(LoyaltyService::class)->awardPointsForInvoice($invoice);
             }
         });
 
         $this->last_package_id = $package->id;
 
-        // Points Logic
-        $customer = $this->found_customer;
-        $pointsEarned = ceil($this->weight); // 1 lb = 1 point
-
-        $customer->increment('points', $pointsEarned);
-
-        // Referrer Points (10% of the points)
-        if ($customer->referrer_id) {
-            $referrer = \App\Models\Customer::find($customer->referrer_id);
-            if ($referrer) {
-                $referrer->increment('points', ceil($pointsEarned * 0.1));
-            }
-        }
-
         if ($this->found_customer->user) {
             try {
                 $this->found_customer->user->notify(new PackageReceived($package));
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Error enviando notificación de paquete recibido: ' . $e->getMessage());
+                Log::error('Error enviando notificación de paquete recibido: '.$e->getMessage());
             }
         }
 
@@ -194,7 +200,7 @@ class ReceivePackage extends Component
 
         $this->dispatch('package-saved');
 
-        session()->flash('message', 'Paquete registrado exitosamente: ' . $package->tracking_number);
+        session()->flash('message', 'Paquete registrado exitosamente: '.$package->tracking_number);
 
         $this->reset(['tracking_number', 'customer_search', 'weight', 'description', 'found_customer', 'box_number', 'service_type']);
     }
@@ -204,7 +210,7 @@ class ReceivePackage extends Component
         $recentCustomers = Customer::with('user')
             ->whereIn('id', $this->recent_customer_ids)
             ->get()
-            ->sortBy(function($model) {
+            ->sortBy(function ($model) {
                 return array_search($model->id, $this->recent_customer_ids);
             });
 
@@ -217,7 +223,7 @@ class ReceivePackage extends Component
         return view('livewire.logistics.receive-package', [
             'warehouses' => Warehouse::all(),
             'recentCustomers' => $recentCustomers,
-            'stats' => $stats
+            'stats' => $stats,
         ])->layout('components.layouts.app');
     }
 }

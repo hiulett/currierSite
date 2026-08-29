@@ -2,14 +2,13 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Tenant;
-use App\Models\Warehouse;
-use App\Models\User;
 use App\Models\Customer;
-use App\Models\Role;
 use App\Models\Permission;
-use Illuminate\Support\Str;
+use App\Models\Role;
+use App\Models\Tenant;
+use App\Models\User;
+use App\Models\Warehouse;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class ProductionDataSyncSeeder extends Seeder
@@ -126,7 +125,7 @@ class ProductionDataSyncSeeder extends Seeder
         User::where('tenant_id', $tenant1->id)->where('role', 'customer')->delete();
 
         // 6. FULL REAL CUSTOMER LIST
-        $dataRaw = "LGX319 David Arauz;David Arauz;davidarauz@cableonda.net;6930-5350 ;
+        $dataRaw = 'LGX319 David Arauz;David Arauz;davidarauz@cableonda.net;6930-5350 ;
 LGX522 Euris Ortega;Euris Ortega;Info@detalleslace.com;6112-1957;
 LGX174 Pma Logistic ;Yaneth Dominguez;Jdominguez@pmalogistics.com;6747-1880;
 LGX172 Yarelis Jhonson;Yarelis Jhonson;Naomycastillo1609@gmail.com;6654-9112;
@@ -360,25 +359,29 @@ LGX100 Milagros Lesmany;Milagros Lesmany;milagros.lemasny@gmail.com;6389-9074;
 LGX100 Kenny Gutierrez;Kenny Gutierrez;kennysting15@gmail.com;65156707;
 LGX100 Marilyn Miller;Miller;millermarilyn09@gmail.com;68956870;
 LGX100 Luis Bravo ;Luis Bravo;loco@gmail.com;65220600 ;
-LGX100 Jorge Rueda;Jorge Rueda;jorgerueda2929@gmail.com;6041-8739";
+LGX100 Jorge Rueda;Jorge Rueda;jorgerueda2929@gmail.com;6041-8739';
 
         $rows = explode("\n", $dataRaw);
         foreach ($rows as $row) {
             $cols = explode(';', $row);
-            if (count($cols) < 3) continue;
+            if (count($cols) < 3) {
+                continue;
+            }
 
             $fullNameRaw = trim($cols[0]);
             $email = trim($cols[2]);
             $phone = isset($cols[3]) ? trim($cols[3]) : '';
 
-            if (empty($email)) continue;
+            if (empty($email)) {
+                continue;
+            }
 
             $boxParts = explode(' ', $fullNameRaw);
             $boxNumber = $boxParts[0];
 
             if ($boxNumber === 'LGX' && isset($boxParts[1]) && is_numeric($boxParts[1])) {
-                $boxNumber = 'LGX' . $boxParts[1];
-                $name = trim(str_replace($boxParts[0] . ' ' . $boxParts[1], '', $fullNameRaw));
+                $boxNumber = 'LGX'.$boxParts[1];
+                $name = trim(str_replace($boxParts[0].' '.$boxParts[1], '', $fullNameRaw));
             } else {
                 $name = trim(str_replace($boxNumber, '', $fullNameRaw));
             }

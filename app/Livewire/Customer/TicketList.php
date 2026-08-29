@@ -2,19 +2,21 @@
 
 namespace App\Livewire\Customer;
 
-use Livewire\Component;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
-use Illuminate\Support\Facades\DB;
-use Livewire\WithPagination;
 use App\Traits\WithSorting;
+use Illuminate\Support\Facades\DB;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class TicketList extends Component
 {
     use WithPagination, WithSorting;
 
     public $subject;
+
     public $message;
+
     public $priority = 'low';
 
     public function createTicket()
@@ -27,7 +29,7 @@ class TicketList extends Component
 
         $customer = auth()->user()->customer;
 
-        DB::transaction(function() use ($customer) {
+        DB::transaction(function () use ($customer) {
             $ticket = Ticket::create([
                 'tenant_id' => $customer->tenant_id,
                 'customer_id' => $customer->id,
@@ -52,10 +54,10 @@ class TicketList extends Component
     {
         $customer = auth()->user()->customer;
 
-        if (!$customer) {
+        if (! $customer) {
             return view('livewire.customer.dashboard-error', [
                 'title' => 'Perfil no encontrado',
-                'message' => 'No tienes un perfil de cliente asociado para gestionar tickets.'
+                'message' => 'No tienes un perfil de cliente asociado para gestionar tickets.',
             ])->layout('components.customer-layout');
         }
 
@@ -63,7 +65,7 @@ class TicketList extends Component
             ->paginate(10);
 
         return view('livewire.customer.ticket-list', [
-            'tickets' => $tickets
+            'tickets' => $tickets,
         ])->layout('components.customer-layout');
     }
 }

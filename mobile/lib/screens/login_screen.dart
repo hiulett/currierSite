@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -52,28 +51,33 @@ class _LoginScreenState extends State<LoginScreen> {
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
-                onPressed: authProvider.isLoading ? null : () async {
-                  final success = await authProvider.login(
-                    _emailController.text,
-                    _passwordController.text,
-                  );
-                  if (success) {
-                    final user = authProvider.user;
-                    final role = user?['role']?.toString().toLowerCase();
-                    if (role == 'customer') {
-                      Navigator.pushReplacementNamed(context, '/customer_home');
-                    } else {
-                      Navigator.pushReplacementNamed(context, '/home');
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Login failed")),
-                    );
-                  }
-                },
+                onPressed: authProvider.isLoading
+                    ? null
+                    : () async {
+                        final success = await authProvider.login(
+                          _emailController.text,
+                          _passwordController.text,
+                        );
+                        if (success) {
+                          final user = authProvider.user;
+                          final role = user?['role']?.toString().toLowerCase();
+                          if (role == 'customer') {
+                            Navigator.pushReplacementNamed(
+                              context,
+                              '/customer_home',
+                            );
+                          } else {
+                            Navigator.pushReplacementNamed(context, '/home');
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Login failed")),
+                          );
+                        }
+                      },
                 child: authProvider.isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text("Entrar"),
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text("Entrar"),
               ),
             ),
           ],

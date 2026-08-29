@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Package;
-use App\Models\Invoice;
-
 use App\Models\AssistedPurchase;
+use App\Models\Invoice;
+use App\Models\Package;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CustomerController extends Controller
@@ -17,12 +16,12 @@ class CustomerController extends Controller
         $user = $request->user();
         $customer = $user->customer;
 
-        if (!$customer) {
+        if (! $customer) {
             return response()->json(['message' => 'Customer profile not found'], 404);
         }
 
         // Generate referral code if missing
-        if (!$customer->referral_code) {
+        if (! $customer->referral_code) {
             $customer->update(['referral_code' => strtoupper(Str::random(8))]);
         }
 
@@ -31,14 +30,16 @@ class CustomerController extends Controller
             'customer' => $customer,
             'locker' => $customer->locker,
             'tenant' => $user->tenant,
-            'referral_link' => config('app.url') . "/register?ref=" . $customer->referral_code,
+            'referral_link' => config('app.url').'/register?ref='.$customer->referral_code,
         ]);
     }
 
     public function assistedPurchases(Request $request)
     {
         $customer = $request->user()->customer;
-        if (!$customer) return response()->json([]);
+        if (! $customer) {
+            return response()->json([]);
+        }
 
         $purchases = AssistedPurchase::where('customer_id', $customer->id)
             ->orderBy('created_at', 'desc')
@@ -73,7 +74,9 @@ class CustomerController extends Controller
     {
         $customer = $request->user()->customer;
 
-        if (!$customer) return response()->json([]);
+        if (! $customer) {
+            return response()->json([]);
+        }
 
         $packages = Package::where('customer_id', $customer->id)
             ->with(['warehouse', 'shipment'])
@@ -88,7 +91,7 @@ class CustomerController extends Controller
         $customer = $request->user()->customer;
         $package = Package::where('customer_id', $customer->id)
             ->where('id', $id)
-            ->with(['trackingEvents' => function($q) {
+            ->with(['trackingEvents' => function ($q) {
                 $q->orderBy('created_at', 'desc');
             }, 'warehouse', 'shipment'])
             ->firstOrFail();
@@ -99,7 +102,9 @@ class CustomerController extends Controller
     public function invoices(Request $request)
     {
         $customer = $request->user()->customer;
-        if (!$customer) return response()->json([]);
+        if (! $customer) {
+            return response()->json([]);
+        }
 
         $invoices = Invoice::where('customer_id', $customer->id)
             ->orderBy('created_at', 'desc')
@@ -111,7 +116,9 @@ class CustomerController extends Controller
     public function balance(Request $request)
     {
         $customer = $request->user()->customer;
-        if (!$customer) return response()->json(['balance' => 0]);
+        if (! $customer) {
+            return response()->json(['balance' => 0]);
+        }
 
         return response()->json([
             'balance' => $customer->balance ?? 0,

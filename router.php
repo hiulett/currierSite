@@ -1,7 +1,8 @@
 <?php
-$publicPath = __DIR__ . DIRECTORY_SEPARATOR . 'public';
+
+$publicPath = __DIR__.DIRECTORY_SEPARATOR.'public';
 $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '');
-if ($uri !== '/' && file_exists($publicPath . $uri)) {
+if ($uri !== '/' && file_exists($publicPath.$uri)) {
     return false;
 }
-require_once $publicPath . '/index.php';
+require_once $publicPath.'/index.php';

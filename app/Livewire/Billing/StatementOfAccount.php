@@ -2,10 +2,11 @@
 
 namespace App\Livewire\Billing;
 
-use Livewire\Component;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Package;
+use App\Models\Tenant;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class StatementOfAccount extends Component
@@ -13,9 +14,13 @@ class StatementOfAccount extends Component
     use WithPagination;
 
     public $search = '';
+
     public $selected_customer_id = null;
+
     public $selected_package_id = null;
+
     public $filter_status = '';
+
     public $group_by = 'customer'; // customer, locker, none
 
     protected $queryString = [
@@ -76,17 +81,19 @@ class StatementOfAccount extends Component
         if ($this->selected_customer_id) {
             $customer = Customer::with('user')->findOrFail($this->selected_customer_id);
 
-            $invoices = Invoice::where('customer_id', $this->selected_customer_id)
+            $invoices = Invoice::with(['items'])
+                ->where('customer_id', $this->selected_customer_id)
                 ->latest()
                 ->paginate(8, ['*'], 'invoicesPage');
 
-            $packages = Package::where('customer_id', $this->selected_customer_id)
+            $packages = Package::with(['warehouse'])
+                ->where('customer_id', $this->selected_customer_id)
                 ->whereNotIn('status', ['delivered', 'cancelled'])
                 ->latest()
                 ->get();
 
             if ($this->selected_package_id) {
-                $package_detail = Package::with(['trackingEvents' => function($q) {
+                $package_detail = Package::with(['trackingEvents' => function ($q) {
                     $q->orderBy('created_at', 'desc');
                 }, 'warehouse'])->find($this->selected_package_id);
             }
@@ -94,11 +101,11 @@ class StatementOfAccount extends Component
 
         $query = Customer::with(['user', 'locker'])
             ->select('customers.*')
-            ->where(function($q) {
-                $q->where('box_number', 'like', '%' . $this->search . '%')
-                  ->orWhereHas('user', function($u) {
-                      $u->where('name', 'like', '%' . $this->search . '%');
-                  });
+            ->where(function ($q) {
+                $q->where('box_number', 'like', '%'.$this->search.'%')
+                    ->orWhereHas('user', function ($u) {
+                        $u->where('name', 'like', '%'.$this->search.'%');
+                    });
             });
 
         if ($this->filter_status === 'debt') {
@@ -126,7 +133,7 @@ class StatementOfAccount extends Component
             'active_packages' => Package::whereNotIn('status', ['delivered', 'cancelled'])->count(),
         ];
 
-        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $tenant = Tenant::find(session('tenant_id'));
         $currency = $tenant->settings_json['currency'] ?? 'USD';
 
         return view('livewire.billing.statement-of-account', [

@@ -2,13 +2,15 @@
 
 namespace App\Livewire\Public;
 
-use Livewire\Component;
 use App\Models\TaxCategory;
+use Livewire\Component;
 
 class DutyCalculator extends Component
 {
     public $value;
+
     public $category_id;
+
     public $result = null;
 
     public function calculate()
@@ -25,15 +27,16 @@ class DutyCalculator extends Component
             'value' => $this->value,
             'tax' => $tax,
             'total' => $this->value + $tax,
-            'percentage' => $category->percentage
+            'percentage' => $category->percentage,
         ];
     }
 
     public function render()
     {
         $layout = request()->query('embedded') ? 'components.embedded-layout' : 'components.public-layout';
+
         return view('livewire.public.duty-calculator', [
-            'categories' => TaxCategory::all()
+            'categories' => TaxCategory::all(),
         ])->layout($layout);
     }
 }

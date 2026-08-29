@@ -2,8 +2,8 @@
 
 namespace App\Livewire\SuperAdmin;
 
-use Livewire\Component;
 use App\Models\Package;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class GlobalTrackingSearch extends Component
@@ -23,13 +23,13 @@ class GlobalTrackingSearch extends Component
         if (strlen($this->search) >= 3) {
             $results = Package::withoutGlobalScope('tenant')
                 ->with(['tenant', 'customer.user'])
-                ->where('tracking_number', 'like', '%' . $this->search . '%')
-                ->orWhere('description', 'like', '%' . $this->search . '%')
+                ->where('tracking_number', 'like', '%'.$this->search.'%')
+                ->orWhere('description', 'like', '%'.$this->search.'%')
                 ->paginate(20);
         }
 
         return view('livewire.super-admin.global-tracking-search', [
-            'packages' => $results
+            'packages' => $results,
         ])->layout('components.super-admin-layout');
     }
 }

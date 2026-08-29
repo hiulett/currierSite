@@ -10,15 +10,10 @@ class CheckPermission
 {
     /**
      * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string  $permission
-     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next, string $permission): Response
     {
-        if (!$request->user() || !$request->user()->hasPermission($permission)) {
+        if (! $request->user() || ! $request->user()->hasPermission($permission)) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'No tienes permisos suficientes.'], 403);
             }

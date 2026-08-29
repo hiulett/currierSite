@@ -2,6 +2,8 @@
 
 namespace App\Actions\Fortify;
 
+use App\Models\Customer;
+use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -45,7 +47,7 @@ class CreateNewUser implements CreatesNewUsers
         ]);
 
         // Create Customer Profile and Auto-Generate Box Numbers
-        $tenant = \App\Models\Tenant::find($user->tenant_id);
+        $tenant = Tenant::find($user->tenant_id);
         if ($tenant) {
             $boxNumberAir = $tenant->generateBoxNumber($user->name, 'air');
             $boxNumberMaritime = $tenant->generateBoxNumber($user->name, 'maritime');
@@ -53,7 +55,7 @@ class CreateNewUser implements CreatesNewUsers
             // Increment the counter once after both are generated
             $tenant->incrementCounter();
 
-            \App\Models\Customer::create([
+            Customer::create([
                 'tenant_id' => $user->tenant_id,
                 'user_id' => $user->id,
                 'box_number' => $boxNumberAir, // Legacy fallback

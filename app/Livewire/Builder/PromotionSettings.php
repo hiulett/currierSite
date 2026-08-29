@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Builder;
 
-use Livewire\Component;
 use App\Models\Promotion;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class PromotionSettings extends Component
@@ -11,13 +11,21 @@ class PromotionSettings extends Component
     use WithPagination;
 
     public $promotion_id;
+
     public $name;
+
     public $code;
+
     public $type = 'percentage';
+
     public $value;
+
     public $start_date;
+
     public $end_date;
+
     public $usage_limit;
+
     public $is_active = true;
 
     public $is_editing = false;
@@ -46,7 +54,7 @@ class PromotionSettings extends Component
     {
         $this->validate([
             'name' => 'required|string',
-            'code' => 'required|string|unique:promotions,code,' . $this->promotion_id,
+            'code' => 'required|string|unique:promotions,code,'.$this->promotion_id,
             'type' => 'required|in:percentage,fixed',
             'value' => 'required|numeric|min:0',
         ]);
@@ -82,7 +90,7 @@ class PromotionSettings extends Component
     public function render()
     {
         return view('livewire.builder.promotion-settings', [
-            'promotions' => Promotion::latest()->paginate(10)
+            'promotions' => Promotion::latest()->paginate(10),
         ])->layout('components.layouts.app');
     }
 }

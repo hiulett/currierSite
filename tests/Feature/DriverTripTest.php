@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Livewire\Billing\DriverTripList;
 use App\Models\DriverTrip;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Livewire\Billing\DriverTripList;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
@@ -16,6 +16,7 @@ class DriverTripTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $admin;
 
     protected function setUp(): void

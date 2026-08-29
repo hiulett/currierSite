@@ -2,24 +2,31 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
 use App\Models\Customer;
 use App\Models\Package;
 use App\Models\Warehouse;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class RepackInterface extends Component
 {
     public $box_number;
+
     public $found_customer = null;
+
     public $selected_packages = [];
 
     // New box info
     public $new_weight;
+
     public $new_length;
+
     public $new_width;
+
     public $new_height;
+
     public $new_description = 'CONSOLIDADO';
+
     public $warehouse_id;
 
     public function updatedBoxNumber($value)
@@ -45,14 +52,14 @@ class RepackInterface extends Component
             'warehouse_id' => 'required|exists:warehouses,id',
         ]);
 
-        DB::transaction(function() {
+        DB::transaction(function () {
             // 1. Create the Master Package
             $masterPackage = Package::create([
                 'tenant_id' => $this->found_customer->tenant_id,
                 'customer_id' => $this->found_customer->id,
                 'warehouse_id' => $this->warehouse_id,
-                'tracking_number' => 'REPACK-' . strtoupper(bin2hex(random_bytes(4))),
-                'internal_tracking' => 'RE-' . date('YmdHis'),
+                'tracking_number' => 'REPACK-'.strtoupper(bin2hex(random_bytes(4))),
+                'internal_tracking' => 'RE-'.date('YmdHis'),
                 'description' => $this->new_description,
                 'weight' => $this->new_weight,
                 'length' => $this->new_length,
@@ -66,7 +73,7 @@ class RepackInterface extends Component
             // 2. Link children and mark them as consolidated
             Package::whereIn('id', $this->selected_packages)->update([
                 'parent_id' => $masterPackage->id,
-                'status' => 'consolidated'
+                'status' => 'consolidated',
             ]);
         });
 
@@ -94,7 +101,7 @@ class RepackInterface extends Component
         return view('livewire.logistics.repack-interface', [
             'packages' => $packages,
             'warehouses' => Warehouse::all(),
-            'stats' => $stats
+            'stats' => $stats,
         ])->layout('components.layouts.app');
     }
 }

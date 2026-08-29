@@ -74,23 +74,24 @@ class Tenant extends Model
     public function getPaypalConfig()
     {
         $settings = $this->settings_json ?? [];
+
         return [
-            'mode'    => $settings['paypal_mode'] ?? env('PAYPAL_MODE', 'sandbox'),
+            'mode' => $settings['paypal_mode'] ?? env('PAYPAL_MODE', 'sandbox'),
             'sandbox' => [
-                'client_id'         => $settings['paypal_sandbox_client_id'] ?? env('PAYPAL_SANDBOX_CLIENT_ID'),
-                'client_secret'     => $settings['paypal_sandbox_client_secret'] ?? env('PAYPAL_SANDBOX_CLIENT_SECRET'),
-                'app_id'            => 'APP-80W284485P519543T',
+                'client_id' => $settings['paypal_sandbox_client_id'] ?? env('PAYPAL_SANDBOX_CLIENT_ID'),
+                'client_secret' => $settings['paypal_sandbox_client_secret'] ?? env('PAYPAL_SANDBOX_CLIENT_SECRET'),
+                'app_id' => 'APP-80W284485P519543T',
             ],
             'live' => [
-                'client_id'         => $settings['paypal_live_client_id'] ?? env('PAYPAL_LIVE_CLIENT_ID'),
-                'client_secret'     => $settings['paypal_live_client_secret'] ?? env('PAYPAL_LIVE_CLIENT_SECRET'),
-                'app_id'            => $settings['paypal_live_app_id'] ?? env('PAYPAL_LIVE_APP_ID'),
+                'client_id' => $settings['paypal_live_client_id'] ?? env('PAYPAL_LIVE_CLIENT_ID'),
+                'client_secret' => $settings['paypal_live_client_secret'] ?? env('PAYPAL_LIVE_CLIENT_SECRET'),
+                'app_id' => $settings['paypal_live_app_id'] ?? env('PAYPAL_LIVE_APP_ID'),
             ],
             'payment_action' => 'Sale',
-            'currency'       => $settings['paypal_currency'] ?? 'USD',
-            'notify_url'     => '',
-            'locale'         => 'en_US',
-            'validate_ssl'   => true,
+            'currency' => $settings['paypal_currency'] ?? 'USD',
+            'notify_url' => '',
+            'locale' => 'en_US',
+            'validate_ssl' => true,
         ];
     }
 
@@ -149,6 +150,7 @@ class Tenant extends Model
         $counter = (int) ($settings['box_number_counter'] ?? 1000);
         $settings['box_number_counter'] = $counter + 1;
         $this->update(['settings_json' => $settings]);
+
         return $settings['box_number_counter'];
     }
 
@@ -173,6 +175,7 @@ class Tenant extends Model
     public function getLoginUrl(): string
     {
         $slug = $this->login_url_slug ?? ($this->subdomain ?? $this->uuid);
+
         return route('tenant.access', $slug);
     }
 
@@ -182,6 +185,7 @@ class Tenant extends Model
     public function getRegisterUrl(): string
     {
         $slug = $this->login_url_slug ?? ($this->subdomain ?? $this->uuid);
+
         return route('tenant.join', $slug);
     }
 
@@ -207,8 +211,8 @@ class Tenant extends Model
         if ($logo) {
             // Si el archivo físico existe en public/logos/, usarlo prioritariamente (evita problemas de symlinks/storage en producción)
             $filename = basename($logo);
-            if (file_exists(public_path('logos/' . $filename))) {
-                return asset('logos/' . $filename);
+            if (file_exists(public_path('logos/'.$filename))) {
+                return asset('logos/'.$filename);
             }
 
             if (filter_var($logo, FILTER_VALIDATE_URL)) {
@@ -216,14 +220,14 @@ class Tenant extends Model
             }
             // Asegurar que siempre se busque dentro de 'logos/'
             $cleanPath = ltrim(str_replace('logos/', '', $logo), '/');
-            if (file_exists(public_path('logos/' . $cleanPath))) {
-                return asset('logos/' . $cleanPath);
+            if (file_exists(public_path('logos/'.$cleanPath))) {
+                return asset('logos/'.$cleanPath);
             }
         }
 
         // 3. Fallback: Cloudflare R2 o S3 si está configurado
         if (env('AWS_URL') && $logo) {
-            return rtrim(env('AWS_URL'), '/') . '/' . ltrim($logo, '/');
+            return rtrim(env('AWS_URL'), '/').'/'.ltrim($logo, '/');
         }
 
         return null;
@@ -235,6 +239,7 @@ class Tenant extends Model
     public function getFeatureStatus(string $module): string
     {
         $features = $this->features_json ?? [];
+
         return $features['modules'][$module] ?? 'active';
     }
 
@@ -244,6 +249,7 @@ class Tenant extends Model
     public function hasSubFeature(string $subFeature): bool
     {
         $features = $this->features_json ?? [];
+
         return (bool) ($features['sub_features'][$subFeature] ?? true);
     }
 
@@ -253,6 +259,7 @@ class Tenant extends Model
     public function shouldSubtractProviderCosts(): bool
     {
         $settings = $this->settings_json ?? [];
+
         return (bool) ($settings['subtract_provider_costs'] ?? true);
     }
 }

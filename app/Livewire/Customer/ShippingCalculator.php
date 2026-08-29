@@ -2,16 +2,21 @@
 
 namespace App\Livewire\Customer;
 
-use Livewire\Component;
 use App\Models\Tenant;
+use Livewire\Component;
 
 class ShippingCalculator extends Component
 {
     public $service_type = 'air';
+
     public $weight = 1;
+
     public $declared_value = 0;
+
     public $length = 0;
+
     public $width = 0;
+
     public $height = 0;
 
     public $result = null;
@@ -61,11 +66,11 @@ class ShippingCalculator extends Component
             } else {
                 $amount = $value;
             }
-            
+
             if ($amount > 0) {
                 $applied_charges[] = [
                     'name' => $charge['name'] ?? 'Cargo Extra',
-                    'amount' => $amount
+                    'amount' => $amount,
                 ];
                 $total_other_charges += $amount;
             }
@@ -81,7 +86,7 @@ class ShippingCalculator extends Component
             'chargeable_weight' => $chargeable_weight,
             'is_volumetric' => $volumetric_weight > $this->weight,
             'rate' => $rate,
-            'tax_percentage' => $tax_percentage
+            'tax_percentage' => $tax_percentage,
         ];
     }
 

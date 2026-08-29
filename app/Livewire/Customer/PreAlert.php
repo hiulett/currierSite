@@ -2,10 +2,9 @@
 
 namespace App\Livewire\Customer;
 
-use Livewire\Component;
 use App\Models\Package;
-use App\Models\Customer;
 use App\Models\Warehouse;
+use Livewire\Component;
 use Livewire\WithFileUploads;
 
 class PreAlert extends Component
@@ -13,16 +12,22 @@ class PreAlert extends Component
     use WithFileUploads;
 
     public $tracking_number;
+
     public $warehouse_id;
+
     public $description;
+
     public $declared_value;
+
     public $invoice_file;
+
     public $is_scanning = false;
 
     public function scanInvoice()
     {
-        if (!$this->invoice_file) {
+        if (! $this->invoice_file) {
             session()->flash('error', 'Por favor, sube una factura primero.');
+
             return;
         }
 
@@ -37,7 +42,7 @@ class PreAlert extends Component
         $this->declared_value = $mockedValue;
 
         $stores = ['Amazon', 'eBay', 'Walmart', 'Apple Store'];
-        $this->description = "Compra en " . $stores[array_rand($stores)] . " (Detectado por IA)";
+        $this->description = 'Compra en '.$stores[array_rand($stores)].' (Detectado por IA)';
 
         $this->is_scanning = false;
         session()->flash('message', '¡Escaneo exitoso! Hemos detectado el valor y la tienda.');
@@ -55,15 +60,16 @@ class PreAlert extends Component
 
         $customer = auth()->user()->customer;
 
-        if (!$customer) {
+        if (! $customer) {
             session()->flash('error', 'No tienes un perfil de cliente asociado.');
+
             return;
         }
 
         $invoiceUrl = null;
         if ($this->invoice_file) {
-            $path = $this->invoice_file->store('invoices/' . $customer->tenant_id, 'public');
-            $invoiceUrl = asset('storage/' . $path);
+            $path = $this->invoice_file->store('invoices/'.$customer->tenant_id, 'public');
+            $invoiceUrl = asset('storage/'.$path);
         }
 
         Package::create([
@@ -78,13 +84,14 @@ class PreAlert extends Component
         ]);
 
         session()->flash('message', 'Pre-alerta registrada correctamente. Estaremos atentos a la llegada de tu paquete.');
+
         return redirect()->route('customer.dashboard');
     }
 
     public function render()
     {
         return view('livewire.customer.pre-alert', [
-            'warehouses' => Warehouse::all()
+            'warehouses' => Warehouse::all(),
         ])->layout('components.customer-layout');
     }
 }

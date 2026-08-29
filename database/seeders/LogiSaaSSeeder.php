@@ -2,18 +2,17 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customer;
+use App\Models\Invoice;
+use App\Models\Package;
+use App\Models\Plan;
+use App\Models\SubscriptionInvoice;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Models\Plan;
 use App\Models\Warehouse;
-use App\Models\Customer;
-use App\Models\Package;
-use App\Models\Invoice;
-use App\Models\SubscriptionInvoice;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LogiSaaSSeeder extends Seeder
 {
@@ -61,22 +60,22 @@ class LogiSaaSSeeder extends Seeder
                 'subdomain' => 'logiexpress',
                 'domain' => 'logiexpress.test',
                 'plan' => $planPro,
-                'color' => '#2563eb'
+                'color' => '#2563eb',
             ],
             [
                 'name' => 'Global Cargo China',
                 'subdomain' => 'globalcargo',
                 'domain' => 'globalcargo.test',
                 'plan' => $planEnterprise,
-                'color' => '#dc2626'
+                'color' => '#dc2626',
             ],
             [
                 'name' => 'SpeedShip USA',
                 'subdomain' => 'speedship',
                 'domain' => null,
                 'plan' => $planStarter,
-                'color' => '#16a34a'
-            ]
+                'color' => '#16a34a',
+            ],
         ];
 
         foreach ($tenantsData as $tData) {
@@ -88,7 +87,7 @@ class LogiSaaSSeeder extends Seeder
                 'plan_id' => $tData['plan']->id,
                 'theme_config_json' => [
                     'primary' => $tData['color'],
-                    'logo_url' => null // Removed external hotlinking URL
+                    'logo_url' => null, // Removed external hotlinking URL
                 ],
                 'settings_json' => ['currency' => 'USD', 'tax_rate' => 7],
             ]);
@@ -128,7 +127,7 @@ class LogiSaaSSeeder extends Seeder
             // 6. Customers per Tenant
             $customerNames = ['Juan Perez', 'Maria Lopez', 'Carlos Ruiz', 'Ana Smith', 'Pedro Gomez'];
             foreach ($customerNames as $index => $name) {
-                $email = strtolower(str_replace(' ', '.', $name)) . "_{$tenant->id}@test.com";
+                $email = strtolower(str_replace(' ', '.', $name))."_{$tenant->id}@test.com";
                 $user = User::updateOrCreate(['email' => $email], [
                     'tenant_id' => $tenant->id,
                     'name' => $name,
@@ -140,9 +139,9 @@ class LogiSaaSSeeder extends Seeder
                 $boxPrefix = strtoupper(substr($tData['subdomain'], 0, 3));
                 $customer = Customer::updateOrCreate(['user_id' => $user->id], [
                     'tenant_id' => $tenant->id,
-                    'box_number' => "{$boxPrefix}-" . (5000 + $index),
-                    'identification_number' => "ID-" . rand(1000, 9999),
-                    'phone' => '507-6000-000' . $index,
+                    'box_number' => "{$boxPrefix}-".(5000 + $index),
+                    'identification_number' => 'ID-'.rand(1000, 9999),
+                    'phone' => '507-6000-000'.$index,
                 ]);
 
                 // 7. Random Packages per Customer (Some will have 0 for 'Inactive' scenario)
@@ -155,7 +154,7 @@ class LogiSaaSSeeder extends Seeder
                             'customer_id' => $customer->id,
                             'warehouse_id' => ($i % 2 == 0) ? $miami->id : $local->id,
                             'status' => $statuses[array_rand($statuses)],
-                            'description' => 'Producto de prueba ' . ($i + 1),
+                            'description' => 'Producto de prueba '.($i + 1),
                             'weight' => rand(1, 20),
                             'declared_value' => rand(10, 500),
                         ]);
@@ -183,7 +182,7 @@ class LogiSaaSSeeder extends Seeder
             }
 
             // 9. Subscription Invoices for the SaaS (Revenue for SuperAdmin)
-            SubscriptionInvoice::updateOrCreate(['number' => "SAAS-{$tenant->id}-" . date('Ym')], [
+            SubscriptionInvoice::updateOrCreate(['number' => "SAAS-{$tenant->id}-".date('Ym')], [
                 'tenant_id' => $tenant->id,
                 'plan_id' => $tenant->plan_id,
                 'amount' => $tData['plan']->price,

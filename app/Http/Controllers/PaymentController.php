@@ -3,18 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
-use App\Models\Tenant;
 use Illuminate\Http\Request;
-use Stripe\Stripe;
-use Stripe\Checkout\Session;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
+use Stripe\Checkout\Session;
+use Stripe\Stripe;
 
 class PaymentController extends Controller
 {
     public function checkout(Invoice $invoice)
     {
         // Security check
-        if (!$invoice->customer || $invoice->customer->user_id !== auth()->id()) {
+        if (! $invoice->customer || $invoice->customer->user_id !== auth()->id()) {
             abort(403, 'No tienes permiso para pagar esta factura.');
         }
 
@@ -25,7 +24,7 @@ class PaymentController extends Controller
         $tenant = $invoice->tenant;
         $stripeSecret = $tenant->getStripeSecret();
 
-        if (!$stripeSecret) {
+        if (! $stripeSecret) {
             return redirect()->back()->with('error', 'El sistema de pagos con tarjeta no está configurado para este courier.');
         }
 
@@ -37,7 +36,7 @@ class PaymentController extends Controller
                 'price_data' => [
                     'currency' => strtolower($invoice->currency ?? 'usd'),
                     'product_data' => [
-                        'name' => 'Factura #' . $invoice->number,
+                        'name' => 'Factura #'.$invoice->number,
                     ],
                     'unit_amount' => (int) ($invoice->total * 100),
                 ],
@@ -58,7 +57,7 @@ class PaymentController extends Controller
     public function paypalCheckout(Invoice $invoice)
     {
         // Security check
-        if (!$invoice->customer || $invoice->customer->user_id !== auth()->id()) {
+        if (! $invoice->customer || $invoice->customer->user_id !== auth()->id()) {
             abort(403, 'No tienes permiso para pagar esta factura.');
         }
 
@@ -69,7 +68,7 @@ class PaymentController extends Controller
         $tenant = $invoice->tenant;
         $paypalConfig = $tenant->getPaypalConfig();
 
-        if (!$paypalConfig['sandbox']['client_id'] && !$paypalConfig['live']['client_id']) {
+        if (! $paypalConfig['sandbox']['client_id'] && ! $paypalConfig['live']['client_id']) {
             return redirect()->back()->with('error', 'El sistema de pagos con PayPal no está configurado para este courier.');
         }
 
@@ -78,20 +77,20 @@ class PaymentController extends Controller
         $provider->getAccessToken();
 
         $response = $provider->createOrder([
-            "intent" => "CAPTURE",
-            "application_context" => [
-                "return_url" => route('payment.paypal.success', ['invoice' => $invoice->id]),
-                "cancel_url" => route('payment.cancel', ['invoice' => $invoice->id]),
+            'intent' => 'CAPTURE',
+            'application_context' => [
+                'return_url' => route('payment.paypal.success', ['invoice' => $invoice->id]),
+                'cancel_url' => route('payment.cancel', ['invoice' => $invoice->id]),
             ],
-            "purchase_units" => [
+            'purchase_units' => [
                 0 => [
-                    "amount" => [
-                        "currency_code" => strtoupper($invoice->currency ?? 'USD'),
-                        "value" => number_format($invoice->total, 2, '.', '')
+                    'amount' => [
+                        'currency_code' => strtoupper($invoice->currency ?? 'USD'),
+                        'value' => number_format($invoice->total, 2, '.', ''),
                     ],
-                    "description" => 'Factura #' . $invoice->number
-                ]
-            ]
+                    'description' => 'Factura #'.$invoice->number,
+                ],
+            ],
         ]);
 
         if (isset($response['id']) && $response['id'] != null) {
@@ -100,6 +99,7 @@ class PaymentController extends Controller
                     return redirect()->away($links['href']);
                 }
             }
+
             return redirect()->back()->with('error', 'Algo salió mal con PayPal.');
         } else {
             return redirect()->back()->with('error', $response['message'] ?? 'Error al conectar con PayPal.');
@@ -111,7 +111,7 @@ class PaymentController extends Controller
         $tenant = $invoice->tenant;
         $paypalConfig = $tenant->getPaypalConfig();
 
-        if (!$paypalConfig['sandbox']['client_id'] && !$paypalConfig['live']['client_id']) {
+        if (! $paypalConfig['sandbox']['client_id'] && ! $paypalConfig['live']['client_id']) {
             return redirect()->back()->with('error', 'El sistema de pagos con PayPal no está configurado para este courier.');
         }
 

@@ -271,7 +271,7 @@
     </div>
 
     <!-- Scripts and Styles for Charts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @vite(['resources/js/charts.js'])
     <script>
         window.openQuotationModal = function(id = null) {
             var el = document.getElementById('modalCreateQuotation');
@@ -446,7 +446,11 @@
                     }
                 };
 
-                initCharts();
+                const whenChartReady = (fn) => {
+                    if (window.Chart) { fn(); return; }
+                    window.addEventListener('chartjs-ready', () => fn(), { once: true });
+                };
+                whenChartReady(initCharts);
 
                 // Re-init when livewire component is updated
                 Livewire.on('updateQuotationCharts', (data) => {

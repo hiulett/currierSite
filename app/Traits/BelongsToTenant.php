@@ -2,10 +2,12 @@
 
 namespace App\Traits;
 
+use App\Models\Role;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 trait BelongsToTenant
 {
@@ -17,7 +19,7 @@ trait BelongsToTenant
     protected static function bootBelongsToTenant()
     {
         static::creating(function ($model) {
-            if (!$model->tenant_id) {
+            if (! $model->tenant_id) {
                 // Use session directly to avoid auth() overhead during creation
                 $model->tenant_id = session('tenant_id');
             }
@@ -43,7 +45,7 @@ trait BelongsToTenant
 
                 // 3. SuperAdmin Bypass
                 // Check if user is root to see everything
-                if (session('is_superadmin') === true && !session()->has('impersonate_tenant_id')) {
+                if (session('is_superadmin') === true && ! session()->has('impersonate_tenant_id')) {
                     return;
                 }
 
@@ -52,17 +54,17 @@ trait BelongsToTenant
                     $table = $builder->getModel()->getTable();
 
                     // For Users/Roles, allow tenant specific OR null (global) records
-                    if ($builder->getModel() instanceof \App\Models\User || $builder->getModel() instanceof \App\Models\Role) {
-                        $builder->where(function($query) use ($table, $tenantId) {
-                            $query->where($table . '.tenant_id', $tenantId)
-                                  ->orWhereNull($table . '.tenant_id');
+                    if ($builder->getModel() instanceof User || $builder->getModel() instanceof Role) {
+                        $builder->where(function ($query) use ($table, $tenantId) {
+                            $query->where($table.'.tenant_id', $tenantId)
+                                ->orWhereNull($table.'.tenant_id');
                         });
                     } else {
-                        $builder->where($table . '.tenant_id', $tenantId);
+                        $builder->where($table.'.tenant_id', $tenantId);
                     }
                 } else {
                     // No tenant context: show nothing for security (except User model for auth)
-                    if (!($builder->getModel() instanceof \App\Models\User)) {
+                    if (! ($builder->getModel() instanceof User)) {
                         $builder->whereRaw('1 = 0');
                     }
                 }

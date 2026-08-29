@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
 use App\Models\Delivery;
 use App\Models\Package;
 use App\Models\User;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class DeliveryManagement extends Component
@@ -13,10 +13,15 @@ class DeliveryManagement extends Component
     use WithPagination;
 
     public $route_name;
+
     public $driver_id;
+
     public $selected_packages = [];
+
     public $search_package = '';
+
     public $cod_amount = 0;
+
     public $filter_status = '';
 
     protected $queryString = [
@@ -48,7 +53,7 @@ class DeliveryManagement extends Component
         foreach (Package::whereIn('id', $this->selected_packages)->get() as $package) {
             $package->update([
                 'delivery_id' => $delivery->id,
-                'status' => 'out_for_delivery'
+                'status' => 'out_for_delivery',
             ]);
         }
 
@@ -69,11 +74,11 @@ class DeliveryManagement extends Component
     {
         $packages = Package::whereNull('delivery_id')
             ->whereIn('status', ['received', 'ready_for_pickup'])
-            ->where(function($q) {
-                $q->where('tracking_number', 'like', '%' . $this->search_package . '%')
-                  ->orWhereHas('customer', function($sub) {
-                      $sub->where('box_number', 'like', '%' . $this->search_package . '%');
-                  });
+            ->where(function ($q) {
+                $q->where('tracking_number', 'like', '%'.$this->search_package.'%')
+                    ->orWhereHas('customer', function ($sub) {
+                        $sub->where('box_number', 'like', '%'.$this->search_package.'%');
+                    });
             })
             ->get();
 
@@ -97,7 +102,7 @@ class DeliveryManagement extends Component
             'packages' => $packages,
             'drivers' => $drivers,
             'deliveries' => $query->latest()->paginate(5),
-            'stats' => $stats
+            'stats' => $stats,
         ])->layout('components.layouts.app');
     }
 }

@@ -2,26 +2,35 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
-use App\Models\Package;
 use App\Models\Customer;
-use App\Models\Warehouse;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
-use Livewire\WithPagination;
+use App\Models\Package;
+use App\Models\Tenant;
+use App\Models\Warehouse;
+use App\Notifications\PackagesArrivedNotification;
+use App\Services\Loyalty\LoyaltyService;
 use App\Traits\WithSorting;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class InventoryList extends Component
 {
     use WithPagination, WithSorting;
 
     public $search = '';
+
     public $filter_warehouse = '';
+
     public $filter_status = '';
+
     public $filter_date = '';
+
     public $filter_delivery_type = '';
+
     public $view_tab = 'all'; // all, pending, recent
 
     protected $queryString = [
@@ -35,32 +44,47 @@ class InventoryList extends Component
 
     // Bulk Selection
     public $selected_packages = [];
+
     public $selectAll = false;
 
     // Assignment Panel State
     public $is_assigning = false;
+
     public $target_customer_id;
+
     public $customer_search = '';
+
     public $customer_results = [];
+
     public $selected_customer = null;
 
     // Assignment Customizations
     public $custom_rate;
+
     public $extra_charge = 0;
+
     public $extra_charge_reason = '';
+
     public $shelf_location;
 
     // Temporary storage for notifications
     protected $invoice_to_notify;
+
     protected $packages_to_notify;
 
     // Edit Package Properties (Standard Modal)
     public $editing_package_id = null;
+
     public $edit_tracking_number;
+
     public $edit_description;
+
     public $edit_weight;
+
     public $edit_status;
+
     public $edit_warehouse_id;
+
     public $edit_service_type;
 
     protected $listeners = ['package-saved' => '$refresh'];
@@ -74,14 +98,14 @@ class InventoryList extends Component
         $this->view_tab = 'all';
         $this->resetPage();
 
-        $tenant = \App\Models\Tenant::find(session('tenant_id'));
+        $tenant = Tenant::find(session('tenant_id'));
         $this->custom_rate = $tenant->settings_json['air_rate'] ?? 2.50;
     }
 
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selected_packages = $this->getPackagesQuery()->pluck('id')->map(fn($id) => (string)$id)->toArray();
+            $this->selected_packages = $this->getPackagesQuery()->pluck('id')->map(fn ($id) => (string) $id)->toArray();
         } else {
             $this->selected_packages = [];
         }
@@ -91,13 +115,14 @@ class InventoryList extends Component
     {
         if (strlen($value) < 2) {
             $this->customer_results = [];
+
             return;
         }
 
         $this->customer_results = Customer::with('user')
-            ->where('box_number', 'like', '%' . $value . '%')
-            ->orWhereHas('user', function($q) use ($value) {
-                $q->where('name', 'like', '%' . $value . '%');
+            ->where('box_number', 'like', '%'.$value.'%')
+            ->orWhereHas('user', function ($q) use ($value) {
+                $q->where('name', 'like', '%'.$value.'%');
             })->take(5)->get();
     }
 
@@ -105,7 +130,7 @@ class InventoryList extends Component
     {
         $this->selected_customer = Customer::with('user')->find($id);
         $this->target_customer_id = $id;
-        $this->customer_search = $this->selected_customer->user->name . ' (' . $this->selected_customer->box_number . ')';
+        $this->customer_search = $this->selected_customer->user->name.' ('.$this->selected_customer->box_number.')';
         $this->customer_results = [];
     }
 
@@ -113,8 +138,8 @@ class InventoryList extends Component
     {
         // Si el paquete no tiene cliente, abrimos el panel de asignación para este paquete individual
         $package = Package::find($id);
-        if (!$package->customer_id) {
-            $this->selected_packages = [(string)$id];
+        if (! $package->customer_id) {
+            $this->selected_packages = [(string) $id];
             $this->openAssignment();
         } else {
             // Lógica para edición normal (opcional, si quieres mantener el modal de edición de datos básicos)
@@ -158,6 +183,7 @@ class InventoryList extends Component
     {
         if (empty($this->selected_packages)) {
             session()->flash('error', 'Seleccione al menos un paquete.');
+
             return;
         }
         $this->is_assigning = true;
@@ -166,20 +192,13 @@ class InventoryList extends Component
     public function unassignPackage($id)
     {
         $package = Package::findOrFail($id);
-        $customer = $package->customer;
 
-        if ($customer) {
-            // Decrement points
-            $customer->decrement('points', ceil($package->weight));
-
-            // We don't touch the balance automatically because the invoice might have other items.
-            // We just warn the user or let them handle the invoice manually.
-        }
+        // LOGYPUNTOS: la acumulación/débito se maneja solo vía factura (LoyaltyService).
 
         $package->update([
             'customer_id' => null,
             'status' => 'received', // Reset to received status
-            'shelf_location' => null
+            'shelf_location' => null,
         ]);
 
         session()->flash('message', 'Paquete desasociado del cliente. Recuerde anular o editar la factura manualmente si es necesario.');
@@ -187,24 +206,23 @@ class InventoryList extends Component
 
     public function bulkUnassign()
     {
-        if (empty($this->selected_packages)) return;
+        if (empty($this->selected_packages)) {
+            return;
+        }
 
         $packages = Package::whereIn('id', $this->selected_packages)->get();
 
         foreach ($packages as $pkg) {
-            if ($pkg->customer) {
-                $pkg->customer->decrement('points', ceil($pkg->weight));
-            }
             $pkg->update([
                 'customer_id' => null,
                 'status' => 'received',
-                'shelf_location' => null
+                'shelf_location' => null,
             ]);
         }
 
         $this->selected_packages = [];
         $this->selectAll = false;
-        session()->flash('message', count($packages) . ' paquetes desasociados masivamente.');
+        session()->flash('message', count($packages).' paquetes desasociados masivamente.');
     }
 
     public function cancelAssignment()
@@ -215,24 +233,25 @@ class InventoryList extends Component
 
     public function confirmAssignment()
     {
-        if (!$this->target_customer_id) {
+        if (! $this->target_customer_id) {
             session()->flash('assign_error', 'Debe seleccionar un cliente.');
+
             return;
         }
 
         $packages = Package::whereIn('id', $this->selected_packages)->get();
 
-        DB::transaction(function() use ($packages) {
-            $tenant = \App\Models\Tenant::current();
+        DB::transaction(function () use ($packages) {
+            $tenant = Tenant::current();
             $default_air_rate = $tenant->settings_json['air_rate'] ?? 2.50;
             $default_maritime_rate = $tenant->settings_json['maritime_rate'] ?? 1.50;
 
-            // If user left custom_rate as the default air rate, we use package specific rates. 
+            // If user left custom_rate as the default air rate, we use package specific rates.
             // If they changed it, we apply the custom rate to everything.
             $use_custom_rate = $this->custom_rate != $default_air_rate;
 
             $total_weight = $packages->sum('weight');
-            
+
             $subtotal = 0;
             foreach ($packages as $pkg) {
                 if ($use_custom_rate) {
@@ -242,7 +261,7 @@ class InventoryList extends Component
                 }
                 $subtotal += $pkg->weight * $rate;
             }
-            $subtotal += (float)$this->extra_charge;
+            $subtotal += (float) $this->extra_charge;
 
             $tax_percent = $tenant->settings_json['default_tax'] ?? ($tenant->settings_json['tax_rate'] ?? 0);
             $tax = $subtotal * ($tax_percent / 100);
@@ -252,7 +271,7 @@ class InventoryList extends Component
             $invoice = Invoice::create([
                 'tenant_id' => session('tenant_id'),
                 'customer_id' => $this->target_customer_id,
-                'number' => 'INV-' . date('Ymd') . strtoupper(Str::random(4)),
+                'number' => 'INV-'.date('Ymd').strtoupper(Str::random(4)),
                 'subtotal' => $subtotal,
                 'tax' => $tax,
                 'total' => $total,
@@ -273,7 +292,7 @@ class InventoryList extends Component
                 InvoiceItem::create([
                     'tenant_id' => session('tenant_id'),
                     'invoice_id' => $invoice->id,
-                    'description' => "Flete " . $serviceLabel . ": " . $pkg->tracking_number . " (" . $pkg->weight . " lbs)",
+                    'description' => 'Flete '.$serviceLabel.': '.$pkg->tracking_number.' ('.$pkg->weight.' lbs)',
                     'quantity' => $pkg->weight,
                     'unit_price' => $rate,
                     'total' => $pkg->weight * $rate,
@@ -300,7 +319,9 @@ class InventoryList extends Component
 
             // Update customer balance
             $this->selected_customer->increment('balance', $total);
-            $this->selected_customer->increment('points', ceil($total_weight));
+
+            // LOGYPUNTOS: acumulación automática al emitir la factura
+            app(LoyaltyService::class)->awardPointsForInvoice($invoice);
 
             $this->invoice_to_notify = $invoice;
             $this->packages_to_notify = $packages;
@@ -309,10 +330,10 @@ class InventoryList extends Component
         // 4. Notify Customer (Outside transaction to prevent rollback on mail failure)
         if ($this->selected_customer->user) {
             try {
-                $this->selected_customer->user->notify(new \App\Notifications\PackagesArrivedNotification($this->invoice_to_notify, $this->packages_to_notify));
+                $this->selected_customer->user->notify(new PackagesArrivedNotification($this->invoice_to_notify, $this->packages_to_notify));
                 session()->flash('message', 'Asignación completada y factura generada con éxito. El cliente ha sido notificado vía correo.');
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Error enviando notificación de paquetes: ' . $e->getMessage());
+                Log::error('Error enviando notificación de paquetes: '.$e->getMessage());
                 session()->flash('message', 'Asignación completada con éxito, pero no se pudo enviar el correo de notificación. Por favor, verifique la configuración de correo.');
             }
         } else {
@@ -330,9 +351,9 @@ class InventoryList extends Component
         $query = Package::with(['customer.user', 'warehouse']);
 
         if ($this->search) {
-            $query->where(function($q) {
-                $q->where('tracking_number', 'like', '%' . trim($this->search) . '%')
-                  ->orWhere('description', 'like', '%' . trim($this->search) . '%');
+            $query->where(function ($q) {
+                $q->where('tracking_number', 'like', '%'.trim($this->search).'%')
+                    ->orWhere('description', 'like', '%'.trim($this->search).'%');
             });
         }
 
@@ -344,15 +365,15 @@ class InventoryList extends Component
         }
 
         // Property filters
-        if (!empty($this->filter_warehouse)) {
+        if (! empty($this->filter_warehouse)) {
             $query->where('warehouse_id', $this->filter_warehouse);
         }
 
-        if (!empty($this->filter_status)) {
+        if (! empty($this->filter_status)) {
             $query->where('status', $this->filter_status);
         }
 
-        if (!empty($this->filter_date)) {
+        if (! empty($this->filter_date)) {
             $query->whereDate('created_at', $this->filter_date);
         }
 
@@ -363,31 +384,32 @@ class InventoryList extends Component
     {
         try {
             // Respecting tenant isolation during repair
-            $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
-            $warehouse = \App\Models\Warehouse::where('tenant_id', $tenant->id)->first();
-            $customers = \App\Models\Customer::where('tenant_id', $tenant->id)->pluck('id')->toArray();
+            $tenant = Tenant::find(session('tenant_id')) ?? Tenant::first();
+            $warehouse = Warehouse::where('tenant_id', $tenant->id)->first();
+            $customers = Customer::where('tenant_id', $tenant->id)->pluck('id')->toArray();
 
             Package::where('tenant_id', $tenant->id)->delete();
 
-            for($i=1; $i<=10; $i++) {
+            for ($i = 1; $i <= 10; $i++) {
                 Package::create([
                     'tenant_id' => $tenant->id,
                     'warehouse_id' => $warehouse->id,
-                    'customer_id' => !empty($customers) ? $customers[array_rand($customers)] : null,
-                    'tracking_number' => 'REPAIR-' . strtoupper(Str::random(8)),
-                    'description' => 'Paquete de Reparación ' . $i,
+                    'customer_id' => ! empty($customers) ? $customers[array_rand($customers)] : null,
+                    'tracking_number' => 'REPAIR-'.strtoupper(Str::random(8)),
+                    'description' => 'Paquete de Reparación '.$i,
                     'weight' => rand(1, 10),
                     'status' => 'arrived',
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
             }
 
             session()->flash('message', '¡Base de datos del tenant reparada! 10 paquetes generados.');
+
             return redirect()->route('logistics.inventory');
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
-            session()->flash('error', 'Error en reparación: ' . $e->getMessage());
+            Log::error('Exception in '.__CLASS__.'::'.__FUNCTION__.' - '.$e->getMessage()."\n".$e->getTraceAsString());
+            session()->flash('error', 'Error en reparación: '.$e->getMessage());
         }
     }
 
@@ -402,13 +424,13 @@ class InventoryList extends Component
             'by_status' => Package::whereNotIn('status', ['delivered', 'cancelled'])
                 ->selectRaw('status, count(*) as count')
                 ->groupBy('status')
-                ->get()
+                ->get(),
         ];
 
         return view('livewire.logistics.inventory-list', [
             'packages' => $packages,
             'stats' => $stats,
-            'warehouses' => Warehouse::all()
+            'warehouses' => Warehouse::all(),
         ])->layout('components.layouts.app');
     }
 }

@@ -3,18 +3,20 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Queue\SerializesModels;
 
 class FinancialAlertNotification extends Notification implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     public $type;
+
     public $message;
+
     public $package_id;
+
     public $data;
 
     /**
@@ -57,7 +59,7 @@ class FinancialAlertNotification extends Notification implements ShouldQueue
 
     private function getIcon()
     {
-        return match($this->type) {
+        return match ($this->type) {
             'leak' => 'trending-down',
             'price_hike' => 'alert-triangle',
             'discrepancy' => 'file-text',
@@ -67,7 +69,7 @@ class FinancialAlertNotification extends Notification implements ShouldQueue
 
     private function getColor()
     {
-        return match($this->type) {
+        return match ($this->type) {
             'leak' => 'danger',
             'price_hike' => 'warning',
             'discrepancy' => 'info',
@@ -75,4 +77,3 @@ class FinancialAlertNotification extends Notification implements ShouldQueue
         };
     }
 }
-

@@ -2,18 +2,24 @@
 
 namespace App\Livewire\Builder;
 
-use Livewire\Component;
-use App\Models\Role;
 use App\Models\Permission;
-use Livewire\WithPagination;
+use App\Models\Role;
 use App\Traits\WithSorting;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class RoleManagement extends Component
 {
     use WithPagination, WithSorting;
 
-    public $name, $description, $selected_role_id;
+    public $name;
+
+    public $description;
+
+    public $selected_role_id;
+
     public $selected_permissions = [];
+
     public $is_editing = false;
 
     public function resetFields()
@@ -70,7 +76,7 @@ class RoleManagement extends Component
     public function deleteRole($id)
     {
         $role = Role::find($id);
-        if ($role && !$role->is_system) {
+        if ($role && ! $role->is_system) {
             $role->delete();
             session()->flash('message', 'Rol eliminado.');
         }
@@ -80,7 +86,7 @@ class RoleManagement extends Component
     {
         return view('livewire.builder.role-management', [
             'roles' => $this->applySorting(Role::query())->paginate(10),
-            'all_permissions' => Permission::all()->groupBy('group')
+            'all_permissions' => Permission::all()->groupBy('group'),
         ])->layout('components.layouts.app');
     }
 }

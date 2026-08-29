@@ -2,22 +2,20 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customer;
+use App\Models\Invoice;
+use App\Models\Locker;
+use App\Models\Package;
+use App\Models\Permission;
+use App\Models\Plan;
+use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Models\Plan;
 use App\Models\Warehouse;
-use App\Models\Customer;
-use App\Models\Package;
-use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\TaxCategory;
-use App\Models\Locker;
-use App\Models\Role;
-use App\Models\Permission;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class TestDataSeeder extends Seeder
 {
@@ -104,8 +102,8 @@ class TestDataSeeder extends Seeder
             'theme_config_json' => ['primary_color' => '#3b7ddd'],
             'enabled_reports_json' => [
                 'inventory_stock', 'revenue_daily', 'customer_debt', 'package_status',
-                'volume_weight', 'stagnant_cargo', 'driver_efficiency', 'tax_collection'
-            ]
+                'volume_weight', 'stagnant_cargo', 'driver_efficiency', 'tax_collection',
+            ],
         ]);
 
         // 3.1 Create Roles for the Tenant
@@ -150,7 +148,7 @@ class TestDataSeeder extends Seeder
         // 6. Lockers
         for ($i = 1; $i <= 5; $i++) {
             Locker::updateOrCreate(['code' => "SEC-A-0$i", 'tenant_id' => $tenant->id], [
-                'status' => 'available', 'max_weight' => 50.00
+                'status' => 'available', 'max_weight' => 50.00,
             ]);
         }
 
@@ -171,7 +169,7 @@ class TestDataSeeder extends Seeder
                 'box_number' => $data['box'],
                 'phone' => '6000-0000',
                 'balance' => rand(0, 50),
-                'identification_number' => $data['id']
+                'identification_number' => $data['id'],
             ]);
         }
 
@@ -194,19 +192,19 @@ class TestDataSeeder extends Seeder
             Package::updateOrCreate(['tracking_number' => $p['track']], [
                 'tenant_id' => $tenant->id, 'customer_id' => $p['cust'], 'warehouse_id' => $p['wh'],
                 'status' => $p['status'], 'description' => $p['desc'],
-                'weight' => rand(1, 10)
+                'weight' => rand(1, 10),
             ]);
         }
 
         // 9. Diverse Invoices
         Invoice::updateOrCreate(['number' => 'INV-001'], [
-            'tenant_id' => $tenant->id, 'customer_id' => $juan->id, 'subtotal' => 20, 'tax' => 5.50, 'total' => 25.50, 'status' => 'unpaid', 'due_date' => now()->addDays(5)
+            'tenant_id' => $tenant->id, 'customer_id' => $juan->id, 'subtotal' => 20, 'tax' => 5.50, 'total' => 25.50, 'status' => 'unpaid', 'due_date' => now()->addDays(5),
         ]);
         Invoice::updateOrCreate(['number' => 'INV-002'], [
-            'tenant_id' => $tenant->id, 'customer_id' => $maria->id, 'subtotal' => 100, 'tax' => 10, 'total' => 110.00, 'status' => 'paid', 'paid_at' => now()->subDay()
+            'tenant_id' => $tenant->id, 'customer_id' => $maria->id, 'subtotal' => 100, 'tax' => 10, 'total' => 110.00, 'status' => 'paid', 'paid_at' => now()->subDay(),
         ]);
         Invoice::updateOrCreate(['number' => 'INV-003'], [
-            'tenant_id' => $tenant->id, 'customer_id' => $carlos->id, 'subtotal' => 40, 'tax' => 5, 'total' => 45.00, 'status' => 'unpaid', 'due_date' => now()->subDays(2)
+            'tenant_id' => $tenant->id, 'customer_id' => $carlos->id, 'subtotal' => 40, 'tax' => 5, 'total' => 45.00, 'status' => 'unpaid', 'due_date' => now()->subDays(2),
         ]);
     }
 }

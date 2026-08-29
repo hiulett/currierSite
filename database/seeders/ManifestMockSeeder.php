@@ -75,7 +75,7 @@ class ManifestMockSeeder extends Seeder
             ManifestItem::create([
                 'manifest_id' => $m2->id,
                 'tenant_id' => $tenantId,
-                'tracking_number' => 'MISSING-' . Str::random(8),
+                'tracking_number' => 'MISSING-'.Str::random(8),
                 'status' => 'missing',
                 'observation' => 'Nunca llegó en el camión.',
             ]);
@@ -86,7 +86,7 @@ class ManifestMockSeeder extends Seeder
             ManifestItem::create([
                 'manifest_id' => $m2->id,
                 'tenant_id' => $tenantId,
-                'tracking_number' => 'SURPLUS-' . Str::random(8),
+                'tracking_number' => 'SURPLUS-'.Str::random(8),
                 'status' => 'surplus',
                 'scanned_at' => now()->subDay()->addMinutes(45),
                 'observation' => 'Caja extra no declarada.',
@@ -111,7 +111,7 @@ class ManifestMockSeeder extends Seeder
             ManifestItem::create([
                 'manifest_id' => $m3->id,
                 'tenant_id' => $tenantId,
-                'tracking_number' => 'EXP-' . (1000 + $i),
+                'tracking_number' => 'EXP-'.(1000 + $i),
                 'status' => $status,
                 'scanned_at' => ($status === 'received') ? now()->subMinutes(rand(5, 20)) : null,
             ]);

@@ -270,18 +270,12 @@
     @endif
 
     <!-- Modals Section -->
-    <div class="modal fade" id="customerModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0" style="border-radius: 1rem;">
-                <div class="modal-header bg-primary text-white p-4">
-                    <h5 class="modal-title uppercase font-black tracking-widest text-white">
-                        <i class="align-middle me-2" data-feather="{{ $is_editing ? 'edit' : 'user-plus' }}"></i>
-                        {{ $is_editing ? 'Editar Cliente' : 'Nuevo Cliente' }}
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <form wire:submit.prevent="saveCustomer">
-                    <div class="modal-body p-4 p-md-5">
+    <x-modal id="customerModal" :title="$is_editing ? 'Editar Cliente' : 'Nuevo Cliente'" :icon="$is_editing ? 'edit' : 'user-plus'">
+        <x-slot:footer>
+            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cerrar</button>
+            <button type="submit" form="customerForm" class="btn btn-primary px-4 fw-black">GUARDAR</button>
+        </x-slot:footer>
+        <form id="customerForm" wire:submit.prevent="saveCustomer">
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label xsmall font-black text-uppercase text-muted">Nombre Completo <span class="text-danger">*</span></label>
@@ -337,6 +331,24 @@
                             </div>
                             @endif
                         </div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label xsmall font-black text-uppercase text-muted">Tarifa</label>
+                                <select wire:model="rate_type" class="form-select border-2">
+                                    <option value="regular">Regular ($2.50/lb)</option>
+                                    <option value="reseller">Revendedor</option>
+                                    <option value="special">Tarifa Especial</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end pb-1">
+                                <div class="form-check form-switch d-flex align-items-center gap-2">
+                                    <input class="form-check-input mt-0" type="checkbox" id="loyaltyEligibleSwitch" wire:model="is_loyalty_eligible" style="width: 40px; height: 20px;">
+                                    <label class="form-check-label small fw-bold mb-0" for="loyaltyEligibleSwitch">
+                                        Participa en LOGYPUNTOS
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                         @if($is_editing)
                         <div class="row g-3 mb-4">
                             <div class="col-md-4">
@@ -381,47 +393,32 @@
                             </div>
                         </div>
                         @endif
-                    </div>
-                    <div class="modal-footer bg-light p-4">
-                        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary px-4 fw-black">GUARDAR</button>
-                    </div>
                 </form>
-            </div>
-        </div>
-    </div>
+    </x-modal>
 
     @include('livewire.logistics.partials.customer-credential-modals')
 
+    @script
     <script>
-        window.addEventListener('open-customer-modal', () => {
+        Livewire.on('open-customer-modal', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('customerModal')).show();
         });
-        window.addEventListener('customer-saved', () => {
+        Livewire.on('customer-saved', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('customerModal')).hide();
+            if (typeof initFeather === 'function') initFeather();
         });
-        window.addEventListener('open-password-modal', () => {
+        Livewire.on('open-password-modal', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('passwordResetModal')).show();
         });
-        window.addEventListener('close-password-modal', () => {
+        Livewire.on('close-password-modal', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('passwordResetModal')).hide();
         });
-        window.addEventListener('open-confirm-password-modal', () => {
+        Livewire.on('open-confirm-password-modal', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmPasswordModal')).show();
         });
-        window.addEventListener('close-confirm-password-modal', () => {
+        Livewire.on('close-confirm-password-modal', () => {
             bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmPasswordModal')).hide();
         });
-
-        // Re-initialize icons after every Livewire update in this component
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('customer-updated', () => {
-                if(typeof initFeather === 'function') initFeather();
-            });
-            // Also re-init on standard Livewire navigation/refresh
-            Livewire.on('customer-saved', () => {
-                if(typeof initFeather === 'function') initFeather();
-            });
-        });
     </script>
+    @endscript
 </div>

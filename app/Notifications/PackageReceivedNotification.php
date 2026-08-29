@@ -4,10 +4,10 @@ namespace App\Notifications;
 
 use App\Models\Package;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Queue\SerializesModels;
 
 class PackageReceivedNotification extends Notification implements ShouldQueue
 {
@@ -44,14 +44,14 @@ class PackageReceivedNotification extends Notification implements ShouldQueue
         $tenantName = $this->package->tenant?->name ?? config('app.name');
 
         return (new MailMessage)
-                    ->subject('¡Paquete Recibido! - ' . $tenantName)
-                    ->greeting('Hola ' . $notifiable->name . ',')
-                    ->line('Hemos recibido un nuevo paquete en nuestra bodega con el siguiente detalle:')
-                    ->line('**Tracking:** ' . $this->package->tracking_number)
-                    ->line('**Descripción:** ' . ($this->package->description ?? 'N/A'))
-                    ->line('**Peso:** ' . $this->package->weight . ' lbs')
-                    ->action('Ver mi casillero', route('customer.dashboard'))
-                    ->line('Gracias por utilizar nuestros servicios.');
+            ->subject('¡Paquete Recibido! - '.$tenantName)
+            ->greeting('Hola '.$notifiable->name.',')
+            ->line('Hemos recibido un nuevo paquete en nuestra bodega con el siguiente detalle:')
+            ->line('**Tracking:** '.$this->package->tracking_number)
+            ->line('**Descripción:** '.($this->package->description ?? 'N/A'))
+            ->line('**Peso:** '.$this->package->weight.' lbs')
+            ->action('Ver mi casillero', route('customer.dashboard'))
+            ->line('Gracias por utilizar nuestros servicios.');
     }
 
     /**
@@ -64,9 +64,8 @@ class PackageReceivedNotification extends Notification implements ShouldQueue
         return [
             'package_id' => $this->package->id,
             'tracking_number' => $this->package->tracking_number,
-            'message' => 'Paquete ' . $this->package->tracking_number . ' recibido en bodega.',
-            'type' => 'package_received'
+            'message' => 'Paquete '.$this->package->tracking_number.' recibido en bodega.',
+            'type' => 'package_received',
         ];
     }
 }
-

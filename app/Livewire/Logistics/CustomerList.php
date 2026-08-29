@@ -43,6 +43,10 @@ class CustomerList extends Component
 
     public $loyalty_level_id;
 
+    public $rate_type = 'regular';
+
+    public $is_loyalty_eligible = true;
+
     public $admin_notes;
 
     public $box_number_air;
@@ -283,7 +287,9 @@ class CustomerList extends Component
 
     public function resetFields()
     {
-        $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'loyalty_level_id', 'identification_number', 'address', 'admin_notes', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id', 'duplicate_warning']);
+        $this->reset(['name', 'email', 'phone', 'box_number', 'locker_id', 'loyalty_level_id', 'rate_type', 'is_loyalty_eligible', 'identification_number', 'address', 'admin_notes', 'box_number_air', 'box_number_maritime', 'is_editing', 'customer_id', 'duplicate_warning']);
+        $this->rate_type = 'regular';
+        $this->is_loyalty_eligible = true;
         $this->send_credentials_now = true;
     }
 
@@ -305,6 +311,8 @@ class CustomerList extends Component
         $this->box_number_maritime = $customer->box_number_maritime;
         $this->locker_id = $customer->locker_id;
         $this->loyalty_level_id = $customer->loyalty_level_id;
+        $this->rate_type = $customer->rate_type ?? 'regular';
+        $this->is_loyalty_eligible = $customer->is_loyalty_eligible ?? true;
         $this->identification_number = $customer->identification_number;
         $this->address = $customer->address;
         $this->admin_notes = $customer->admin_notes;
@@ -325,6 +333,8 @@ class CustomerList extends Component
             ],
             'locker_id' => 'nullable|exists:lockers,id',
             'loyalty_level_id' => 'nullable|exists:loyalty_levels,id',
+            'rate_type' => 'required|in:regular,reseller,special',
+            'is_loyalty_eligible' => 'boolean',
             'phone' => 'required|string|max:20',
             'identification_number' => 'required|string|max:50',
             'address' => 'nullable|string|max:500',
@@ -351,6 +361,8 @@ class CustomerList extends Component
                 'phone' => $this->phone,
                 'locker_id' => $this->locker_id,
                 'loyalty_level_id' => $this->loyalty_level_id,
+                'rate_type' => $this->rate_type,
+                'is_loyalty_eligible' => $this->is_loyalty_eligible,
                 'identification_number' => $this->identification_number,
                 'address' => $this->address,
                 'admin_notes' => $this->admin_notes,
@@ -390,6 +402,8 @@ class CustomerList extends Component
                 'phone' => $this->phone,
                 'locker_id' => $this->locker_id,
                 'loyalty_level_id' => null, // Siempre nulo al inicio
+                'rate_type' => $this->rate_type,
+                'is_loyalty_eligible' => $this->is_loyalty_eligible,
                 'identification_number' => $this->identification_number,
                 'address' => $this->address,
                 'admin_notes' => $this->admin_notes,

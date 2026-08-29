@@ -268,8 +268,14 @@
         </div>
     </div>
 
+    @vite(['resources/js/charts.js'])
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        function whenChartReady(fn) {
+            if (window.Chart) { fn(); return; }
+            window.addEventListener('chartjs-ready', () => fn(), { once: true });
+        }
+
+        function initSuperCharts() {
             // 1. Growth Chart
             var ctx = document.getElementById("chart-package-growth").getContext("2d");
             var gradient = ctx.createLinearGradient(0, 0, 0, 225);
@@ -355,6 +361,8 @@
                     }
                 }
             });
-        });
+        }
+        document.addEventListener('livewire:navigated', () => whenChartReady(initSuperCharts));
+        whenChartReady(initSuperCharts);
     </script>
 </div>

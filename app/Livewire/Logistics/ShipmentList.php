@@ -2,18 +2,19 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
 use App\Models\Shipment;
-use Livewire\WithPagination;
 use App\Traits\WithSorting;
-use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class ShipmentList extends Component
 {
     use WithPagination, WithSorting;
 
     public $manifest_number;
+
     public $carrier_name;
+
     public $filter_status = '';
 
     protected $queryString = [
@@ -33,6 +34,7 @@ class ShipmentList extends Component
         ]);
 
         $this->reset(['manifest_number', 'carrier_name']);
+
         return redirect()->route('logistics.shipments.detail', $shipment->id);
     }
 
@@ -52,7 +54,7 @@ class ShipmentList extends Component
 
         return view('livewire.logistics.shipment-list', [
             'shipments' => $this->applySorting($query)->paginate(10),
-            'stats' => $stats
+            'stats' => $stats,
         ])->layout('components.layouts.app');
     }
 }

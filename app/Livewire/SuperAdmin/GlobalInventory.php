@@ -2,17 +2,18 @@
 
 namespace App\Livewire\SuperAdmin;
 
-use Livewire\Component;
 use App\Models\Package;
 use App\Models\Tenant;
-use Livewire\WithPagination;
 use App\Traits\WithSorting;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class GlobalInventory extends Component
 {
     use WithPagination, WithSorting;
 
     public $search = '';
+
     public $filter_tenant = '';
 
     public function updatingSearch()
@@ -26,15 +27,15 @@ class GlobalInventory extends Component
             ->with(['tenant', 'customer.user', 'warehouse']);
 
         if ($this->search) {
-            $searchTerm = '%' . str_replace(' ', '%', trim($this->search)) . '%';
-            $query->where(function($q) use ($searchTerm) {
+            $searchTerm = '%'.str_replace(' ', '%', trim($this->search)).'%';
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('tracking_number', 'like', $searchTerm)
-                  ->orWhereHas('customer', function($c) use ($searchTerm) {
-                      $c->where('box_number', 'like', $searchTerm)
-                        ->orWhereHas('user', function($u) use ($searchTerm) {
-                            $u->where('name', 'like', $searchTerm);
-                        });
-                  });
+                    ->orWhereHas('customer', function ($c) use ($searchTerm) {
+                        $c->where('box_number', 'like', $searchTerm)
+                            ->orWhereHas('user', function ($u) use ($searchTerm) {
+                                $u->where('name', 'like', $searchTerm);
+                            });
+                    });
             });
         }
 
@@ -44,7 +45,7 @@ class GlobalInventory extends Component
 
         return view('livewire.super-admin.global-inventory', [
             'packages' => $this->applySorting($query)->paginate(15),
-            'tenants' => Tenant::all()
+            'tenants' => Tenant::all(),
         ])->layout('components.super-admin-layout');
     }
 }

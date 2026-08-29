@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Billing;
 use App\Http\Controllers\Controller;
 use App\Models\Quotation;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class QuotationController extends Controller
 {
@@ -28,17 +28,18 @@ class QuotationController extends Controller
                 $logoData = file_get_contents($logoUrl);
                 if ($logoData) {
                     $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
-                    $logoBase64 = 'data:image/' . ($type ?: 'png') . ';base64,' . base64_encode($logoData);
+                    $logoBase64 = 'data:image/'.($type ?: 'png').';base64,'.base64_encode($logoData);
                 }
             }
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning("Could not convert logo to base64: " . $e->getMessage());
+            Log::warning('Could not convert logo to base64: '.$e->getMessage());
         }
 
         // Get Currency
         $currency = $quotation->tenant->settings_json['currency'] ?? 'USD';
 
         $pdf = Pdf::loadView('billing.quotation-pdf', compact('quotation', 'logoBase64', 'currency'));
-        return $pdf->stream('Cotizacion_' . $quotation->number . '.pdf');
+
+        return $pdf->stream('Cotizacion_'.$quotation->number.'.pdf');
     }
 }

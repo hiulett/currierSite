@@ -2,13 +2,12 @@
 
 namespace App\Notifications;
 
+use App\Models\Package;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-
-use App\Models\Package;
+use Illuminate\Queue\SerializesModels;
 
 class PackageReceived extends Notification implements ShouldQueue
 {
@@ -45,13 +44,13 @@ class PackageReceived extends Notification implements ShouldQueue
         $tenantName = $this->package->tenant?->name ?? config('app.name');
 
         return (new MailMessage)
-            ->subject('Paquete Recibido - ' . $this->package->tracking_number)
-            ->greeting('¡Hola, ' . $notifiable->name . '!')
+            ->subject('Paquete Recibido - '.$this->package->tracking_number)
+            ->greeting('¡Hola, '.$notifiable->name.'!')
             ->line('Hemos recibido un nuevo paquete para ti en nuestra bodega.')
-            ->line('Tracking: ' . $this->package->tracking_number)
-            ->line('Peso: ' . $this->package->weight . ' kg')
+            ->line('Tracking: '.$this->package->tracking_number)
+            ->line('Peso: '.$this->package->weight.' kg')
             ->action('Ver mi Casillero', url('/portal/paquetes'))
-            ->line('Gracias por confiar en ' . $tenantName . '.');
+            ->line('Gracias por confiar en '.$tenantName.'.');
     }
 
     /**
@@ -66,4 +65,3 @@ class PackageReceived extends Notification implements ShouldQueue
         ];
     }
 }
-

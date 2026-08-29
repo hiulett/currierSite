@@ -2,23 +2,29 @@
 
 namespace App\Livewire\SuperAdmin;
 
-use Livewire\Component;
 use App\Models\SubscriptionInvoice;
 use App\Models\Tenant;
-use App\Models\Plan;
-use Livewire\WithPagination;
 use App\Traits\WithSorting;
 use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class BillingManagement extends Component
 {
     use WithPagination, WithSorting;
 
     public $search = '';
+
     public $filter_status = '';
 
     // Create Invoice Modal
-    public $tenant_id, $amount, $due_date, $notes;
+    public $tenant_id;
+
+    public $amount;
+
+    public $due_date;
+
+    public $notes;
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -38,7 +44,7 @@ class BillingManagement extends Component
         SubscriptionInvoice::create([
             'tenant_id' => $this->tenant_id,
             'plan_id' => $tenant->plan_id,
-            'number' => 'SA-' . date('Ymd') . strtoupper(Str::random(4)),
+            'number' => 'SA-'.date('Ymd').strtoupper(Str::random(4)),
             'amount' => $this->amount,
             'status' => 'unpaid',
             'due_date' => $this->due_date,
@@ -63,8 +69,8 @@ class BillingManagement extends Component
     public function render()
     {
         $query = SubscriptionInvoice::with(['tenant', 'plan'])
-            ->whereHas('tenant', function($q) {
-                $q->where('name', 'like', '%' . $this->search . '%');
+            ->whereHas('tenant', function ($q) {
+                $q->where('name', 'like', '%'.$this->search.'%');
             });
 
         if ($this->filter_status) {
@@ -81,7 +87,7 @@ class BillingManagement extends Component
         return view('livewire.super-admin.billing-management', [
             'invoices' => $this->applySorting($query)->paginate(10),
             'tenants' => Tenant::all(),
-            'stats' => $stats
+            'stats' => $stats,
         ])->layout('components.super-admin-layout');
     }
 }

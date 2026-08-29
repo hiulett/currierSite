@@ -2,9 +2,9 @@
 
 namespace App\Services\Logistics;
 
+use Illuminate\Support\Facades\Log;
 use Smalot\PdfParser\Parser;
 use thiagoalessio\TesseractOCR\TesseractOCR;
-use Illuminate\Support\Facades\Log;
 
 class AIParserService
 {
@@ -12,7 +12,7 @@ class AIParserService
 
     public function __construct()
     {
-        $this->pdfParser = new Parser();
+        $this->pdfParser = new Parser;
     }
 
     /**
@@ -21,7 +21,7 @@ class AIParserService
     public function parseGlobalExpressInvoice(string $filePath): array
     {
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-        $fullText = "";
+        $fullText = '';
         $items = [];
 
         try {
@@ -33,14 +33,14 @@ class AIParserService
                     $pageText = $page->getText();
 
                     // 1. RECONSTRUCCIÓN: Unir trackings que el PDF corta en 2 líneas
-                    $pageText = preg_replace_callback('/(\d{15,30})\s*\n\s*(\d{5,15})/', function($m) {
-                        return $m[1] . $m[2];
+                    $pageText = preg_replace_callback('/(\d{15,30})\s*\n\s*(\d{5,15})/', function ($m) {
+                        return $m[1].$m[2];
                     }, $pageText);
 
                     // 2. UNIÓN DE DATOS: Si las dimensiones están en la línea de abajo, subirlas
                     $pageText = preg_replace('/\n\s*([0-9]+[\.,][0-9]{2})/', ' $1', $pageText);
 
-                    $fullText .= $pageText . "\n";
+                    $fullText .= $pageText."\n";
                     $items = array_merge($items, $this->extractDataFromTable($pageText));
                 }
 
@@ -58,16 +58,17 @@ class AIParserService
                 'items' => collect($items)->unique('tracking')->values()->toArray(),
                 'invoice_number' => $this->extractInvoiceNumber($fullText),
                 'raw_text' => $fullText,
-                'error' => empty($items) && str_contains($fullText, 'ERROR:') ? $fullText : null
+                'error' => empty($items) && str_contains($fullText, 'ERROR:') ? $fullText : null,
             ];
 
         } catch (\Exception $e) {
-            Log::error("Error en AIParserService: " . $e->getMessage());
+            Log::error('Error en AIParserService: '.$e->getMessage());
+
             return [
                 'items' => [],
                 'invoice_number' => null,
                 'raw_text' => '',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -76,7 +77,9 @@ class AIParserService
     {
         $keyword = 'Código';
         $tableStart = mb_stripos($text, $keyword);
-        if ($tableStart === false) $tableStart = mb_stripos($text, 'Codigo');
+        if ($tableStart === false) {
+            $tableStart = mb_stripos($text, 'Codigo');
+        }
 
         if ($tableStart !== false) {
             $text = mb_substr($text, $tableStart);
@@ -91,7 +94,7 @@ class AIParserService
             'USPS' => '/\b(9[0-9]{19,33})\b/',
             'Internal' => '/\b(WH[0-9]{6}\s+[0-9]-[0-9])\b/i',
             'Courier' => '/\b(TBA[A-Z0-9]{10,20})\b/i',
-            'Long' => '/\b(420331[0-9]{20,35})\b/'
+            'Long' => '/\b(420331[0-9]{20,35})\b/',
         ];
 
         foreach ($lines as $line) {
@@ -110,12 +113,12 @@ class AIParserService
                 if (count($nums) >= 4) {
                     $extracted[] = [
                         'tracking' => $tracking,
-                        'length' => (float)str_replace(',', '.', $nums[0] ?? 1),
-                        'height' => (float)str_replace(',', '.', $nums[1] ?? 1),
-                        'width'  => (float)str_replace(',', '.', $nums[2] ?? 1),
-                        'weight' => (float)str_replace(',', '.', $nums[3] ?? 0),
-                        'volume' => (float)str_replace(',', '.', $nums[4] ?? 0),
-                        'price'  => (float)str_replace(',', '.', $nums[5] ?? 0),
+                        'length' => (float) str_replace(',', '.', $nums[0] ?? 1),
+                        'height' => (float) str_replace(',', '.', $nums[1] ?? 1),
+                        'width' => (float) str_replace(',', '.', $nums[2] ?? 1),
+                        'weight' => (float) str_replace(',', '.', $nums[3] ?? 0),
+                        'volume' => (float) str_replace(',', '.', $nums[4] ?? 0),
+                        'price' => (float) str_replace(',', '.', $nums[5] ?? 0),
                     ];
                 }
             }
@@ -143,24 +146,29 @@ class AIParserService
                 }
             }
         }
+
         return null;
     }
 
     private function tryOCRFallback(string $filePath): string
     {
-        if (!class_exists('thiagoalessio\TesseractOCR\TesseractOCR')) {
-            return "ERROR: Tesseract no instalado localmente.";
+        if (! class_exists('thiagoalessio\TesseractOCR\TesseractOCR')) {
+            return 'ERROR: Tesseract no instalado localmente.';
         }
         try {
             $ocr = new TesseractOCR($filePath);
             if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
                 $winPath = 'C:\Program Files\Tesseract-OCR\tesseract.exe';
-                if (file_exists($winPath)) $ocr->executable($winPath);
+                if (file_exists($winPath)) {
+                    $ocr->executable($winPath);
+                }
             }
+
             return $ocr->lang('spa', 'eng')->run();
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
-            return "ERROR OCR: " . $e->getMessage();
+            Log::error('Exception in '.__CLASS__.'::'.__FUNCTION__.' - '.$e->getMessage()."\n".$e->getTraceAsString());
+
+            return 'ERROR OCR: '.$e->getMessage();
         }
     }
 }

@@ -54,7 +54,7 @@
 	<div class="wrapper">
 		<nav id="sidebar" class="sidebar js-sidebar">
 			<div class="sidebar-content js-simplebar">
-				<a class='sidebar-brand d-flex flex-column align-items-center py-4' href='{{ route('super.dashboard') }}'>
+				<a class='sidebar-brand d-flex flex-column align-items-center py-4' wire:navigate href='{{ route('super.dashboard') }}'>
                     <div class="mb-2">
                         <i class="align-middle text-primary" data-feather="shield" style="width: 40px; height: 40px;"></i>
                     </div>
@@ -79,7 +79,7 @@
                                 <div class="dropdown-divider"></div>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit" class="dropdown-item text-danger">Cerrar Sesión</button>
+                                    <button type="submit" class="dropdown-item text-danger">Cerrar SesiÃ³n</button>
                                 </form>
                             </div>
                             <div class="sidebar-user-subtitle">Super Administrador</div>
@@ -93,26 +93,26 @@
 					</li>
 
 					<li class="sidebar-item {{ request()->routeIs('super.dashboard') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('super.dashboard') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('super.dashboard') }}'>
 							<i class="align-middle" data-feather="monitor"></i> <span class="align-middle">Dashboard Global</span>
 						</a>
 					</li>
 
 					<li class="sidebar-item {{ request()->routeIs('super.tenants*') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('super.tenants') }}'>
-							<i class="align-middle" data-feather="layers"></i> <span class="align-middle">Gestión de Tenants</span>
+						<a class='sidebar-link' wire:navigate href='{{ route('super.tenants') }}'>
+							<i class="align-middle" data-feather="layers"></i> <span class="align-middle">GestiÃ³n de Tenants</span>
 						</a>
 					</li>
 
 					<li class="sidebar-item {{ request()->routeIs('super.plans*') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('super.plans') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('super.plans') }}'>
 							<i class="align-middle" data-feather="shopping-bag"></i> <span class="align-middle">Planes y Precios</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('super.billing') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('super.billing') }}'>
-							<i class="align-middle" data-feather="credit-card"></i> <span class="align-middle">Facturación SaaS</span>
+						<a class='sidebar-link' wire:navigate href='{{ route('super.billing') }}'>
+							<i class="align-middle" data-feather="credit-card"></i> <span class="align-middle">FacturaciÃ³n SaaS</span>
 						</a>
 					</li>
 
@@ -121,41 +121,41 @@
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('super.inventory') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('super.inventory') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('super.inventory') }}'>
 							<i class="align-middle" data-feather="package"></i> <span class="align-middle">Inventario Global</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('super.tracking') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('super.tracking') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('super.tracking') }}'>
 							<i class="align-middle" data-feather="search"></i> <span class="align-middle">Buscador Maestro</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('super.users') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('super.users') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('super.users') }}'>
 							<i class="align-middle" data-feather="users"></i> <span class="align-middle">Usuarios Globales</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('super.audit') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('super.audit') }}'>
-							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">Auditoría Financiera</span>
+						<a class='sidebar-link' wire:navigate href='{{ route('super.audit') }}'>
+							<i class="align-middle" data-feather="file-text"></i> <span class="align-middle">AuditorÃ­a Financiera</span>
 						</a>
 					</li>
 
 					<li class="sidebar-header">
-						Configuración Base
+						ConfiguraciÃ³n Base
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('super.settings') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('super.settings') }}'>
-							<i class="align-middle" data-feather="settings"></i> <span class="align-middle">Ajustes del Núcleo</span>
+						<a class='sidebar-link' wire:navigate href='{{ route('super.settings') }}'>
+							<i class="align-middle" data-feather="settings"></i> <span class="align-middle">Ajustes del NÃºcleo</span>
 						</a>
 					</li>
 
                     <li class="sidebar-item {{ request()->routeIs('super.api') ? 'active' : '' }}">
-						<a class='sidebar-link' href='{{ route('super.api') }}'>
+						<a class='sidebar-link' wire:navigate href='{{ route('super.api') }}'>
 							<i class="align-middle" data-feather="code"></i> <span class="align-middle">API & Webhooks</span>
 						</a>
 					</li>
@@ -208,7 +208,7 @@
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="dropdown-item py-2 px-3 text-danger rounded-bottom-4">
-                                        <i class="align-middle me-2" data-feather="log-out"></i> Cerrar Sesión
+                                        <i class="align-middle me-2" data-feather="log-out"></i> Cerrar SesiÃ³n
                                     </button>
                                 </form>
 							</div>
@@ -237,8 +237,8 @@
 		</div>
 	</div>
 
-	<script src="{{ asset('adminkit/js/app.js') }}"></script>
-    <script>
+	<script src="{{ asset('adminkit/js/app.js') }}" data-navigate-once></script>
+    <script data-navigate-once>
         function initFeather() {
             if (typeof feather !== 'undefined') {
                 try {
@@ -262,7 +262,7 @@
             });
         });
     </script>
-    <script>
+    <script data-navigate-once>
         // Kill any lingering service workers from old PWA packages
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
@@ -271,6 +271,27 @@
                 }
             });
         }
+    </script>
+    <script data-navigate-once>
+        // Persistir scroll del sidebar entre navegaciones
+        (function () {
+            var KEY = 'logysaas.sidebar.scroll';
+            function scroller() {
+                return document.querySelector('.sidebar-content') || document.getElementById('sidebar');
+            }
+            window.addEventListener('beforeunload', function () {
+                var el = scroller();
+                if (el) { try { sessionStorage.setItem(KEY, String(el.scrollTop)); } catch (e) {} }
+            });
+            function restoreSidebarScroll() {
+                var el = scroller();
+                var v = null;
+                try { v = sessionStorage.getItem(KEY); } catch (e) {}
+                if (el && v) { el.scrollTop = parseInt(v, 10) || 0; }
+            }
+            window.addEventListener('DOMContentLoaded', restoreSidebarScroll);
+            document.addEventListener('livewire:navigated', restoreSidebarScroll);
+        })();
     </script>
 </body>
 </html>

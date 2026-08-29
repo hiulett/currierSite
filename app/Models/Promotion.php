@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Promotion extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use BelongsToTenant, HasFactory;
 
     protected $fillable = [
         'tenant_id',
@@ -33,13 +33,21 @@ class Promotion extends Model
 
     public function isValid()
     {
-        if (!$this->is_active) return false;
+        if (! $this->is_active) {
+            return false;
+        }
 
         $now = now()->startOfDay();
-        if ($this->start_date && $this->start_date->gt($now)) return false;
-        if ($this->end_date && $this->end_date->lt($now)) return false;
+        if ($this->start_date && $this->start_date->gt($now)) {
+            return false;
+        }
+        if ($this->end_date && $this->end_date->lt($now)) {
+            return false;
+        }
 
-        if ($this->usage_limit && $this->used_count >= $this->usage_limit) return false;
+        if ($this->usage_limit && $this->used_count >= $this->usage_limit) {
+            return false;
+        }
 
         return true;
     }

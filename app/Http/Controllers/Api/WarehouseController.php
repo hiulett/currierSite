@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Package;
 use App\Models\PreAlert;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 
 class WarehouseController extends Controller
@@ -24,7 +25,7 @@ class WarehouseController extends Controller
                 'found' => true,
                 'type' => 'package',
                 'data' => $package,
-                'message' => 'Package already exists in system'
+                'message' => 'Package already exists in system',
             ]);
         }
 
@@ -35,19 +36,19 @@ class WarehouseController extends Controller
                 'found' => true,
                 'type' => 'pre_alert',
                 'data' => $preAlert,
-                'message' => 'Pre-alert found for this tracking'
+                'message' => 'Pre-alert found for this tracking',
             ]);
         }
 
         return response()->json([
             'found' => false,
-            'message' => 'No record found. Ready for new reception.'
+            'message' => 'No record found. Ready for new reception.',
         ]);
     }
 
     public function warehouses()
     {
-        return response()->json(\App\Models\Warehouse::all(['id', 'name', 'code']));
+        return response()->json(Warehouse::all(['id', 'name', 'code']));
     }
 
     public function bulkReceive(Request $request)
@@ -80,7 +81,7 @@ class WarehouseController extends Controller
         return response()->json([
             'success' => true,
             'processed_count' => count($results),
-            'items' => $results
+            'items' => $results,
         ]);
     }
 }

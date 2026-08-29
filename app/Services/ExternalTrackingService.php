@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class ExternalTrackingService
 {
@@ -13,7 +13,7 @@ class ExternalTrackingService
      */
     public function trackInstantParcels($trackingNumber)
     {
-        $url = "https://api.instantparcels.com/v1/tracking/" . trim($trackingNumber);
+        $url = 'https://api.instantparcels.com/v1/tracking/'.trim($trackingNumber);
 
         try {
             $response = Http::withHeaders([
@@ -29,14 +29,14 @@ class ExternalTrackingService
                 $history = [];
                 if (isset($data['events'])) {
                     foreach ($data['events'] as $event) {
-                        $location = isset($event['location_obj']['city']) ? $event['location_obj']['city'] . ', ' . ($event['location_obj']['countryISO'] ?? '') : ($event['location_obj']['countryISO'] ?? 'Unknown');
+                        $location = isset($event['location_obj']['city']) ? $event['location_obj']['city'].', '.($event['location_obj']['countryISO'] ?? '') : ($event['location_obj']['countryISO'] ?? 'Unknown');
 
                         $history[] = [
                             'status' => strtoupper($event['status'] ?? $event['name']),
                             'date' => Carbon::parse($event['date'])->format('d M, Y H:i'),
                             'location' => $location,
                             'notes' => $event['name'] ?? '',
-                            'source' => 'International'
+                            'source' => 'International',
                         ];
                     }
                 }
@@ -45,14 +45,16 @@ class ExternalTrackingService
                     'tracking' => $data['code'] ?? $trackingNumber,
                     'status' => $data['status'] ?? 'IN TRANSIT',
                     'carrier' => $data['shipmentInfo']['carrier']['name'] ?? 'Detected Carrier',
-                    'origin' => ($data['origin']['city'] ?? '') . ' ' . ($data['origin']['countryISO'] ?? ''),
-                    'destination' => ($data['destination']['city'] ?? '') . ' ' . ($data['destination']['countryISO'] ?? ''),
-                    'history' => $history
+                    'origin' => ($data['origin']['city'] ?? '').' '.($data['origin']['countryISO'] ?? ''),
+                    'destination' => ($data['destination']['city'] ?? '').' '.($data['destination']['countryISO'] ?? ''),
+                    'history' => $history,
                 ];
             }
+
             return null;
         } catch (\Exception $e) {
-            Log::error("InstantParcels API Error: " . $e->getMessage());
+            Log::error('InstantParcels API Error: '.$e->getMessage());
+
             return null;
         }
     }
@@ -62,7 +64,7 @@ class ExternalTrackingService
      */
     public function trackFuzionCargo($trackingNumber)
     {
-        $url = "https://app.fuzioncargo.com/index.php/v3/package/" . trim($trackingNumber);
+        $url = 'https://app.fuzioncargo.com/index.php/v3/package/'.trim($trackingNumber);
 
         try {
             $response = Http::withHeaders([
@@ -83,8 +85,8 @@ class ExternalTrackingService
                                 'status' => strtoupper($statusKey),
                                 'date' => Carbon::parse($details['date'])->format('d M, Y H:i'),
                                 'location' => 'Panama Delivery Center',
-                                'notes' => "Procesado en fase local: " . $statusKey,
-                                'source' => 'Local Panama'
+                                'notes' => 'Procesado en fase local: '.$statusKey,
+                                'source' => 'Local Panama',
                             ];
                         }
                     }
@@ -94,12 +96,14 @@ class ExternalTrackingService
                     'tracking' => $data['tracking'] ?? $trackingNumber,
                     'status' => count($history) > 0 ? $history[0]['status'] : 'LOCAL PROCESSING',
                     'weight' => $data['weight'] ?? '0.00',
-                    'history' => $history
+                    'history' => $history,
                 ];
             }
+
             return null;
         } catch (\Exception $e) {
-            Log::error("FuzionCargo API Error: " . $e->getMessage());
+            Log::error('FuzionCargo API Error: '.$e->getMessage());
+
             return null;
         }
     }

@@ -2,14 +2,15 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Support\Str;
+use App\Livewire\Billing\CreateInvoice;
+use App\Livewire\Billing\EditInvoice;
+use App\Livewire\Billing\InvoiceList;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Tenant;
 use App\Models\User;
-use App\Livewire\Billing\InvoiceList;
-use App\Livewire\Billing\CreateInvoice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -18,7 +19,9 @@ class BillingTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $admin;
+
     protected $customer;
 
     protected function setUp(): void
@@ -102,7 +105,7 @@ class BillingTest extends TestCase
         // Test Livewire customer search
         Livewire::test(CreateInvoice::class)
             ->set('customer_search', 'Customer')
-            ->assertSet('customer_results', function($results) {
+            ->assertSet('customer_results', function ($results) {
                 return count($results) === 1 && $results[0]['id'] === $this->customer->id;
             })
             ->call('selectCustomer', $this->customer->id)
@@ -126,8 +129,8 @@ class BillingTest extends TestCase
                     'description' => 'Servicio de Flete',
                     'quantity' => 2,
                     'unit_price' => 10.00,
-                    'total' => 20.00
-                ]
+                    'total' => 20.00,
+                ],
             ])
             ->set('tax_percent', 10)
             ->call('save')
@@ -157,15 +160,15 @@ class BillingTest extends TestCase
         // Prior customer balance is 100.00
         $this->assertEquals(100.00, $this->customer->fresh()->balance);
 
-        Livewire::test(\App\Livewire\Billing\EditInvoice::class, ['invoice' => $invoice])
+        Livewire::test(EditInvoice::class, ['invoice' => $invoice])
             ->assertSet('box_number', 'PTY-12345')
             ->set('items', [
                 [
                     'description' => 'Updated Item',
                     'quantity' => 1,
                     'unit_price' => 30.00,
-                    'total' => 30.00
-                ]
+                    'total' => 30.00,
+                ],
             ])
             ->set('tax_percent', 0)
             ->call('save')

@@ -2,26 +2,41 @@
 
 namespace App\Livewire\SuperAdmin;
 
-use Livewire\Component;
 use App\Models\Plan;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
-use Livewire\WithPagination;
 use App\Traits\WithSorting;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class PlanList extends Component
 {
     use WithPagination, WithSorting;
 
     public $planId;
+
     public $isEditing = false;
 
-    public $name, $price, $price_annual, $price_5year, $limit_users, $limit_packages_month;
+    public $name;
+
+    public $price;
+
+    public $price_annual;
+
+    public $price_5year;
+
+    public $limit_users;
+
+    public $limit_packages_month;
+
     public $has_website_builder = false;
+
     public $has_api_access = false;
+
     public $is_featured = false;
 
     public $selected_features = [];
+
     public $available_modules = [
         'Logística PRO (Recepción, Scanner, Etiquetas)',
         'Inventario Avanzado (Búsqueda por Cédula/Tracking)',
@@ -71,8 +86,8 @@ class PlanList extends Component
 
         // Normalize numeric values to avoid "MathException: Unable to cast value to a decimal"
         $price = $this->price ?: 0;
-        $price_annual = !empty($this->price_annual) ? $this->price_annual : null;
-        $price_5year = !empty($this->price_5year) ? $this->price_5year : null;
+        $price_annual = ! empty($this->price_annual) ? $this->price_annual : null;
+        $price_5year = ! empty($this->price_5year) ? $this->price_5year : null;
 
         $data = [
             'name' => $this->name,
@@ -106,8 +121,8 @@ class PlanList extends Component
 
         // Use direct DB update or force null on empty decimal fields to avoid cast exception
         DB::table('plans')->where('id', $id)->update([
-            'is_active' => !$plan->is_active,
-            'updated_at' => now()
+            'is_active' => ! $plan->is_active,
+            'updated_at' => now(),
         ]);
 
         session()->flash('message', "El plan {$plan->name} ha sido actualizado.");
@@ -116,7 +131,7 @@ class PlanList extends Component
     public function render()
     {
         return view('livewire.super-admin.plan-list', [
-            'plans' => $this->applySorting(Plan::query())->paginate(10)
+            'plans' => $this->applySorting(Plan::query())->paginate(10),
         ])->layout('components.super-admin-layout');
     }
 }

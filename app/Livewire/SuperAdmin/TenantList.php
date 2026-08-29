@@ -2,28 +2,52 @@
 
 namespace App\Livewire\SuperAdmin;
 
-use Livewire\Component;
+use App\Models\Permission;
+use App\Models\Plan;
+use App\Models\Role;
 use App\Models\Tenant;
-use Livewire\WithPagination;
+use App\Models\User;
+use App\Models\Warehouse;
 use App\Traits\WithSorting;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class TenantList extends Component
 {
     use WithPagination, WithSorting;
 
     public $search = '';
+
     public $configuring_tenant_id = null;
+
     public $configuring_billing_id = null;
+
     public $editing_tenant_id = null;
+
     public $creating_tenant = false; // New
+
     public $features = [];
 
     // Tenant Create/Edit state
-    public $tenant_name, $tenant_subdomain, $tenant_domain, $tenant_plan_id, $tenant_status;
-    public $admin_email, $admin_password; // For creation
+    public $tenant_name;
+
+    public $tenant_subdomain;
+
+    public $tenant_domain;
+
+    public $tenant_plan_id;
+
+    public $tenant_status;
+
+    public $admin_email;
+
+    public $admin_password; // For creation
 
     // Billing state
     public $next_billing_at;
+
     public $payment_warning_active;
 
     protected $listeners = ['stop-impersonating' => 'stopImpersonating'];
@@ -32,7 +56,7 @@ class TenantList extends Component
     {
         $this->reset(['tenant_name', 'tenant_subdomain', 'tenant_domain', 'tenant_plan_id', 'tenant_status', 'admin_email', 'admin_password']);
         $this->tenant_status = 'active';
-        $this->tenant_plan_id = \App\Models\Plan::where('is_active', true)->first()?->id;
+        $this->tenant_plan_id = Plan::where('is_active', true)->first()?->id;
         $this->creating_tenant = true;
     }
 
@@ -48,7 +72,7 @@ class TenantList extends Component
 
         // 1. Create Tenant
         $tenant = Tenant::create([
-            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'uuid' => (string) Str::uuid(),
             'name' => $this->tenant_name,
             'subdomain' => $this->tenant_subdomain,
             'domain' => $this->tenant_domain,
@@ -58,33 +82,33 @@ class TenantList extends Component
             'settings_json' => [
                 'currency' => 'USD',
                 'force_password_change' => true,
-            ]
+            ],
         ]);
 
         // 2. Create Admin Role for this tenant
-        $role = \App\Models\Role::create([
+        $role = Role::create([
             'tenant_id' => $tenant->id,
             'name' => 'Administrador',
-            'description' => 'Acceso total al sistema'
+            'description' => 'Acceso total al sistema',
         ]);
 
         // 3. Assign all permissions to this role
-        $allPermissions = \App\Models\Permission::all();
+        $allPermissions = Permission::all();
         $role->permissions()->sync($allPermissions->pluck('id'));
 
         // 4. Create Admin User
-        \App\Models\User::create([
+        User::create([
             'tenant_id' => $tenant->id,
             'role_id' => $role->id,
-            'name' => 'Admin ' . $tenant->name,
+            'name' => 'Admin '.$tenant->name,
             'email' => $this->admin_email,
-            'password' => \Illuminate\Support\Facades\Hash::make($this->admin_password),
+            'password' => Hash::make($this->admin_password),
             'role' => 'admin',
             'email_verified_at' => now(),
         ]);
 
         // 5. Create default Warehouse
-        \App\Models\Warehouse::create([
+        Warehouse::create([
             'tenant_id' => $tenant->id,
             'name' => 'Miami Hub Principal',
             'code' => 'MIA-01',
@@ -97,7 +121,7 @@ class TenantList extends Component
         ]);
 
         $this->creating_tenant = false;
-        session()->flash('message', 'Empresa ' . $tenant->name . ' creada exitosamente con su usuario administrador.');
+        session()->flash('message', 'Empresa '.$tenant->name.' creada exitosamente con su usuario administrador.');
     }
 
     public function editTenant($id)
@@ -115,7 +139,7 @@ class TenantList extends Component
     {
         $this->validate([
             'tenant_name' => 'required|string|max:255',
-            'tenant_subdomain' => 'required|string|unique:tenants,subdomain,' . $this->editing_tenant_id,
+            'tenant_subdomain' => 'required|string|unique:tenants,subdomain,'.$this->editing_tenant_id,
             'tenant_plan_id' => 'required|exists:plans,id',
         ]);
 
@@ -129,7 +153,7 @@ class TenantList extends Component
         ]);
 
         $this->editing_tenant_id = null;
-        session()->flash('message', 'Información de ' . $tenant->name . ' actualizada.');
+        session()->flash('message', 'Información de '.$tenant->name.' actualizada.');
     }
 
     public function configureBilling($id)
@@ -145,16 +169,17 @@ class TenantList extends Component
         $tenant = Tenant::find($this->configuring_billing_id);
         $tenant->update([
             'next_billing_at' => $this->next_billing_at,
-            'payment_warning_active' => $this->payment_warning_active
+            'payment_warning_active' => $this->payment_warning_active,
         ]);
 
         $this->configuring_billing_id = null;
-        session()->flash('message', 'Configuración de facturación actualizada para ' . $tenant->name);
+        session()->flash('message', 'Configuración de facturación actualizada para '.$tenant->name);
     }
 
     public function stopImpersonating()
     {
         session()->forget('impersonate_tenant_id');
+
         return redirect()->route('super.tenants');
     }
 
@@ -167,39 +192,39 @@ class TenantList extends Component
 
         // Legacy features default
         foreach (['repack', 'whatsapp_ia', 'tickets', 'online_payments'] as $legacyKey) {
-            if (!isset($features[$legacyKey])) {
+            if (! isset($features[$legacyKey])) {
                 $features[$legacyKey] = true;
             }
         }
 
         // Modules default
-        if (!isset($features['modules'])) {
+        if (! isset($features['modules'])) {
             $features['modules'] = [];
         }
         $allModules = [
-            'dashboard', 
-            'recepcion_paquetes', 'control_manifiestos', 
+            'dashboard',
+            'recepcion_paquetes', 'control_manifiestos',
             'inventario_activo', 'rastreo_global', 'reempaque_consolidacion', 'casilleros_fisicos',
             'embarques', 'ultima_milla', 'entrega_counter',
             'base_clientes', 'soporte_tickets',
             'facturacion', 'cotizaciones', 'control_fletes', 'estados_cuenta', 'expenses', 'reportes_negocio',
             'identidad_visual', 'gestion_bodegas', 'pagos_integraciones', 'ajustes_correo', 'estados_carga',
-            'niveles_cliente', 'promociones', 'usuarios_roles', 'ajustes_generales'
+            'niveles_cliente', 'promociones', 'usuarios_roles', 'ajustes_generales',
         ];
         foreach ($allModules as $mod) {
-            if (!isset($features['modules'][$mod])) {
+            if (! isset($features['modules'][$mod])) {
                 $features['modules'][$mod] = 'active';
             }
         }
 
         // Subfeatures default
-        if (!isset($features['sub_features'])) {
+        if (! isset($features['sub_features'])) {
             $features['sub_features'] = [];
         }
         foreach ([
-            'download_reports', 'customize_mail_templates', 'change_company_name', 'customize_visual_brand'
+            'download_reports', 'customize_mail_templates', 'change_company_name', 'customize_visual_brand',
         ] as $sub) {
-            if (!isset($features['sub_features'][$sub])) {
+            if (! isset($features['sub_features'][$sub])) {
                 $features['sub_features'][$sub] = true;
             }
         }
@@ -213,17 +238,19 @@ class TenantList extends Component
         $tenant->update(['features_json' => $this->features]);
 
         $this->configuring_tenant_id = null;
-        session()->flash('message', 'Funcionalidades actualizadas para ' . $tenant->name);
+        session()->flash('message', 'Funcionalidades actualizadas para '.$tenant->name);
     }
 
     public function impersonate($tenantId)
     {
         if ($tenantId === 'stop') {
             session()->forget('impersonate_tenant_id');
+
             return redirect()->route('super.tenants');
         }
 
         session(['impersonate_tenant_id' => $tenantId]);
+
         return redirect()->route('dashboard');
     }
 
@@ -240,10 +267,10 @@ class TenantList extends Component
 
     public function render()
     {
-        $query = Tenant::where('name', 'like', '%' . $this->search . '%');
+        $query = Tenant::where('name', 'like', '%'.$this->search.'%');
 
         return view('livewire.super-admin.tenant-list', [
-            'tenants' => $this->applySorting($query)->paginate(10)
+            'tenants' => $this->applySorting($query)->paginate(10),
         ])->layout('components.super-admin-layout');
     }
 }

@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Billing;
 
-use Livewire\Component;
 use App\Models\Customer;
 use App\Models\Invoice;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class DebtCollection extends Component
@@ -17,7 +17,7 @@ class DebtCollection extends Component
     {
         $debtors = Customer::with('user')
             ->where('balance', '>', 0)
-            ->whereHas('user', function($q) {
+            ->whereHas('user', function ($q) {
                 $q->where('tenant_id', session('tenant_id'));
             })
             ->latest()
@@ -29,7 +29,7 @@ class DebtCollection extends Component
         return view('livewire.billing.debt-collection', [
             'debtors' => $debtors,
             'total_debt' => $total_debt,
-            'overdue_count' => $overdue_count
+            'overdue_count' => $overdue_count,
         ])->layout('components.layouts.app');
     }
 }

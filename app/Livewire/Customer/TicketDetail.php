@@ -2,13 +2,14 @@
 
 namespace App\Livewire\Customer;
 
-use Livewire\Component;
 use App\Models\Ticket;
 use App\Models\TicketMessage;
+use Livewire\Component;
 
 class TicketDetail extends Component
 {
     public Ticket $ticket;
+
     public $message;
 
     public function mount(Ticket $ticket)
@@ -16,7 +17,7 @@ class TicketDetail extends Component
         $customer = auth()->user()->customer;
 
         // Security check
-        if (!$customer || $ticket->customer_id !== $customer->id) {
+        if (! $customer || $ticket->customer_id !== $customer->id) {
             abort(403);
         }
         $this->ticket = $ticket;

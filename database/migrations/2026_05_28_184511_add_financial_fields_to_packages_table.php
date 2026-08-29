@@ -35,7 +35,7 @@ return new class extends Migration
                 'provider_width',
                 'provider_height',
                 'provider_tracking',
-                'client_total_billed'
+                'client_total_billed',
             ]);
         });
     }

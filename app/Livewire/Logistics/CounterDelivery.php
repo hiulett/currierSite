@@ -2,22 +2,27 @@
 
 namespace App\Livewire\Logistics;
 
-use Livewire\Component;
-use App\Models\Package;
 use App\Models\Customer;
 use App\Models\Invoice;
-use Livewire\WithPagination;
+use App\Models\Package;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class CounterDelivery extends Component
 {
     use WithPagination;
 
     public $search = '';
+
     public $filter_status = '';
+
     public $selected_customer_id = null;
+
     public $selected_packages = [];
+
     public $receiver_name = '';
+
     public $pay_pending_invoices = false;
 
     public function updatedSearch()
@@ -60,7 +65,7 @@ class CounterDelivery extends Component
             'receiver_name' => 'required|string',
         ]);
 
-        DB::transaction(function() {
+        DB::transaction(function () {
             // 1. Mark packages as delivered
             $packages = Package::whereIn('id', $this->selected_packages)->get();
             foreach ($packages as $pkg) {
@@ -101,15 +106,15 @@ class CounterDelivery extends Component
     {
         $search_results = [];
         if (strlen($this->search) >= 3) {
-            $searchTerm = '%' . str_replace(' ', '%', trim($this->search)) . '%';
+            $searchTerm = '%'.str_replace(' ', '%', trim($this->search)).'%';
 
             // 1. Buscar directamente por cliente (nombre o casillero)
             $customer_results = Customer::with('user')
-                ->where(function($q) use ($searchTerm) {
+                ->where(function ($q) use ($searchTerm) {
                     $q->where('box_number', 'like', $searchTerm)
-                      ->orWhereHas('user', function($u) use ($searchTerm) {
-                          $u->where('name', 'like', $searchTerm);
-                      });
+                        ->orWhereHas('user', function ($u) use ($searchTerm) {
+                            $u->where('name', 'like', $searchTerm);
+                        });
                 })
                 ->take(5)
                 ->get();
@@ -149,14 +154,14 @@ class CounterDelivery extends Component
             'waiting_pickup' => Package::whereIn('status', ['received', 'arrived', 'ready_for_pickup'])->count(),
             'delivered_today' => Package::where('status', 'delivered')->whereDate('delivered_at', now()->today())->count(),
             'weight_delivered_today' => Package::where('status', 'delivered')->whereDate('delivered_at', now()->today())->sum('weight'),
-            'customers_with_debt' => Customer::whereHas('invoices', function($q) {
+            'customers_with_debt' => Customer::whereHas('invoices', function ($q) {
                 $q->where('status', 'unpaid');
             })->count(),
         ];
 
         // Apply filter to search results if searching for customers with debt
         if ($this->filter_status === 'debt' && empty($this->search)) {
-            $search_results = Customer::with('user')->whereHas('invoices', function($q) {
+            $search_results = Customer::with('user')->whereHas('invoices', function ($q) {
                 $q->where('status', 'unpaid');
             })->take(10)->get();
         }
@@ -166,7 +171,7 @@ class CounterDelivery extends Component
             'customer' => $customer,
             'customer_packages' => $customer_packages,
             'unpaid_invoices_count' => $unpaid_invoices_count,
-            'stats' => $stats
+            'stats' => $stats,
         ])->layout('components.layouts.app');
     }
 }

@@ -2,12 +2,14 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use App\Models\Tenant;
+use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpFoundation\Response;
 
 class IdentifyTenant
 {
@@ -26,22 +28,22 @@ class IdentifyTenant
         }
 
         // 2. [SUBDOMAIN] Extraction (Production Wildcard)
-        if (!$tenant && !in_array($subdomain, ['localhost', '127', '127.0.0.1', 'www', 'logysaas'])) {
+        if (! $tenant && ! in_array($subdomain, ['localhost', '127', '127.0.0.1', 'www', 'logysaas'])) {
             $tenant = Tenant::where('subdomain', $subdomain)->orWhere('domain', $host)->first();
         }
 
         // 2.5 [HEADER] Mobile support (X-Tenant: slug)
-        if (!$tenant && $request->hasHeader('X-Tenant')) {
+        if (! $tenant && $request->hasHeader('X-Tenant')) {
             $tenant = Tenant::where('subdomain', $request->header('X-Tenant'))->first();
         }
 
         // 3. [AUTHENTICATED] User identity
-        if (!$tenant && Auth::check() && Auth::user()->tenant_id) {
+        if (! $tenant && Auth::check() && Auth::user()->tenant_id) {
             $tenant = Tenant::find(Auth::user()->tenant_id);
         }
 
         // 4. [SESSION/COOKIE] Context persistence
-        if (!$tenant) {
+        if (! $tenant) {
             $tenantId = session('tenant_id') ?? $request->cookie('tenant_branding_id');
             if ($tenantId) {
                 $tenant = Tenant::find($tenantId);
@@ -49,7 +51,7 @@ class IdentifyTenant
         }
 
         // 5. [LOCAL FALLBACK] For development convenience
-        if (!$tenant && in_array($subdomain, ['localhost', '127', '127.0.0.1'])) {
+        if (! $tenant && in_array($subdomain, ['localhost', '127', '127.0.0.1'])) {
             $tenant = Tenant::first();
         }
 
@@ -65,7 +67,7 @@ class IdentifyTenant
 
             // Set SuperAdmin flag for scope bypass
             if (Auth::check()) {
-                if (!session()->has('is_superadmin')) {
+                if (! session()->has('is_superadmin')) {
                     session(['is_superadmin' => Auth::user()->role === 'superadmin']);
                 }
             }
@@ -95,13 +97,13 @@ class IdentifyTenant
         $settings = $tenant->settings_json ?? [];
 
         // SMTP Override
-        if (!empty($settings['mail_host'])) {
+        if (! empty($settings['mail_host'])) {
             $driver = $settings['mail_driver'] ?? 'smtp';
 
             if ($driver === 'sendgrid_api' || $driver === 'sendgrid') {
                 config(["mail.mailers.$driver" => [
                     'transport' => $driver,
-                    'key' => $settings['mail_password'] ?? $settings['mail_username']
+                    'key' => $settings['mail_password'] ?? $settings['mail_username'],
                 ]]);
             }
 
@@ -118,10 +120,10 @@ class IdentifyTenant
 
             // Force Laravel to drop cached instances and use new config
             try {
-                \Illuminate\Support\Facades\Mail::purge('smtp');
-                \Illuminate\Support\Facades\Mail::purge($driver);
+                Mail::purge('smtp');
+                Mail::purge($driver);
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Exception in ' . __CLASS__ . '::' . __FUNCTION__ . ' - ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+                Log::error('Exception in '.__CLASS__.'::'.__FUNCTION__.' - '.$e->getMessage()."\n".$e->getTraceAsString());
                 // Ignore if Mail facade is not fully loaded yet
             }
         }

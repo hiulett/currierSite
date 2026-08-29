@@ -2,36 +2,49 @@
 
 namespace App\Livewire\Billing;
 
-use Livewire\Component;
+use App\Exports\DriverTripExport;
 use App\Models\DriverTrip;
 use App\Models\Tenant;
-use App\Exports\DriverTripExport;
-use Livewire\WithPagination;
 use App\Traits\WithSorting;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
+use Livewire\Component;
+use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DriverTripList extends Component
 {
     use WithPagination, WithSorting;
 
     public $search = '';
+
     public $filter_date_from = '';
+
     public $filter_date_to = '';
+
     public $filter_invoice_status = '';
+
     public $filter_driver_payment_status = '';
 
     // Modal / Form fields
     public $trip_id;
+
     public $date;
+
     public $driver_name = '';
+
     public $company_name = '';
+
     public $description = '';
+
     public $outsourcing_cost = 0;
+
     public $final_client_price = 0;
+
     public $invoice_number = '';
+
     public $invoice_status = 'PENDIENTE';
+
     public $driver_payment_status = 'PENDIENTE';
 
     public $isEditMode = false;
@@ -87,7 +100,7 @@ class DriverTripList extends Component
 
         return Excel::download(
             new DriverTripExport($trips, $currency),
-            'Fletes_' . now()->format('Y-m-d') . '.xlsx'
+            'Fletes_'.now()->format('Y-m-d').'.xlsx'
         );
     }
 
@@ -105,7 +118,7 @@ class DriverTripList extends Component
         ];
 
         $dateRange = ($this->filter_date_from && $this->filter_date_to)
-            ? Carbon::parse($this->filter_date_from)->format('d/m/Y') . ' - ' . Carbon::parse($this->filter_date_to)->format('d/m/Y')
+            ? Carbon::parse($this->filter_date_from)->format('d/m/Y').' - '.Carbon::parse($this->filter_date_to)->format('d/m/Y')
             : 'Todos los períodos';
 
         // Logo en base64 para DomPDF
@@ -116,7 +129,7 @@ class DriverTripList extends Component
                 $logoData = @file_get_contents($logoUrl);
                 if ($logoData) {
                     $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
-                    $logoBase64 = 'data:image/' . ($type ?: 'png') . ';base64,' . base64_encode($logoData);
+                    $logoBase64 = 'data:image/'.($type ?: 'png').';base64,'.base64_encode($logoData);
                 }
             }
         } catch (\Exception $e) {
@@ -129,8 +142,8 @@ class DriverTripList extends Component
         $pdf->setPaper('letter', 'landscape');
 
         return response()->streamDownload(
-            fn () => print($pdf->output()),
-            'Reporte_Fletes_' . now()->format('Y-m-d') . '.pdf'
+            fn () => print ($pdf->output()),
+            'Reporte_Fletes_'.now()->format('Y-m-d').'.pdf'
         );
     }
 
@@ -216,28 +229,28 @@ class DriverTripList extends Component
     {
         $query = DriverTrip::query();
 
-        if (!empty($this->search)) {
-            $query->where(function($q) {
-                $q->where('driver_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('company_name', 'like', '%' . $this->search . '%')
-                  ->orWhere('description', 'like', '%' . $this->search . '%')
-                  ->orWhere('invoice_number', 'like', '%' . $this->search . '%');
+        if (! empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('driver_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('company_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('description', 'like', '%'.$this->search.'%')
+                    ->orWhere('invoice_number', 'like', '%'.$this->search.'%');
             });
         }
 
-        if (!empty($this->filter_date_from)) {
+        if (! empty($this->filter_date_from)) {
             $query->whereDate('date', '>=', $this->filter_date_from);
         }
 
-        if (!empty($this->filter_date_to)) {
+        if (! empty($this->filter_date_to)) {
             $query->whereDate('date', '<=', $this->filter_date_to);
         }
 
-        if (!empty($this->filter_invoice_status)) {
+        if (! empty($this->filter_invoice_status)) {
             $query->where('invoice_status', $this->filter_invoice_status);
         }
 
-        if (!empty($this->filter_driver_payment_status)) {
+        if (! empty($this->filter_driver_payment_status)) {
             $query->where('driver_payment_status', $this->filter_driver_payment_status);
         }
 
@@ -267,11 +280,11 @@ class DriverTripList extends Component
         if ($isCurrentMonth) {
             $dateRangeLabel = ucfirst(now()->translatedFormat('F Y'));
         } elseif ($this->filter_date_from && $this->filter_date_to) {
-            $dateRangeLabel = Carbon::parse($this->filter_date_from)->format('d/m/Y') . ' — ' . Carbon::parse($this->filter_date_to)->format('d/m/Y');
+            $dateRangeLabel = Carbon::parse($this->filter_date_from)->format('d/m/Y').' — '.Carbon::parse($this->filter_date_to)->format('d/m/Y');
         } elseif ($this->filter_date_from) {
-            $dateRangeLabel = 'Desde ' . Carbon::parse($this->filter_date_from)->format('d/m/Y');
+            $dateRangeLabel = 'Desde '.Carbon::parse($this->filter_date_from)->format('d/m/Y');
         } elseif ($this->filter_date_to) {
-            $dateRangeLabel = 'Hasta ' . Carbon::parse($this->filter_date_to)->format('d/m/Y');
+            $dateRangeLabel = 'Hasta '.Carbon::parse($this->filter_date_to)->format('d/m/Y');
         } else {
             $dateRangeLabel = 'Todos los períodos';
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Tenant;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,13 +30,14 @@ class RequiresTenantContext
         $subdomain = explode('.', $host)[0];
         $excludedHosts = ['curriersite-production', 'localhost', '127', 'www'];
 
-        if (!in_array($subdomain, $excludedHosts)) {
-            $tenant = \App\Models\Tenant::where('domain', $host)
+        if (! in_array($subdomain, $excludedHosts)) {
+            $tenant = Tenant::where('domain', $host)
                 ->orWhere('subdomain', $subdomain)
                 ->first();
 
             if ($tenant) {
                 session(['tenant_id' => $tenant->id]);
+
                 return $next($request);
             }
         }

@@ -2,51 +2,71 @@
 
 namespace App\Livewire\Builder;
 
-use Livewire\Component;
 use App\Models\Tenant;
+use Livewire\Component;
 
 class GeneralSettings extends Component
 {
     public $currency;
+
     public $default_tax;
+
     public $air_rate;
+
     public $maritime_rate;
+
     public $timezone;
+
     public $locale;
+
     public $subtract_provider_costs = true;
 
     public $other_charges = [];
 
     // Box Number Settings - Air
     public $box_number_prefix_air;
+
     public $box_number_template_air;
+
     public $air_address;
+
     public $air_city;
+
     public $air_state;
+
     public $air_zip_code;
+
     public $air_phone;
 
     // Box Number Settings - Maritime
     public $box_number_prefix_maritime;
+
     public $box_number_template_maritime;
+
     public $maritime_address;
+
     public $maritime_city;
+
     public $maritime_state;
+
     public $maritime_zip_code;
+
     public $maritime_phone;
 
     public $box_number_counter;
+
     public $force_password_change = false;
 
     // Service Toggles
     public $service_air_enabled = true;
+
     public $service_maritime_enabled = true;
 
     public function mount()
     {
         $tenant = Tenant::current();
-        if (!$tenant) {
-             return;
+        if (! $tenant) {
+            return;
         }
         $settings = $tenant->settings_json ?? [];
 
@@ -56,7 +76,7 @@ class GeneralSettings extends Component
         $this->maritime_rate = $settings['maritime_rate'] ?? 1.50;
         $this->timezone = $settings['timezone'] ?? 'UTC';
         $this->locale = $tenant->locale ?? 'es';
-        
+
         $this->other_charges = $settings['other_charges'] ?? [];
 
         $this->box_number_prefix_air = $settings['box_number_prefix_air'] ?? 'AIR';
@@ -148,7 +168,7 @@ class GeneralSettings extends Component
 
         $tenant->update([
             'settings_json' => $settings,
-            'locale' => $this->locale
+            'locale' => $this->locale,
         ]);
 
         session()->flash('message', 'Configuraciones generales actualizadas correctamente.');
@@ -159,7 +179,7 @@ class GeneralSettings extends Component
         $id = $this->box_number_counter + 1;
         $name = 'JUAN PEREZ';
         $template = $this->box_number_template_air ?: '{PREFIX}{ID} {NAME}';
-        
+
         return str_replace(
             ['{PREFIX}', '{ID}', '{NAME}'],
             [$this->box_number_prefix_air, $id, $name],
@@ -172,7 +192,7 @@ class GeneralSettings extends Component
         $id = $this->box_number_counter + 1;
         $name = 'JUAN PEREZ';
         $template = $this->box_number_template_maritime ?: '{PREFIX}{ID} {NAME}';
-        
+
         return str_replace(
             ['{PREFIX}', '{ID}', '{NAME}'],
             [$this->box_number_prefix_maritime, $id, $name],

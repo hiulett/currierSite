@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use BelongsToTenant, HasFactory;
 
     protected $fillable = [
         'tenant_id',
@@ -22,6 +22,8 @@ class Customer extends Model
         'box_number_maritime',
         'balance',
         'points',
+        'rate_type',
+        'is_loyalty_eligible',
         'phone',
         'identification_number',
         'address',
@@ -34,11 +36,22 @@ class Customer extends Model
 
     protected $casts = [
         'password_sent_at' => 'datetime',
+        'is_loyalty_eligible' => 'boolean',
     ];
 
     public function level()
     {
         return $this->belongsTo(LoyaltyLevel::class, 'loyalty_level_id');
+    }
+
+    public function pointsHistory()
+    {
+        return $this->hasMany(LoyaltyPointsHistory::class);
+    }
+
+    public function redemptions()
+    {
+        return $this->hasMany(RedemptionHistory::class);
     }
 
     public function user()

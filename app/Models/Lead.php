@@ -12,6 +12,6 @@ class Lead extends Model
         'phone',
         'company',
         'message',
-        'status'
+        'status',
     ];
 }

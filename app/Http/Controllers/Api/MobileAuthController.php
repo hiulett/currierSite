@@ -28,8 +28,8 @@ class MobileAuthController extends Controller
 
         // Check if user is allowed to use mobile
         $allowedRoles = ['superadmin', 'admin', 'staff', 'operator', 'customer'];
-        if (!in_array($user->role, $allowedRoles)) {
-             return response()->json(['message' => 'Unauthorized for mobile access'], 403);
+        if (! in_array($user->role, $allowedRoles)) {
+            return response()->json(['message' => 'Unauthorized for mobile access'], 403);
         }
 
         // Set tenant context for the current request
@@ -57,6 +57,7 @@ class MobileAuthController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
+
         return response()->json(['message' => 'Logged out']);
     }
 

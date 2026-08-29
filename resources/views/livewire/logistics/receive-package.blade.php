@@ -1,8 +1,8 @@
 <div>
 
-    {{-- ══════════════════════════════════════════
+    {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         METRICS BAR
-    ══════════════════════════════════════════ --}}
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
     <div class="row g-3 mb-5">
         {{-- Recibidos Hoy --}}
         <div class="col-6 col-md-3">
@@ -33,12 +33,12 @@
             </div>
         </div>
 
-        {{-- Últimos Paquetes --}}
+        {{-- Ãšltimos Paquetes --}}
         <div class="col-12 col-md-6">
             <div class="card border-0 h-100"
                  style="background: linear-gradient(135deg,#0f172a 0%,#1e293b 100%); border-radius: 1rem;">
                 <div class="card-body p-4 text-white">
-                    <p class="xsmall text-uppercase font-black opacity-50 mb-3 tracking-widest">Últimos Registros</p>
+                    <p class="xsmall text-uppercase font-black opacity-50 mb-3 tracking-widest">Ãšltimos Registros</p>
                     <div class="d-flex flex-wrap gap-2">
                         @forelse($stats['last_packages']->take(3) as $lp)
                             <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-pill"
@@ -55,9 +55,9 @@
         </div>
     </div>
 
-    {{-- ══════════════════════════════════════════
+    {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         SUCCESS ALERT
-    ══════════════════════════════════════════ --}}
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
     @if (session()->has('message'))
         <div class="mb-5 p-4 d-flex align-items-center justify-content-between gap-4"
              style="background:linear-gradient(135deg,#dcfce7,#f0fdf4); border:1.5px solid #86efac; border-radius:1rem;">
@@ -67,7 +67,7 @@
                     <i data-feather="check" style="width:20px;height:20px;"></i>
                 </div>
                 <div>
-                    <p class="fw-black text-success mb-0" style="font-size:.9rem;">¡Paquete registrado con éxito!</p>
+                    <p class="fw-black text-success mb-0" style="font-size:.9rem;">Â¡Paquete registrado con Ã©xito!</p>
                     <p class="text-success small mb-0 opacity-75">{{ session('message') }}</p>
                 </div>
             </div>
@@ -82,12 +82,12 @@
         </div>
     @endif
 
-    {{-- ══════════════════════════════════════════
+    {{-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
         MAIN LAYOUT
-    ══════════════════════════════════════════ --}}
+    â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• --}}
     <div class="row g-4">
 
-        {{-- ─── FORM COLUMN ─── --}}
+        {{-- â”€â”€â”€ FORM COLUMN â”€â”€â”€ --}}
         <div class="col-12 col-lg-8">
             <div class="card border-0 shadow-sm overflow-hidden" style="border-radius:1.25rem;">
 
@@ -109,21 +109,21 @@
                 <form wire:submit.prevent="save">
                     <div class="card-body px-5 py-4">
 
-                        {{-- SECTION: Identificación --}}
+                        {{-- SECTION: IdentificaciÃ³n --}}
                         <p class="xsmall text-uppercase font-black text-muted tracking-widest mb-3"
-                           style="letter-spacing:.15em;">① Identificación del Paquete</p>
+                           style="letter-spacing:.15em;">â‘  IdentificaciÃ³n del Paquete</p>
 
                         <div class="row g-4 mb-5">
                             {{-- Tracking --}}
                             <div class="col-md-4">
                                 <label class="form-label small fw-black text-dark mb-2">
-                                    Nº Tracking
+                                    NÂº Tracking
                                     <span class="text-danger ms-1">*</span>
                                 </label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light border-end-0"
                                           style="border-radius:.75rem 0 0 .75rem;border:1.5px solid #e2e8f0;border-right:0;">
-                                        <i data-feather="barcode" style="width:16px;height:16px;color:#94a3b8;"></i>
+                                        <i data-feather="hash" style="width:16px;height:16px;color:#94a3b8;"></i>
                                     </span>
                                     <input type="text" wire:model="tracking_number"
                                            class="form-control fw-black border-start-0 @error('tracking_number') is-invalid @enderror"
@@ -144,8 +144,8 @@
                                     <span class="text-danger ms-1">*</span>
                                 </label>
                                 <select wire:model="service_type" class="form-select fw-black" style="font-size:1.1rem;border:1.5px solid #e2e8f0;border-radius:.75rem;padding:.8rem 1rem;background:#fafafa;">
-                                    <option value="air">Aéreo</option>
-                                    <option value="maritime">Marítimo</option>
+                                    <option value="air">AÃ©reo</option>
+                                    <option value="maritime">MarÃ­timo</option>
                                 </select>
                             </div>
 
@@ -213,9 +213,9 @@
                             </div>
                         </div>
 
-                        {{-- SECTION: Datos Físicos --}}
+                        {{-- SECTION: Datos FÃ­sicos --}}
                         <p class="xsmall text-uppercase font-black text-muted tracking-widest mb-3"
-                           style="letter-spacing:.15em;">② Datos Físicos</p>
+                           style="letter-spacing:.15em;">â‘¡ Datos FÃ­sicos</p>
 
                         <div class="row g-4 mb-5">
                             {{-- Peso y Bodega --}}
@@ -254,7 +254,7 @@
                                     <label class="form-label xsmall fw-black text-uppercase mb-3 d-block"
                                            style="color:#0369a1;letter-spacing:.1em;">
                                         <i data-feather="maximize-2" style="width:12px;height:12px;" class="me-1"></i>
-                                        Dimensiones Volumétricas (Pulgadas)
+                                        Dimensiones VolumÃ©tricas (Pulgadas)
                                     </label>
                                     <div class="row g-2 mb-2">
                                         <div class="col-4">
@@ -281,7 +281,7 @@
                                     </div>
                                     @if($volumetric_weight > 0)
                                         <div class="d-flex align-items-center justify-content-between pt-2 border-top border-info-subtle mt-2">
-                                            <span class="xsmall fw-black text-uppercase" style="color:#0369a1;font-size:.65rem;">Peso Volumétrico:</span>
+                                            <span class="xsmall fw-black text-uppercase" style="color:#0369a1;font-size:.65rem;">Peso VolumÃ©trico:</span>
                                             <span class="fw-black" style="font-size:1.1rem;color:#0369a1;">{{ $volumetric_weight }} <span style="font-size:.7rem;">vlb</span></span>
                                         </div>
                                     @endif
@@ -289,11 +289,11 @@
                             </div>
                         </div>
 
-                        {{-- SECTION: Descripción --}}
+                        {{-- SECTION: DescripciÃ³n --}}
                         <p class="xsmall text-uppercase font-black text-muted tracking-widest mb-3"
-                           style="letter-spacing:.15em;">③ Descripción del Contenido</p>
+                           style="letter-spacing:.15em;">â‘¢ DescripciÃ³n del Contenido</p>
                         <textarea wire:model="description" rows="3"
-                                  placeholder="¿Qué contiene el paquete? (Opcional)"
+                                  placeholder="Â¿QuÃ© contiene el paquete? (Opcional)"
                                   class="form-control"
                                   style="border:1.5px solid #e2e8f0;border-radius:.75rem;background:#fafafa;resize:none;padding:1rem;"></textarea>
                     </div>
@@ -304,7 +304,7 @@
                         <div class="form-check form-switch mb-0">
                             <input class="form-check-input" type="checkbox" wire:model="auto_invoice" id="autoInvoiceSwitch" style="width:2.4em;height:1.3em;">
                             <label class="form-check-label fw-bold text-muted small ms-2" for="autoInvoiceSwitch">
-                                Generar factura automáticamente <span class="text-primary fw-black">($2.50/lb)</span>
+                                Generar factura automÃ¡ticamente <span class="text-primary fw-black">($2.50/lb)</span>
                             </label>
                         </div>
 
@@ -326,7 +326,7 @@
             </div>
         </div>
 
-        {{-- ─── SIDEBAR COLUMN ─── --}}
+        {{-- â”€â”€â”€ SIDEBAR COLUMN â”€â”€â”€ --}}
         <div class="col-12 col-lg-4 d-flex flex-column gap-4">
 
             {{-- Customer Info Card --}}
@@ -373,7 +373,7 @@
                             <i data-feather="user" style="width:30px;height:30px;color:#94a3b8;"></i>
                         </div>
                         <p class="xsmall fw-black text-uppercase text-muted mb-0 tracking-widest" style="letter-spacing:.12em;">
-                            Esperando selección<br>de cliente
+                            Esperando selecciÃ³n<br>de cliente
                         </p>
                     </div>
                 @endif
@@ -383,7 +383,7 @@
             <div class="card border-0 overflow-hidden" style="border-radius:1.25rem;background:linear-gradient(135deg,#0f172a,#1e293b);">
                 <div class="card-body p-4">
                     <p class="xsmall text-uppercase fw-black mb-4 tracking-widest" style="color:rgba(255,255,255,.35);letter-spacing:.15em;">
-                        Tips de Operación
+                        Tips de OperaciÃ³n
                     </p>
                     <div class="d-flex align-items-start gap-3 mb-3">
                         <div class="d-flex align-items-center justify-content-center rounded-circle flex-shrink-0"
@@ -391,7 +391,7 @@
                             <i data-feather="zap" style="width:13px;height:13px;color:#4ade80;"></i>
                         </div>
                         <p class="small mb-0" style="color:rgba(255,255,255,.55);line-height:1.5;">
-                            Escanea el código de barras directamente para evitar errores de captura manual.
+                            Escanea el cÃ³digo de barras directamente para evitar errores de captura manual.
                         </p>
                     </div>
                     <div class="d-flex align-items-start gap-3">
@@ -400,7 +400,7 @@
                             <i data-feather="maximize-2" style="width:13px;height:13px;color:#4ade80;"></i>
                         </div>
                         <p class="small mb-0" style="color:rgba(255,255,255,.55);line-height:1.5;">
-                            Ingresa dimensiones para paquetes voluminosos — el peso vlb se calcula automáticamente.
+                            Ingresa dimensiones para paquetes voluminosos â€” el peso vlb se calcula automÃ¡ticamente.
                         </p>
                     </div>
                 </div>

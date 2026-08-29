@@ -2,17 +2,17 @@
 
 namespace App\Livewire\Customer;
 
-use Livewire\Component;
 use App\Models\Package;
-use App\Models\Customer;
-use Livewire\WithPagination;
 use App\Traits\WithSorting;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class PackageList extends Component
 {
     use WithPagination, WithSorting;
 
     public $status = 'all';
+
     public $search = '';
 
     protected $queryString = ['status', 'search'];
@@ -31,7 +31,7 @@ class PackageList extends Component
     {
         $package = Package::where('customer_id', auth()->user()->customer->id)->findOrFail($packageId);
 
-        if (!in_array($package->status, ['delivered', 'cancelled'])) {
+        if (! in_array($package->status, ['delivered', 'cancelled'])) {
             $package->update(['delivery_type' => $type]);
             session()->flash('message', 'Preferencia de entrega actualizada.');
         } else {
@@ -43,10 +43,10 @@ class PackageList extends Component
     {
         $customer = auth()->user()->customer;
 
-        if (!$customer) {
+        if (! $customer) {
             return view('livewire.customer.dashboard-error', [
                 'title' => 'Perfil no encontrado',
-                'message' => 'No tienes un perfil de cliente asociado para ver paquetes.'
+                'message' => 'No tienes un perfil de cliente asociado para ver paquetes.',
             ])->layout('components.customer-layout');
         }
 
@@ -59,7 +59,7 @@ class PackageList extends Component
         ];
 
         $query = Package::where('customer_id', $customer->id)
-            ->with(['trackingEvents' => function($q) {
+            ->with(['trackingEvents' => function ($q) {
                 $q->latest();
             }, 'warehouse']);
 
@@ -68,15 +68,15 @@ class PackageList extends Component
         }
 
         if ($this->search) {
-            $query->where(function($q) {
-                $q->where('tracking_number', 'like', '%' . $this->search . '%')
-                  ->orWhere('description', 'like', '%' . $this->search . '%');
+            $query->where(function ($q) {
+                $q->where('tracking_number', 'like', '%'.$this->search.'%')
+                    ->orWhere('description', 'like', '%'.$this->search.'%');
             });
         }
 
         return view('livewire.customer.package-list', [
             'packages' => $this->applySorting($query)->paginate(10),
-            'stats' => $stats
+            'stats' => $stats,
         ])->layout('components.customer-layout');
     }
 }

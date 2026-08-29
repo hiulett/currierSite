@@ -1,0 +1,1033 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Instanceof between App\\Models\\User and Illuminate\\Contracts\\Auth\\MustVerifyEmail will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Actions/Fortify/UpdateUserProfileInformation.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Console/Commands/SendPaymentReminders.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Invoice model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Console/Commands/SendPaymentReminders.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Exports/InventoryExport.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$tenant\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Helpers/DocumentPdf.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Quotation\:\:\$tenant\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Helpers/DocumentPdf.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 7
+			path: app/Http/Controllers/Api/CustomerController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$tenant\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/CustomerController.php
+
+		-
+			message: '#^Relation ''shipment'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Api/CustomerController.php
+
+		-
+			message: '#^Relation ''trackingEvents'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Api/CustomerController.php
+
+		-
+			message: '#^Relation ''warehouse'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Http/Controllers/Api/CustomerController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$tenant\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/MobileAuthController.php
+
+		-
+			message: '#^Call to static method where\(\) on an unknown class App\\Models\\PreAlert\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Http/Controllers/Api/WarehouseController.php
+
+		-
+			message: '#^Relation ''warehouse'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Http/Controllers/Billing/InvoiceController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/PaymentController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$tenant\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/PaymentController.php
+
+		-
+			message: '#^Parameter \#1 \$params of static method Stripe\\Checkout\\Session\:\:create\(\) expects array\{adaptive_pricing\?\: array\{enabled\?\: bool\}, after_expiration\?\: array\{recovery\?\: array\{allow_promotion_codes\?\: bool, enabled\: bool\}\}, allow_promotion_codes\?\: bool, automatic_tax\?\: array\{enabled\: bool, liability\?\: array\{account\?\: string, type\: string\}\}, billing_address_collection\?\: string, branding_settings\?\: array\{background_color\?\: string\|null, border_style\?\: string\|null, button_color\?\: string\|null, display_name\?\: string, font_family\?\: string\|null, icon\?\: array\{file\?\: string, type\: string, url\?\: string\}, logo\?\: array\{file\?\: string, type\: string, url\?\: string\}\}, cancel_url\?\: string, client_reference_id\?\: string, \.\.\.\}\|null, array\{payment_method_types\: array\{''card''\}, line_items\: array\{array\{price_data\: array\{currency\: string, product_data\: array\{name\: non\-falsy\-string\}, unit_amount\: int\}, quantity\: 1\}\}, mode\: ''payment'', success_url\: string, cancel_url\: string, metadata\: array\{invoice_id\: int, tenant_id\: mixed\}\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/PaymentController.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 3
+			path: app/Livewire/Billing/CreateInvoice.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Livewire/Billing/CreateInvoice.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Quotation\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/CreateQuotation.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Quotation\:\:\$handling_price\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/CreateQuotation.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Quotation\:\:\$item_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/CreateQuotation.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Quotation\:\:\$price\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/CreateQuotation.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Quotation\:\:\$quantity\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/CreateQuotation.php
+
+		-
+			message: '#^Access to protected property Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Quotation\>\:\:\$items\.$#'
+			identifier: property.protected
+			count: 1
+			path: app/Livewire/Billing/CreateQuotation.php
+
+		-
+			message: '#^Offset 0 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Livewire/Billing/CreateQuotation.php
+
+		-
+			message: '#^Parameter \#1 \$string of function str_pad expects string, int given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Livewire/Billing/CreateQuotation.php
+
+		-
+			message: '#^Relation ''items'' is not found in App\\Models\\Quotation model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Billing/CreateQuotation.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Livewire/Billing/CreateQuotation.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Livewire/Billing/DebtCollection.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Livewire/Billing/EditInvoice.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$items\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/EditInvoice.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 3
+			path: app/Livewire/Billing/EditInvoice.php
+
+		-
+			message: '#^Right side of && is always true\.$#'
+			identifier: booleanAnd.rightAlwaysTrue
+			count: 1
+			path: app/Livewire/Billing/EditInvoice.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>provider_cost" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Livewire/Billing/EditInvoice.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Expense\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/ExpenseList.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Expense\:\:\$total\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/ExpenseList.php
+
+		-
+			message: '#^Relation ''category'' is not found in App\\Models\\Expense model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Billing/ExpenseList.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/InvoiceList.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Invoice\>\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Livewire/Billing/InvoiceList.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Invoice\>\:\:\$tenant\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/InvoiceList.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Invoice model\.$#'
+			identifier: larastan.relationExistence
+			count: 4
+			path: app/Livewire/Billing/InvoiceList.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\PaymentProof\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\PaymentProof\>\:\:\$invoice\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Livewire/Billing/PaymentApprovals.php
+
+		-
+			message: '#^Relation ''invoice'' is not found in App\\Models\\PaymentProof model\.$#'
+			identifier: larastan.relationExistence
+			count: 3
+			path: app/Livewire/Billing/PaymentApprovals.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Quotation\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Quotation\>\:\:\$tenant\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Billing/QuotationList.php
+
+		-
+			message: '#^Method App\\Livewire\\Billing\\QuotationList\:\:applySorting\(\) invoked with 3 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: app/Livewire/Billing/QuotationList.php
+
+		-
+			message: '#^Parameter \#1 \$array \(array\{int\<0, max\>, int\<0, max\>, int\<0, max\>, int\<0, max\>\}\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: app/Livewire/Billing/QuotationList.php
+
+		-
+			message: '#^Parameter \#1 \$array \(non\-empty\-list\<mixed\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: app/Livewire/Billing/QuotationList.php
+
+		-
+			message: '#^Parameter \#1 \$array \(non\-empty\-list\<string\>\) of array_values is already a list, call has no effect\.$#'
+			identifier: arrayValues.list
+			count: 1
+			path: app/Livewire/Billing/QuotationList.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Quotation model\.$#'
+			identifier: larastan.relationExistence
+			count: 4
+			path: app/Livewire/Billing/QuotationList.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>email" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Livewire/Billing/QuotationList.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>phone" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Livewire/Billing/QuotationList.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\RedemptionHistory model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Livewire/Billing/RedemptionList.php
+
+		-
+			message: '#^Relation ''items'' is not found in App\\Models\\Invoice model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Billing/StatementOfAccount.php
+
+		-
+			message: '#^Relation ''locker'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Billing/StatementOfAccount.php
+
+		-
+			message: '#^Relation ''trackingEvents'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Billing/StatementOfAccount.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 3
+			path: app/Livewire/Billing/StatementOfAccount.php
+
+		-
+			message: '#^Relation ''warehouse'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Livewire/Billing/StatementOfAccount.php
+
+		-
+			message: '#^Parameter \#2 \$replace of function str_replace expects array\<string\>\|string, array\<int, mixed\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Livewire/Builder/GeneralSettings.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Livewire/Builder/MailSettings.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Role\:\:\$permissions\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Builder/RoleManagement.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Customer/Checkout.php
+
+		-
+			message: '#^Access to protected property Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Invoice\>\:\:\$items\.$#'
+			identifier: property.protected
+			count: 1
+			path: app/Livewire/Customer/Checkout.php
+
+		-
+			message: '#^Cannot call method first\(\) on array\<int, App\\Models\\Invoice\>\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Livewire/Customer/Checkout.php
+
+		-
+			message: '#^Relation ''items'' is not found in App\\Models\\Invoice model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Customer/Checkout.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Customer/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Customer/InvoiceList.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Livewire/Customer/PackageList.php
+
+		-
+			message: '#^Relation ''trackingEvents'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Customer/PackageList.php
+
+		-
+			message: '#^Relation ''warehouse'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Customer/PackageList.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Customer/PreAlert.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Livewire/Customer/ProfileSettings.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Customer/QuotationList.php
+
+		-
+			message: '#^Relation ''items'' is not found in App\\Models\\Quotation model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Customer/QuotationList.php
+
+		-
+			message: '#^Relation ''tenant'' is not found in App\\Models\\Quotation model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Customer/QuotationList.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Reward\:\:\$is_claimable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Customer/Rewards.php
+
+		-
+			message: '#^Access to an undefined property App\\Livewire\\Customer\\ShippingCalculator\:\:\$airRate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Customer/ShippingCalculator.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Customer/TicketDetail.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Livewire/Customer/TicketList.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Customer/Tracking.php
+
+		-
+			message: '#^Relation ''trackingEvents'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Customer/Tracking.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Customer/WhatsappBot.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 3
+			path: app/Livewire/Dashboard.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Dashboard.php
+
+		-
+			message: '#^Relation ''packages'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Dashboard.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Customer\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Customer\>\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Logistics/CounterDelivery.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Logistics/CounterDelivery.php
+
+		-
+			message: '#^Relation ''invoices'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Livewire/Logistics/CounterDelivery.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 6
+			path: app/Livewire/Logistics/CounterDelivery.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Customer\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 6
+			path: app/Livewire/Logistics/CustomerDetail.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Livewire/Logistics/CustomerDetail.php
+
+		-
+			message: '#^Relation ''messages'' is not found in App\\Models\\Ticket model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/CustomerDetail.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Customer\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Livewire/Logistics/CustomerList.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Customer\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Customer\>\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Livewire/Logistics/CustomerList.php
+
+		-
+			message: '#^Relation ''level'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/CustomerList.php
+
+		-
+			message: '#^Relation ''locker'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/CustomerList.php
+
+		-
+			message: '#^Relation ''packages'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Livewire/Logistics/CustomerList.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 5
+			path: app/Livewire/Logistics/CustomerList.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>email" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Livewire/Logistics/CustomerList.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Livewire/Logistics/CustomerList.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/DeliveryManagement.php
+
+		-
+			message: '#^Relation ''driver'' is not found in App\\Models\\Delivery model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/DeliveryManagement.php
+
+		-
+			message: '#^Relation ''packages'' is not found in App\\Models\\Delivery model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/DeliveryManifest.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/GlobalSearch.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Livewire/Logistics/GlobalSearch.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/GlobalTracking.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/GlobalTracking.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Customer\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Customer\>\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Logistics/InventoryList.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/InventoryList.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 3
+			path: app/Livewire/Logistics/InventoryList.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Locker model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/LockerList.php
+
+		-
+			message: '#^Relation ''creator'' is not found in App\\Models\\Manifest model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/ReceiveManifest.php
+
+		-
+			message: '#^Relation ''items'' is not found in App\\Models\\Manifest model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/ReceiveManifest.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Customer\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Customer\>\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Logistics/ReceivePackage.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/ReceivePackage.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 4
+			path: app/Livewire/Logistics/ReceivePackage.php
+
+		-
+			message: '#^Undefined variable\: \$customer$#'
+			identifier: variable.undefined
+			count: 1
+			path: app/Livewire/Logistics/ReceivePackage.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/ReportCenter.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/ReportCenter.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>code" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Livewire/Logistics/ReportCenter.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Livewire/Logistics/ReportCenter.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Shipment\:\:\$packages\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Logistics/ShipmentDetail.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/ShipmentDetail.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Customer\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\Customer\>\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Livewire/Logistics/SmartReceptionHub.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Logistics/SmartReceptionHub.php
+
+		-
+			message: '#^Relation ''user'' is not found in App\\Models\\Customer model\.$#'
+			identifier: larastan.relationExistence
+			count: 3
+			path: app/Livewire/Logistics/SmartReceptionHub.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Ticket model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Livewire/Logistics/SupportTickets.php
+
+		-
+			message: '#^Relation ''trackingEvents'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/Public/TrackingSearch.php
+
+		-
+			message: '#^Relation ''plan'' is not found in App\\Models\\SubscriptionInvoice model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/SuperAdmin/BillingManagement.php
+
+		-
+			message: '#^Relation ''tenant'' is not found in App\\Models\\SubscriptionInvoice model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Livewire/SuperAdmin/BillingManagement.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 1
+			path: app/Livewire/SuperAdmin/CoreSettings.php
+
+		-
+			message: '#^Relation ''plan'' is not found in App\\Models\\Tenant model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/SuperAdmin/Dashboard.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Invoice model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/SuperAdmin/GlobalFinanceAudit.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: app/Livewire/SuperAdmin/GlobalInventory.php
+
+		-
+			message: '#^Relation ''customer'' is not found in App\\Models\\Package model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/SuperAdmin/GlobalTrackingSearch.php
+
+		-
+			message: '#^Relation ''tenant'' is not found in App\\Models\\User model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Livewire/SuperAdmin/GlobalUserManagement.php
+
+		-
+			message: '#^Method App\\Mail\\QuotationSent\:\:prepareMailableForDelivery\(\) with return type void returns null but should not return anything\.$#'
+			identifier: return.void
+			count: 1
+			path: app/Mail/QuotationSent.php
+
+		-
+			message: '#^Result of method Illuminate\\Mail\\Mailable\:\:prepareMailableForDelivery\(\) \(void\) is used\.$#'
+			identifier: staticMethod.void
+			count: 1
+			path: app/Mail/QuotationSent.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Mail/QuotationSent.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 8
+			path: app/Models/Tenant.php
+
+		-
+			message: '#^Parameter \#2 \$replace of function str_replace expects array\<string\>\|string, array\<int, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Models/Tenant.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$user_role\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Variable \$e might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: app/Notifications/InvoiceSent.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/PackageReceived.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/PackageReceivedNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/PackageStatusNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/PackagesArrivedNotification.php
+
+		-
+			message: '#^Variable \$e might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: app/Notifications/PackagesArrivedNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/PaymentReminder.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Customer\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Notifications/RedemptionNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/RedemptionNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/TemporaryPasswordNotification.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Notifications/TenantPasswordResetNotification.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>theme_config_json" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Providers/AppServiceProvider.php
+
+		-
+			message: '#^Call to an undefined method thiagoalessio\\TesseractOCR\\TesseractOCR\:\:lang\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Services/Logistics/AIParserService.php
+
+		-
+			message: '#^Offset 0 on array\{list\<string\>, list\<non\-falsy\-string\>\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/Logistics/AIParserService.php
+
+		-
+			message: '#^Offset 0 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/Logistics/AIParserService.php
+
+		-
+			message: '#^Offset 1 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/Logistics/AIParserService.php
+
+		-
+			message: '#^Offset 2 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/Logistics/AIParserService.php
+
+		-
+			message: '#^Offset 3 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/Logistics/AIParserService.php
+
+		-
+			message: '#^Offset 0 on array\{list\<string\>, list\<non\-falsy\-string\>\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/Logistics/ManifestParserService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Customer\:\:\$level\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Loyalty/LoyaltyService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Customer\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Loyalty/LoyaltyService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/Loyalty/LoyaltyService.php
+
+		-
+			message: '#^Offset ''apply_on'' on array\{enabled\: bool, points_per_pound\: float, apply_on\: string, eligible_rate_types\: array\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Services/Loyalty/LoyaltyService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$customer\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/WhatsAppService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Invoice\:\:\$tenant\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/WhatsAppService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Quotation\:\:\$tenant\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/WhatsAppService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Services/WhatsAppService.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>phone" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Services/WhatsAppService.php

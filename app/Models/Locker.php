@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Locker extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use BelongsToTenant, HasFactory;
 
     protected $fillable = [
         'tenant_id',

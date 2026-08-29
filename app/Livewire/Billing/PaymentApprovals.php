@@ -2,17 +2,17 @@
 
 namespace App\Livewire\Billing;
 
-use Livewire\Component;
 use App\Models\PaymentProof;
-use App\Models\Invoice;
-use Livewire\WithPagination;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class PaymentApprovals extends Component
 {
     use WithPagination;
 
     public $selected_proof;
+
     public $rejection_reason;
 
     public function selectProof($id)
@@ -47,7 +47,7 @@ class PaymentApprovals extends Component
         $proof = PaymentProof::find($id);
         $proof->update([
             'status' => 'rejected',
-            'rejection_reason' => $this->rejection_reason
+            'rejection_reason' => $this->rejection_reason,
         ]);
 
         $proof->invoice->update(['status' => 'unpaid']);
@@ -63,7 +63,7 @@ class PaymentApprovals extends Component
             'proofs' => PaymentProof::with(['invoice.customer.user'])
                 ->where('status', 'pending')
                 ->latest()
-                ->paginate(10)
+                ->paginate(10),
         ])->layout('components.layouts.app');
     }
 }

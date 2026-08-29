@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\TenantPasswordResetNotification;
 use App\Traits\BelongsToTenant;
 use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +14,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, BelongsToTenant, HasApiTokens;
+    use BelongsToTenant, HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -38,10 +39,14 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function hasPermission($permissionName)
     {
-        if ($this->role === 'superadmin') return true;
+        if ($this->role === 'superadmin') {
+            return true;
+        }
 
         $role = $this->user_role;
-        if (!$role) return false;
+        if (! $role) {
+            return false;
+        }
 
         return $role->permissions()->where('name', $permissionName)->exists();
     }
@@ -83,7 +88,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function sendPasswordResetNotification($token)
     {
-        $tenant = $this->tenant_id ? \App\Models\Tenant::find($this->tenant_id) : null;
-        $this->notify(new \App\Notifications\TenantPasswordResetNotification($token, $tenant));
+        $tenant = $this->tenant_id ? Tenant::find($this->tenant_id) : null;
+        $this->notify(new TenantPasswordResetNotification($token, $tenant));
     }
 }

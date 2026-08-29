@@ -4,11 +4,11 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Log;
 
 class DeployCommand extends Command
 {
     protected $signature = 'app:deploy';
+
     protected $description = 'Prepara la aplicación para producción de forma segura';
 
     public function handle()
@@ -24,7 +24,7 @@ class DeployCommand extends Command
         $this->info('--- Optimizando Sistema ---');
 
         // Ensure storage link exists for logos
-        if (!file_exists(public_path('storage'))) {
+        if (! file_exists(public_path('storage'))) {
             Artisan::call('storage:link');
         }
 
@@ -34,6 +34,7 @@ class DeployCommand extends Command
         Artisan::call('view:cache');
 
         $this->info('✅ Despliegue completado con éxito.');
+
         return 0;
     }
 }

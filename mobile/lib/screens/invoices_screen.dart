@@ -11,7 +11,10 @@ class InvoicesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Mis Facturas", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          "Mis Facturas",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -35,22 +38,37 @@ class InvoicesScreen extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.all(20),
         leading: CircleAvatar(
-          backgroundColor: inv['status'] == 'paid' ? Colors.green.shade50 : Colors.red.shade50,
+          backgroundColor: inv['status'] == 'paid'
+              ? Colors.green.shade50
+              : Colors.red.shade50,
           child: Icon(
-            inv['status'] == 'paid' ? Icons.check_circle_outline : Icons.pending_actions,
+            inv['status'] == 'paid'
+                ? Icons.check_circle_outline
+                : Icons.pending_actions,
             color: inv['status'] == 'paid' ? Colors.green : Colors.red,
           ),
         ),
-        title: Text("Factura #${inv['invoice_number'] ?? inv['id']}",
-          style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text("${inv['created_at'].toString().split('T')[0]}"),
+        title: Text(
+          "Factura #${inv['invoice_number'] ?? inv['id']}",
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text(inv['created_at'].toString().split('T')[0]),
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text("\$${inv['total']}", style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-            Text(inv['status'] == 'paid' ? "PAGADA" : "PENDIENTE",
-              style: TextStyle(color: inv['status'] == 'paid' ? Colors.green : Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
+            Text(
+              "\$${inv['total']}",
+              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+            ),
+            Text(
+              inv['status'] == 'paid' ? "PAGADA" : "PENDIENTE",
+              style: TextStyle(
+                color: inv['status'] == 'paid' ? Colors.green : Colors.red,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
         onTap: () {

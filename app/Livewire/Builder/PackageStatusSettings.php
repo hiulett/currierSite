@@ -2,15 +2,25 @@
 
 namespace App\Livewire\Builder;
 
-use Livewire\Component;
 use App\Models\PackageStatus;
 use App\Models\Tenant;
+use Livewire\Component;
 
 class PackageStatusSettings extends Component
 {
     public $statuses = [];
+
     public $editing_id = null;
-    public $name, $label, $color, $icon, $sort_order;
+
+    public $name;
+
+    public $label;
+
+    public $color;
+
+    public $icon;
+
+    public $sort_order;
 
     public function mount()
     {
@@ -33,7 +43,7 @@ class PackageStatusSettings extends Component
                     'color' => $data['color'],
                     'icon' => $data['icon'],
                     'sort_order' => $order++,
-                    'is_system' => true
+                    'is_system' => true,
                 ]);
             }
         }

@@ -1,10 +1,5 @@
 <div class="container-fluid p-0">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="h3 mb-0 uppercase font-black tracking-tight text-dark">Configuración de Fidelización</h1>
-            <p class="text-muted small">Gestiona niveles, puntos y beneficios para tus clientes.</p>
-        </div>
-    </div>
+    <x-page-header title="Configuración de Fidelización" subtitle="Gestiona niveles, puntos y beneficios para tus clientes." icon="award" />
 
     @if (session()->has('message'))
         <div class="alert alert-success alert-dismissible shadow-sm mb-4" role="alert">
@@ -16,12 +11,8 @@
     <div class="row">
         <!-- General Loyalty Settings -->
         <div class="col-lg-4">
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-light border-bottom">
-                    <h5 class="card-title mb-0 uppercase font-black small">Reglas Generales</h5>
-                </div>
-                <div class="card-body">
-                    <form wire:submit.prevent="saveGeneral">
+            <x-card title="Reglas Generales" headerClass="bg-light border-bottom">
+                <form wire:submit.prevent="saveGeneral">
                         <div class="mb-3">
                             <label class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" wire:model="loyalty_enabled">
@@ -42,16 +33,11 @@
                             GUARDAR CONFIGURACIÓN
                         </button>
                     </form>
-                </div>
-            </div>
+            </x-card>
 
             <!-- Form to Add/Edit Levels -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0 uppercase font-black small text-white">{{ $is_editing ? 'Editar Nivel' : 'Nuevo Nivel' }}</h5>
-                </div>
-                <div class="card-body">
-                    <form wire:submit.prevent="saveLevel">
+            <x-card :title="$is_editing ? 'Editar Nivel' : 'Nuevo Nivel'" headerClass="bg-primary text-white">
+                <form wire:submit.prevent="saveLevel">
                         <div class="mb-3">
                             <label class="form-label font-bold small text-uppercase text-muted">Nombre del Nivel</label>
                             <input type="text" wire:model="name" class="form-control" placeholder="Ej: Silver, Gold, Platinum...">
@@ -93,16 +79,12 @@
                             @endif
                         </div>
                     </form>
-                </div>
-            </div>
+            </x-card>
         </div>
 
         <!-- Levels List -->
         <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-white border-bottom py-3">
-                    <h5 class="card-title mb-0 uppercase font-black small text-dark">Niveles de Lealtad Configuradores</h5>
-                </div>
+            <x-card title="Niveles de Lealtad Configurados" flush>
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="bg-light">
@@ -159,7 +141,7 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </x-card>
 
             <div class="alert alert-info mt-4 border-0 shadow-sm d-flex align-items-center">
                 <i data-feather="info" class="me-3"></i>

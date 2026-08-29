@@ -16,6 +16,6 @@ class LabelController extends Controller
         $pdf = Pdf::loadView('logistics.label-pdf', compact('package'))
             ->setPaper([0, 0, 288, 432], 'portrait');
 
-        return $pdf->stream('Label_' . $package->tracking_number . '.pdf');
+        return $pdf->stream('Label_'.$package->tracking_number.'.pdf');
     }
 }

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class TenantFeatureToggleTest extends TestCase
@@ -12,6 +13,7 @@ class TenantFeatureToggleTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $admin;
 
     protected function setUp(): void
@@ -19,7 +21,7 @@ class TenantFeatureToggleTest extends TestCase
         parent::setUp();
 
         $this->tenant = Tenant::create([
-            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'uuid' => (string) Str::uuid(),
             'name' => 'Logy Test Company',
             'subdomain' => 'logytest',
             'domain' => 'logytest.localhost',
@@ -29,13 +31,13 @@ class TenantFeatureToggleTest extends TestCase
                 'modules' => [
                     'expenses' => 'disabled',
                     'recepcion_carga' => 'hidden',
-                    'dashboard' => 'active'
+                    'dashboard' => 'active',
                 ],
                 'sub_features' => [
                     'download_reports' => false,
-                    'change_company_name' => true
-                ]
-            ]
+                    'change_company_name' => true,
+                ],
+            ],
         ]);
 
         $this->admin = User::create([
@@ -67,7 +69,7 @@ class TenantFeatureToggleTest extends TestCase
 
         // Accessing 'expenses' (e.g. /egresos) which is configured as 'disabled'
         $response = $this->get('/egresos');
-        
+
         $response->assertRedirect('/dashboard');
         $response->assertSessionHas('warning', 'Esta funcionalidad está bloqueada bajo la configuración de su plan.');
     }
@@ -84,7 +86,7 @@ class TenantFeatureToggleTest extends TestCase
     {
         $this->assertFalse($this->tenant->hasSubFeature('download_reports'));
         $this->assertTrue($this->tenant->hasSubFeature('change_company_name'));
-        
+
         // Default fallback is true
         $this->assertTrue($this->tenant->hasSubFeature('non_existent'));
     }

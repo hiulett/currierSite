@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Builder;
 
-use Livewire\Component;
 use App\Models\Warehouse;
+use Livewire\Component;
 use Livewire\WithPagination;
 
 class WarehouseSettings extends Component
@@ -14,14 +14,23 @@ class WarehouseSettings extends Component
 
     // Form fields
     public $warehouse_id;
+
     public $name;
+
     public $code;
+
     public $address;
+
     public $city;
+
     public $state;
+
     public $zip_code;
+
     public $country = 'USA';
+
     public $service_type = 'both';
+
     public $is_active = true;
 
     public $is_editing = false;
@@ -65,7 +74,7 @@ class WarehouseSettings extends Component
         $this->zip_code = $warehouse->zip_code;
         $this->country = $warehouse->country;
         $this->service_type = $warehouse->service_type;
-        $this->is_active = (bool)$warehouse->is_active;
+        $this->is_active = (bool) $warehouse->is_active;
         $this->is_editing = true;
 
         $this->dispatch('open-warehouse-modal');
@@ -111,7 +120,7 @@ class WarehouseSettings extends Component
 
     public function toggleStatus(Warehouse $warehouse)
     {
-        $warehouse->update(['is_active' => !$warehouse->is_active]);
+        $warehouse->update(['is_active' => ! $warehouse->is_active]);
     }
 
     public function deleteWarehouse($id)
@@ -121,6 +130,7 @@ class WarehouseSettings extends Component
         // Check if warehouse has packages
         if ($warehouse->packages()->count() > 0) {
             session()->flash('error', 'No se puede eliminar la bodega porque tiene paquetes asociados.');
+
             return;
         }
 
@@ -130,13 +140,13 @@ class WarehouseSettings extends Component
 
     public function render()
     {
-        $warehouses = Warehouse::where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('code', 'like', '%' . $this->search . '%')
+        $warehouses = Warehouse::where('name', 'like', '%'.$this->search.'%')
+            ->orWhere('code', 'like', '%'.$this->search.'%')
             ->latest()
             ->paginate(10);
 
         return view('livewire.builder.warehouse-settings', [
-            'warehouses' => $warehouses
+            'warehouses' => $warehouses,
         ])->layout('components.layouts.app');
     }
 }

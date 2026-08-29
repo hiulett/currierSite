@@ -2,12 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\Tenant;
-use App\Models\User;
+use App\Livewire\Billing\ExpenseList;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
-use App\Livewire\Billing\ExpenseList;
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -16,6 +17,7 @@ class ExpenseTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $admin;
 
     protected function setUp(): void
@@ -23,12 +25,12 @@ class ExpenseTest extends TestCase
         parent::setUp();
 
         $this->tenant = Tenant::create([
-            'uuid' => (string) \Illuminate\Support\Str::uuid(),
+            'uuid' => (string) Str::uuid(),
             'name' => 'Logy Test Company',
             'subdomain' => 'logytest',
             'domain' => 'logytest.localhost',
             'status' => 'active',
-            'settings_json' => ['currency' => 'USD']
+            'settings_json' => ['currency' => 'USD'],
         ]);
 
         $this->admin = User::create([
@@ -54,7 +56,7 @@ class ExpenseTest extends TestCase
         $this->assertGreaterThan(0, ExpenseCategory::count());
         $this->assertDatabaseHas('expense_categories', [
             'tenant_id' => $this->tenant->id,
-            'name' => 'Luz'
+            'name' => 'Luz',
         ]);
     }
 
@@ -78,7 +80,7 @@ class ExpenseTest extends TestCase
             'tenant_id' => $this->tenant->id,
             'expense_category_id' => $category->id,
             'amount' => 250.00,
-            'description' => 'Pago de luz del local central'
+            'description' => 'Pago de luz del local central',
         ]);
     }
 
@@ -95,7 +97,7 @@ class ExpenseTest extends TestCase
         $this->assertDatabaseHas('expense_categories', [
             'tenant_id' => $this->tenant->id,
             'name' => 'Mantenimiento de Vehículos',
-            'icon' => 'tool'
+            'icon' => 'tool',
         ]);
 
         $category = ExpenseCategory::where('name', 'Mantenimiento de Vehículos')->first();
@@ -105,7 +107,7 @@ class ExpenseTest extends TestCase
             ->call('deleteCategory', $category->id);
 
         $this->assertDatabaseMissing('expense_categories', [
-            'id' => $category->id
+            'id' => $category->id,
         ]);
     }
 
@@ -120,7 +122,7 @@ class ExpenseTest extends TestCase
             'tenant_id' => $this->tenant->id,
             'expense_category_id' => $category->id,
             'amount' => 100.00,
-            'expense_date' => '2026-06-20'
+            'expense_date' => '2026-06-20',
         ]);
 
         Livewire::test(ExpenseList::class)
@@ -128,7 +130,7 @@ class ExpenseTest extends TestCase
             ->assertSee('No se puede eliminar la categoría');
 
         $this->assertDatabaseHas('expense_categories', [
-            'id' => $category->id
+            'id' => $category->id,
         ]);
     }
 }

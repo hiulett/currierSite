@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\MobileAuthController;
 use App\Http\Controllers\Api\WarehouseController;
-use App\Http\Controllers\Api\CustomerController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

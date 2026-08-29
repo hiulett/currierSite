@@ -2,17 +2,22 @@
 
 namespace App\Livewire\Public;
 
-use Livewire\Component;
 use App\Models\Lead;
 use Illuminate\Support\Facades\Log;
+use Livewire\Component;
 
 class ContactForm extends Component
 {
     public $name;
+
     public $email;
+
     public $phone;
+
     public $company;
+
     public $message;
+
     public $successMessage = '';
 
     protected $rules = [

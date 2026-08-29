@@ -2,23 +2,30 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\Package;
+use App\Helpers\DatabaseHelper;
 use App\Models\Customer;
+use App\Models\Expense;
 use App\Models\Invoice;
+use App\Models\Package;
+use App\Models\PaymentProof;
+use App\Models\Tenant;
 use App\Models\Ticket;
+use App\Models\User;
 use App\Models\Warehouse;
+use Illuminate\Support\Facades\Log;
+use Livewire\Component;
 
 class Dashboard extends Component
 {
     public $days = 30;
+
     public $warehouse_id = '';
 
     public function mount()
     {
         $user = auth()->user();
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
@@ -28,7 +35,7 @@ class Dashboard extends Component
         }
 
         // If SuperAdmin and NO tenant context, go to super dashboard
-        if ($user->role === 'superadmin' && !session()->has('tenant_id') && !session()->has('impersonate_tenant_id')) {
+        if ($user->role === 'superadmin' && ! session()->has('tenant_id') && ! session()->has('impersonate_tenant_id')) {
             return redirect()->route('super.dashboard');
         }
     }
@@ -55,7 +62,7 @@ class Dashboard extends Component
 
             $recent_packages = Package::with(['customer.user'])->latest()->take(6)->get();
 
-            $monthFormat = \App\Helpers\DatabaseHelper::formatMonth('created_at', '%m');
+            $monthFormat = DatabaseHelper::formatMonth('created_at', '%m');
 
             // --- FINANCIAL METRICS (Smart Reception) ---
             $financialMetrics = Package::selectRaw('
@@ -64,8 +71,8 @@ class Dashboard extends Component
             ')->first();
 
             // Projected Profit from stock (Received but not billed)
-            $tenant = \App\Models\Tenant::find(session('tenant_id')) ?? \App\Models\Tenant::first();
-            $totalExpenses = floatval(\App\Models\Expense::sum('amount') ?? 0);
+            $tenant = Tenant::find(session('tenant_id')) ?? Tenant::first();
+            $totalExpenses = floatval(Expense::sum('amount') ?? 0);
             $totalInvoices = floatval(Invoice::where('status', '!=', 'cancelled')->sum('total') ?? 0);
             if ($tenant && $tenant->shouldSubtractProviderCosts()) {
                 $totalProviderCosts = floatval(Package::sum('provider_cost') ?? 0);
@@ -82,7 +89,7 @@ class Dashboard extends Component
                 ->where('service_type', 'air')
                 ->where('weight', '>', 0)
                 ->sum('weight');
-                
+
             $maritimeWeight = Package::whereNotIn('status', ['delivered', 'cancelled'])
                 ->whereNull('client_total_billed')
                 ->where('service_type', 'maritime')
@@ -108,7 +115,7 @@ class Dashboard extends Component
 
             $chartData = array_fill(1, 12, 0);
             foreach ($monthlyMovement as $month => $count) {
-                $chartData[(int)$month] = $count;
+                $chartData[(int) $month] = $count;
             }
 
             // Prepare Revenue Chart Data
@@ -129,7 +136,7 @@ class Dashboard extends Component
                 ->toArray();
 
             // Real Expenses Data (from expenses table)
-            $monthlyExpenses = \App\Models\Expense::selectRaw("$monthFormat as month, sum(amount) as total_expense")
+            $monthlyExpenses = Expense::selectRaw("$monthFormat as month, sum(amount) as total_expense")
                 ->where('expense_date', '>=', now()->startOfYear())
                 ->groupBy('month')
                 ->orderBy('month')
@@ -143,15 +150,15 @@ class Dashboard extends Component
             $projectionData = array_fill(1, 12, 0);
 
             foreach ($monthlyRevenue as $month => $total) {
-                $revenueData[(int)$month] = $total;
+                $revenueData[(int) $month] = $total;
             }
 
             foreach ($monthlyCosts as $month => $cost) {
-                $costData[(int)$month] = $cost;
+                $costData[(int) $month] = $cost;
             }
 
             foreach ($monthlyExpenses as $month => $expense) {
-                $expenseData[(int)$month] = $expense;
+                $expenseData[(int) $month] = $expense;
             }
 
             $subtractProviderCosts = $tenant ? $tenant->shouldSubtractProviderCosts() : true;
@@ -173,7 +180,7 @@ class Dashboard extends Component
 
             // Heuristic: Each customer adds 5% potential, each 10 packages add 1% potential to the baseline
             $momentumFactor = 1 + (($newCustomersWeight * 0.05) + ($packageVolume * 0.001));
-            $currentMonth = (int)date('m');
+            $currentMonth = (int) date('m');
 
             for ($i = 1; $i <= 12; $i++) {
                 if ($i < $currentMonth) {
@@ -203,21 +210,21 @@ class Dashboard extends Component
                     'icon' => 'alert-circle',
                     'title' => 'Facturas Vencidas',
                     'count' => $overdueCount,
-                    'text' => 'Hay ' . $overdueCount . ' facturas que superaron su fecha límite.',
-                    'link' => route('billing.index', ['filter_status' => 'overdue'])
+                    'text' => 'Hay '.$overdueCount.' facturas que superaron su fecha límite.',
+                    'link' => route('billing.index', ['filter_status' => 'overdue']),
                 ];
             }
 
             // 1b. Pending Payment Validations
-            $pendingPayments = \App\Models\PaymentProof::where('status', 'pending')->count();
+            $pendingPayments = PaymentProof::where('status', 'pending')->count();
             if ($pendingPayments > 0) {
                 $actionAlerts[] = [
                     'type' => 'warning',
                     'icon' => 'check-square',
                     'title' => 'Validar Pagos',
                     'count' => $pendingPayments,
-                    'text' => 'Hay ' . $pendingPayments . ' comprobantes de Yappy/ACH por validar.',
-                    'link' => route('billing.approvals')
+                    'text' => 'Hay '.$pendingPayments.' comprobantes de Yappy/ACH por validar.',
+                    'link' => route('billing.approvals'),
                 ];
             }
 
@@ -229,8 +236,8 @@ class Dashboard extends Component
                     'icon' => 'message-square',
                     'title' => 'Tickets de Soporte',
                     'count' => $openTickets,
-                    'text' => $openTickets . ' solicitudes de clientes esperan respuesta.',
-                    'link' => route('logistics.tickets')
+                    'text' => $openTickets.' solicitudes de clientes esperan respuesta.',
+                    'link' => route('logistics.tickets'),
                 ];
             }
 
@@ -242,8 +249,8 @@ class Dashboard extends Component
                     'icon' => 'bell',
                     'title' => 'Nuevas Pre-alertas',
                     'count' => $prealerts,
-                    'text' => $prealerts . ' paquetes han sido anunciados por clientes.',
-                    'link' => route('logistics.inventory', ['filter_status' => 'prealert'])
+                    'text' => $prealerts.' paquetes han sido anunciados por clientes.',
+                    'link' => route('logistics.inventory', ['filter_status' => 'prealert']),
                 ];
             }
 
@@ -255,8 +262,8 @@ class Dashboard extends Component
                     'icon' => 'clock',
                     'title' => 'Carga Estancada',
                     'count' => $stagnant,
-                    'text' => $stagnant . ' paquetes listos no han sido retirados en 5+ días.',
-                    'link' => route('logistics.counter')
+                    'text' => $stagnant.' paquetes listos no han sido retirados en 5+ días.',
+                    'link' => route('logistics.counter'),
                 ];
             }
 
@@ -268,21 +275,21 @@ class Dashboard extends Component
                     'icon' => 'user-plus',
                     'title' => 'Nuevos Clientes',
                     'count' => $newCustomersCount,
-                    'text' => $newCustomersCount . ' nuevos miembros se unieron en las últimas 48h.',
-                    'link' => route('logistics.customers', ['filter' => 'new'])
+                    'text' => $newCustomersCount.' nuevos miembros se unieron en las últimas 48h.',
+                    'link' => route('logistics.customers', ['filter' => 'new']),
                 ];
             }
 
             // 6. Unverified Emails (Action required for accounts)
-            $unverifiedCount = \App\Models\User::whereNull('email_verified_at')->where('role', 'customer')->count();
+            $unverifiedCount = User::whereNull('email_verified_at')->where('role', 'customer')->count();
             if ($unverifiedCount > 0) {
                 $actionAlerts[] = [
                     'type' => 'warning',
                     'icon' => 'mail',
                     'title' => 'Emails sin Validar',
                     'count' => $unverifiedCount,
-                    'text' => $unverifiedCount . ' clientes aún no han confirmado su cuenta.',
-                    'link' => route('logistics.customers', ['filter' => 'unverified'])
+                    'text' => $unverifiedCount.' clientes aún no han confirmado su cuenta.',
+                    'link' => route('logistics.customers', ['filter' => 'unverified']),
                 ];
             }
 
@@ -297,8 +304,8 @@ class Dashboard extends Component
                     'icon' => 'user-minus',
                     'title' => 'Clientes Inactivos',
                     'count' => $inactiveCount,
-                    'text' => $inactiveCount . ' clientes creados hace 7+ días no han enviado carga.',
-                    'link' => route('logistics.customers', ['filter' => 'inactive'])
+                    'text' => $inactiveCount.' clientes creados hace 7+ días no han enviado carga.',
+                    'link' => route('logistics.customers', ['filter' => 'inactive']),
                 ];
             }
 
@@ -309,8 +316,8 @@ class Dashboard extends Component
                     'icon' => 'trending-down',
                     'title' => 'Fugas de Dinero',
                     'count' => $financialMetrics->leaks_count,
-                    'text' => 'Detectamos ' . $financialMetrics->leaks_count . ' paquetes con margen negativo.',
-                    'link' => route('logistics.inventory', ['filter' => 'leaks'])
+                    'text' => 'Detectamos '.$financialMetrics->leaks_count.' paquetes con margen negativo.',
+                    'link' => route('logistics.inventory', ['filter' => 'leaks']),
                 ];
             }
 
@@ -336,7 +343,7 @@ class Dashboard extends Component
                 'currency' => $currency,
             ])->layout('components.layouts.app');
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Dashboard Render Error: ' . $e->getMessage());
+            Log::error('Dashboard Render Error: '.$e->getMessage());
             throw $e;
         }
     }

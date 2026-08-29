@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Notifications\PackageStatusNotification;
 use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Package extends Model
 {
-    use HasFactory, BelongsToTenant;
+    use BelongsToTenant, HasFactory;
 
     protected $fillable = [
         'tenant_id',
@@ -58,9 +60,10 @@ class Package extends Model
      */
     public function getMarginAmountAttribute()
     {
-        if (!$this->client_total_billed || !$this->provider_cost) {
+        if (! $this->client_total_billed || ! $this->provider_cost) {
             return 0;
         }
+
         return $this->client_total_billed - $this->provider_cost;
     }
 
@@ -69,9 +72,10 @@ class Package extends Model
      */
     public function getRoiPercentageAttribute()
     {
-        if (!$this->provider_cost || $this->provider_cost == 0) {
+        if (! $this->provider_cost || $this->provider_cost == 0) {
             return 0;
         }
+
         return ($this->margin_amount / $this->provider_cost) * 100;
     }
 
@@ -123,6 +127,7 @@ class Package extends Model
         }
 
         $defaults = PackageStatus::getDefaults();
+
         return $defaults[$this->status]['label'] ?? ucfirst($this->status);
     }
 
@@ -137,6 +142,7 @@ class Package extends Model
         }
 
         $defaults = PackageStatus::getDefaults();
+
         return $defaults[$this->status]['color'] ?? '#6c757d';
     }
 
@@ -151,6 +157,7 @@ class Package extends Model
         }
 
         $defaults = PackageStatus::getDefaults();
+
         return $defaults[$this->status]['icon'] ?? 'package';
     }
 
@@ -170,16 +177,14 @@ class Package extends Model
                 $notifiableStatuses = ['in_transit', 'arrived', 'ready_for_pickup', 'out_for_delivery', 'delivered'];
                 if (in_array($package->status, $notifiableStatuses) && $package->customer && $package->customer->user) {
                     try {
-                        $package->customer->user->notify(new \App\Notifications\PackageStatusNotification($package, $package->status));
+                        $package->customer->user->notify(new PackageStatusNotification($package, $package->status));
                     } catch (\Exception $e) {
-                        \Illuminate\Support\Facades\Log::error('Error enviando notificación de estado de paquete: ' . $e->getMessage());
+                        Log::error('Error enviando notificación de estado de paquete: '.$e->getMessage());
                     }
                 }
 
-                // 3. Award Loyalty Points if delivered
-                if ($package->status === 'delivered') {
-                    app(\App\Services\Loyalty\LoyaltyService::class)->awardPointsForPackage($package);
-                }
+                // 3. (LOGYPUNTOS) La acumulación de puntos se realiza al emitir la factura,
+                //    no al entregar el paquete. Ver LoyaltyService::awardPointsForInvoice().
             }
         });
 

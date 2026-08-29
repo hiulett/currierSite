@@ -425,6 +425,24 @@
                             </div>
                         </div>
                         <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label xsmall font-black text-uppercase text-muted">Tarifa</label>
+                                <select wire:model="rate_type" class="form-select border-2">
+                                    <option value="regular">Regular ($2.50/lb)</option>
+                                    <option value="reseller">Revendedor</option>
+                                    <option value="special">Tarifa Especial</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end pb-1">
+                                <div class="form-check form-switch d-flex align-items-center gap-2">
+                                    <input class="form-check-input mt-0" type="checkbox" id="loyaltyEligibleSwitch" wire:model="is_loyalty_eligible" style="width: 40px; height: 20px;">
+                                    <label class="form-check-label small fw-bold mb-0" for="loyaltyEligibleSwitch">
+                                        Participa en LOGYPUNTOS
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-4">
                             <div class="col-md-4">
                                 <label class="form-label xsmall font-black text-uppercase text-muted">ID Master <span class="text-danger">*</span></label>
                                 <input type="text" wire:model="box_number" class="form-control border-2 fw-black text-primary">
