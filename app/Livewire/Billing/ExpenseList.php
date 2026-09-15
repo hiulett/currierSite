@@ -6,7 +6,6 @@ use App\Models\Expense;
 use App\Models\ExpenseCategory;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -182,14 +181,14 @@ class ExpenseList extends Component
         if ($this->attachment) {
             try {
                 $filename = 'expense_'.$tenant->id.'_'.time().'.'.$this->attachment->getClientOriginalExtension();
-                $disk = ! empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
+                $disk = Expense::attachmentDisk();
 
-                $path = $this->attachment->storeAs('expenses', $filename, [
+                // Se guarda la ruta relativa; el archivo se sirve vía la ruta
+                // autenticada billing.expenses.attachment (no requiere bucket público).
+                $data['attachment_path'] = $this->attachment->storeAs('expenses', $filename, [
                     'disk' => $disk,
-                    'visibility' => 'public',
+                    'visibility' => 'private',
                 ]);
-
-                $data['attachment_path'] = Storage::disk($disk)->url($path);
             } catch (\Exception $e) {
                 Log::error('Error subiendo comprobante de egreso: '.$e->getMessage());
                 session()->flash('error', 'Error al subir el archivo comprobante.');
@@ -217,15 +216,7 @@ class ExpenseList extends Component
         $expense = Expense::findOrFail($id);
 
         // Remove attachment if exists
-        if ($expense->attachment_path) {
-            try {
-                $disk = ! empty(config('filesystems.disks.s3.key')) ? 's3' : 'public';
-                $relativePath = str_replace(Storage::disk($disk)->url(''), '', $expense->attachment_path);
-                Storage::disk($disk)->delete($relativePath);
-            } catch (\Exception $e) {
-                Log::error('Error eliminando adjunto de egreso: '.$e->getMessage());
-            }
-        }
+        $expense->deleteAttachment();
 
         $expense->delete();
         session()->flash('success', 'Registro de egreso eliminado.');

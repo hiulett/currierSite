@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Billing\ExpenseAttachmentController;
 use App\Http\Controllers\Billing\InvoiceController;
 use App\Http\Controllers\Billing\QuotationController;
 use App\Http\Controllers\LandingController;
@@ -184,6 +185,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Egresos (Expenses)
         Route::get('/egresos', ExpenseList::class)
             ->name('billing.expenses.index')
+            ->middleware(['can:billing.view', 'tenant.feature:expenses']);
+
+        Route::get('/egresos/{expense}/adjunto', ExpenseAttachmentController::class)
+            ->name('billing.expenses.attachment')
             ->middleware(['can:billing.view', 'tenant.feature:expenses']);
 
         Route::get('/builder', PageList::class)->name('builder.index')->middleware('can:settings.general');

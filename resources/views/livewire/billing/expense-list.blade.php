@@ -150,7 +150,7 @@
                             <td class="small text-muted">{{ $exp->reference_number ?: '-' }}</td>
                             <td>
                                 @if($exp->attachment_path)
-                                    <a href="{{ $exp->attachment_path }}" target="_blank" class="btn btn-xs btn-light border text-primary" title="Ver Comprobante">
+                                    <a href="{{ route('billing.expenses.attachment', $exp) }}" target="_blank" class="btn btn-xs btn-light border text-primary" title="Ver Comprobante">
                                         <i class="align-middle" data-feather="file" style="width: 12px; height: 12px;"></i> Adjunto
                                     </a>
                                 @else
@@ -334,7 +334,7 @@
                                     @if ($current_attachment_path)
                                         <div class="mt-2">
                                             <span class="xsmall text-muted">Archivo actual:</span>
-                                            <a href="{{ $current_attachment_path }}" target="_blank" class="badge bg-light border text-dark text-decoration-none">
+                                            <a href="{{ route('billing.expenses.attachment', $expense_id) }}" target="_blank" class="badge bg-light border text-dark text-decoration-none">
                                                 Ver adjunto existente
                                             </a>
                                         </div>
