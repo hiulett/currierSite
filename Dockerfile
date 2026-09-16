@@ -49,13 +49,14 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Instalar dependencias PHP (sin dev; scripts corren package discovery)
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --no-interaction --optimize-autoloader
-
 # Código fuente + assets ya compilados
+# (debe ir antes de composer install: el script post-autoload-dump
+#  ejecuta "php artisan package:discover" y requiere que exista artisan)
 COPY . .
 COPY --from=node /app/public/build /app/public/build
+
+# Instalar dependencias PHP (sin dev; scripts corren package discovery)
+RUN composer install --no-dev --no-interaction --optimize-autoloader
 
 # Directorios de runtime y permisos (usuario no-root)
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views bootstrap/cache storage/app/public/logos \
