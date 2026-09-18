@@ -318,25 +318,23 @@
     </div>
 
     <!-- Modal Helper Script -->
+    @script
     <script>
-        document.addEventListener('livewire:initialized', () => {
-            window.addEventListener('open-modal', event => {
-                const modalId = event.detail;
-                const el = document.getElementById(modalId);
-                if (el) {
-                    const myModal = bootstrap.Modal.getOrCreateInstance(el);
-                    myModal.show();
-                }
-            });
+        Livewire.on('open-modal', (detail) => {
+            const modalId = Array.isArray(detail) ? detail[0] : detail;
+            const el = document.getElementById(modalId);
+            if (el) {
+                bootstrap.Modal.getOrCreateInstance(el).show();
+            }
+        });
 
-            window.addEventListener('close-modal', event => {
-                const modalId = event.detail;
-                const el = document.getElementById(modalId);
-                if (el) {
-                    const myModal = bootstrap.Modal.getOrCreateInstance(el);
-                    myModal.hide();
-                }
-            });
+        Livewire.on('close-modal', (detail) => {
+            const modalId = Array.isArray(detail) ? detail[0] : detail;
+            const el = document.getElementById(modalId);
+            if (el) {
+                bootstrap.Modal.getOrCreateInstance(el).hide();
+            }
         });
     </script>
+    @endscript
 </div>
