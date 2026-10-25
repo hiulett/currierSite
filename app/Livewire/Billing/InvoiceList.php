@@ -2,13 +2,12 @@
 
 namespace App\Livewire\Billing;
 
-use App\Jobs\SendInvoiceWhatsApp;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Tenant;
 use App\Notifications\InvoiceSent;
-use App\Services\WhatsAppService;
+use App\Services\WhatsApp\DocumentSender;
 use App\Traits\WithSorting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -143,20 +142,18 @@ class InvoiceList extends Component
             return;
         }
 
-        $tenant = $invoice->tenant;
-        if (! $tenant || ! app(WhatsAppService::class)->isConfigured($tenant)) {
-            session()->flash('error', 'WhatsApp no está configurado. Configúralo en Configuración → Pagos e Integraciones.');
+        $result = app(DocumentSender::class)->invoice($invoice);
+
+        if ($result['error']) {
+            session()->flash('error', $result['error']);
 
             return;
         }
 
-        if (! $invoice->customer?->phone) {
-            session()->flash('error', 'El cliente no tiene un teléfono registrado.');
-
-            return;
+        if ($result['url']) {
+            return redirect()->away($result['url']);
         }
 
-        SendInvoiceWhatsApp::dispatch($invoice);
         session()->flash('message', 'Envío de la factura #'.$invoice->number.' por WhatsApp encolado.');
     }
 

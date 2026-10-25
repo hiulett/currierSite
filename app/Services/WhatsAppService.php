@@ -7,40 +7,46 @@ use App\Models\AppSetting;
 use App\Models\Invoice;
 use App\Models\Quotation;
 use App\Models\Tenant;
-use Illuminate\Support\Facades\Http;
+use App\Services\WhatsApp\ApiChannel;
+use App\Services\WhatsApp\WebChannel;
+use App\Services\WhatsApp\WhatsAppChannel;
 use Illuminate\Support\Facades\Log;
 
 class WhatsAppService
 {
-    protected string $version = 'v22.0';
-
     /**
-     * Códigos de error de Meta que indican que la ventana de 24h está cerrada
-     * y se requiere una plantilla aprobada.
+     * Resuelve el canal configurado por el tenant (settings_json.whatsapp_channel).
      */
-    protected array $outOfWindowCodes = [131026, 131042, 131047, 131051, 131056, 132012, 133010];
+    public function channel(Tenant $tenant): WhatsAppChannel
+    {
+        $configured = $tenant->settings_json['whatsapp_channel'] ?? 'api';
+
+        return $configured === 'web'
+            ? app(WebChannel::class)
+            : app(ApiChannel::class);
+    }
+
+    public function channelName(Tenant $tenant): string
+    {
+        return $this->channel($tenant)->name();
+    }
+
+    public function isConfigured(Tenant $tenant): bool
+    {
+        return $this->channel($tenant)->isConfigured($tenant);
+    }
 
     protected function config(Tenant $tenant): array
     {
         $s = $tenant->settings_json ?? [];
 
         return [
-            'enabled' => (bool) ($s['whatsapp_enabled'] ?? false),
-            'phone_number_id' => $s['whatsapp_phone_number_id'] ?? '',
-            'token' => $s['whatsapp_token'] ?? '',
             'business_number' => $s['whatsapp_business_number'] ?? '',
             'template_invoice' => $s['whatsapp_template_invoice'] ?? 'factura_whatsapp',
             'template_quotation' => $s['whatsapp_template_quotation'] ?? 'cotizacion_whatsapp',
             'invoice_template' => $s['whatsapp_invoice_template'] ?? "Hola {nombre_cliente},\n\nTu factura #{numero_documento} por {monto_total} está disponible.\n\nMírala o descárgala aquí: {link_documento}",
             'quotation_template' => $s['whatsapp_quotation_template'] ?? "Hola {nombre_cliente},\n\nTu cotización #{numero_documento} por {monto_total} está disponible.\n\nMírala o descárgala aquí: {link_documento}",
         ];
-    }
-
-    public function isConfigured(Tenant $tenant): bool
-    {
-        $c = $this->config($tenant);
-
-        return $c['enabled'] && $c['phone_number_id'] !== '' && $c['token'] !== '';
     }
 
     /**
@@ -76,93 +82,6 @@ class WhatsAppService
         return '+'.$digits;
     }
 
-    protected function endpoint(string $phoneNumberId): string
-    {
-        return "https://graph.facebook.com/{$this->version}/{$phoneNumberId}/messages";
-    }
-
-    protected function send(Tenant $tenant, string $to, array $payload): array
-    {
-        $c = $this->config($tenant);
-
-        $payload['to'] = $to;
-        $payload['messaging_product'] = 'whatsapp';
-
-        try {
-            $response = Http::withToken($c['token'])
-                ->acceptJson()
-                ->post($this->endpoint($c['phone_number_id']), $payload);
-        } catch (\Throwable $e) {
-            Log::error('WhatsApp request exception', ['tenant_id' => $tenant->id, 'error' => $e->getMessage()]);
-
-            return ['ok' => false, 'out_of_window' => false, 'error' => $e->getMessage()];
-        }
-
-        $body = $response->json() ?? [];
-
-        if ($response->successful()) {
-            return [
-                'ok' => true,
-                'message_id' => $body['messages'][0]['id'] ?? null,
-            ];
-        }
-
-        $error = $body['error'] ?? [];
-        $code = $error['code'] ?? null;
-        $subcode = $error['error_subcode'] ?? null;
-        $message = $error['message'] ?? $response->body();
-
-        Log::warning('WhatsApp send failed', [
-            'tenant_id' => $tenant->id,
-            'code' => $code,
-            'error_subcode' => $subcode,
-            'message' => $message,
-        ]);
-
-        $outOfWindow = $code === 429 || in_array($code, $this->outOfWindowCodes);
-
-        return [
-            'ok' => false,
-            'out_of_window' => $outOfWindow,
-            'error' => $message,
-            'code' => $code,
-        ];
-    }
-
-    protected function sendText(Tenant $tenant, string $to, string $body): array
-    {
-        return $this->send($tenant, $to, [
-            'type' => 'text',
-            'text' => ['preview_url' => true, 'body' => $body],
-        ]);
-    }
-
-    protected function sendDocument(Tenant $tenant, string $to, string $filename, string $pdfBytes, string $caption): array
-    {
-        return $this->send($tenant, $to, [
-            'type' => 'document',
-            'document' => [
-                'filename' => $filename,
-                'caption' => $caption,
-                'data' => base64_encode($pdfBytes),
-            ],
-        ]);
-    }
-
-    protected function sendTemplate(Tenant $tenant, string $to, string $templateName, array $params): array
-    {
-        return $this->send($tenant, $to, [
-            'type' => 'template',
-            'template' => [
-                'name' => $templateName,
-                'language' => ['code' => 'es'],
-                'components' => [
-                    ['type' => 'body', 'parameters' => array_map(fn ($v) => ['text' => (string) $v], $params)],
-                ],
-            ],
-        ]);
-    }
-
     /**
      * Aplica placeholders sobre la plantilla de texto configurada.
      */
@@ -172,11 +91,26 @@ class WhatsAppService
     }
 
     /**
-     * Envía un mensaje de prueba para validar credenciales desde Integraciones.
+     * Asegura que el mensaje incluya el link del portal cuando el canal no
+     * puede adjuntar el PDF (WhatsApp Web).
+     */
+    protected function withPortalLink(string $body, string $link): string
+    {
+        if ($link === '' || str_contains($body, $link)) {
+            return $body;
+        }
+
+        return rtrim($body)."\n\n".$link;
+    }
+
+    /**
+     * Envía un mensaje de prueba para validar la configuración desde Integraciones.
      */
     public function sendTestMessage(Tenant $tenant, string $to): array
     {
-        if (! $this->isConfigured($tenant)) {
+        $channel = $this->channel($tenant);
+
+        if (! $channel->isConfigured($tenant)) {
             return ['ok' => false, 'error' => 'WhatsApp no está configurado.'];
         }
 
@@ -186,7 +120,7 @@ class WhatsAppService
             return ['ok' => false, 'error' => 'Número de prueba inválido.'];
         }
 
-        return $this->sendText($tenant, $normalized, 'Prueba de conexión de WhatsApp. Si recibes este mensaje, la configuración es correcta.');
+        return $channel->sendText($tenant, $normalized, 'Prueba de conexión de WhatsApp. Si recibes este mensaje, la configuración es correcta.');
     }
 
     public function sendInvoice(Invoice $invoice): array
@@ -197,7 +131,10 @@ class WhatsAppService
         if (! $tenant) {
             return ['ok' => false, 'error' => 'Tenant no encontrado.'];
         }
-        if (! $this->isConfigured($tenant)) {
+
+        $channel = $this->channel($tenant);
+
+        if (! $channel->isConfigured($tenant)) {
             return ['ok' => false, 'error' => 'WhatsApp no está configurado en Integraciones.'];
         }
 
@@ -211,7 +148,7 @@ class WhatsAppService
         $customerName = $invoice->customer?->user?->name ?? 'Cliente';
         $amount = $currency.' '.number_format($invoice->total, 2);
         $dueDate = $invoice->due_date ? $invoice->due_date->format('d/m/Y') : 'N/A';
-        $link = url('/portal/facturas');
+        $link = route('customer.invoices');
 
         $body = $this->renderBody($c['invoice_template'], [
             '{nombre_cliente}' => $customerName,
@@ -222,7 +159,12 @@ class WhatsAppService
             '{link_documento}' => $link,
         ]);
 
+        if ($channel->name() === 'web') {
+            $body = $this->withPortalLink($body, $link);
+        }
+
         $result = $this->deliverWithPdf(
+            $channel,
             $tenant,
             $to,
             'Factura_'.$invoice->number.'.pdf',
@@ -247,7 +189,10 @@ class WhatsAppService
         if (! $tenant) {
             return ['ok' => false, 'error' => 'Tenant no encontrado.'];
         }
-        if (! $this->isConfigured($tenant)) {
+
+        $channel = $this->channel($tenant);
+
+        if (! $channel->isConfigured($tenant)) {
             return ['ok' => false, 'error' => 'WhatsApp no está configurado en Integraciones.'];
         }
 
@@ -261,7 +206,7 @@ class WhatsAppService
         $customerName = $quotation->customer?->user?->name ?? $quotation->client_name ?? 'Cliente';
         $amount = $currency.' '.number_format($quotation->total, 2);
         // El link al portal solo aplica a clientes con cuenta
-        $link = $quotation->customer_id ? url('/portal/cotizaciones') : '';
+        $link = $quotation->customer_id ? route('customer.quotations') : '';
 
         $body = $this->renderBody($c['quotation_template'], [
             '{nombre_cliente}' => $customerName,
@@ -272,7 +217,12 @@ class WhatsAppService
             '{link_documento}' => $link,
         ]);
 
+        if ($channel->name() === 'web') {
+            $body = $this->withPortalLink($body, $link);
+        }
+
         $result = $this->deliverWithPdf(
+            $channel,
             $tenant,
             $to,
             'Cotizacion_'.$quotation->number.'.pdf',
@@ -290,12 +240,12 @@ class WhatsAppService
     }
 
     /**
-     * Decide la estrategia de entrega según el flag global del superadmin:
-     * - whatsapp_pdf_enabled=false  → texto + link
-     * - whatsapp_pdf_enabled=true   → documento PDF (+ caption)
-     * En ambos casos, si la ventana de 24h está cerrada, cae a plantilla aprobada.
+     * Entrega el mensaje según el canal:
+     * - WhatsApp Web: devuelve la URL wa.me para que el usuario confirme.
+     * - Cloud API: adjunta PDF si whatsapp_pdf_enabled, con respaldo a plantilla.
      */
     protected function deliverWithPdf(
+        WhatsAppChannel $channel,
         Tenant $tenant,
         string $to,
         string $filename,
@@ -304,20 +254,24 @@ class WhatsAppService
         \Closure $pdfGenerator,
         array $templateParams
     ): array {
+        if ($channel->name() === 'web') {
+            return $channel->sendDocument($tenant, $to, $filename, '', $body);
+        }
+
         $pdfEnabled = (bool) AppSetting::get('whatsapp_pdf_enabled', false);
 
         if ($pdfEnabled) {
-            $result = $this->sendDocument($tenant, $to, $filename, $pdfGenerator(), $body);
+            $result = $channel->sendDocument($tenant, $to, $filename, $pdfGenerator(), $body);
         } else {
-            $result = $this->sendText($tenant, $to, $body);
+            $result = $channel->sendText($tenant, $to, $body);
         }
 
-        if ($result['ok'] || ! $result['out_of_window']) {
+        if ($result['ok'] || ! ($result['out_of_window'] ?? false)) {
             return $result;
         }
 
         Log::info('WhatsApp window closed, falling back to template', ['tenant_id' => $tenant->id, 'template' => $templateName]);
 
-        return $this->sendTemplate($tenant, $to, $templateName, $templateParams);
+        return $channel->sendTemplate($tenant, $to, $templateName, $templateParams);
     }
 }

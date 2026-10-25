@@ -2,14 +2,15 @@
 
 namespace App\Livewire\Logistics;
 
-use App\Jobs\SendInvoiceWhatsApp;
 use App\Models\Customer;
 use App\Models\Locker;
 use App\Models\LoyaltyLevel;
 use App\Models\Tenant;
 use App\Models\Ticket;
+use App\Models\User;
 use App\Notifications\TemporaryPasswordNotification;
-use App\Services\WhatsAppService;
+use App\Services\WhatsApp\DocumentSender;
+use App\Services\WhatsApp\PasswordResetLink;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -143,21 +144,53 @@ class CustomerDetail extends Component
             return;
         }
 
-        $tenant = $invoice->tenant;
-        if (! $tenant || ! app(WhatsAppService::class)->isConfigured($tenant)) {
-            session()->flash('error', 'WhatsApp no está configurado. Configúralo en Configuración → Pagos e Integraciones.');
+        $result = app(DocumentSender::class)->invoice($invoice);
+
+        if ($result['error']) {
+            session()->flash('error', $result['error']);
 
             return;
         }
 
-        if (! $this->customer->phone) {
+        if ($result['url']) {
+            return redirect()->away($result['url']);
+        }
+
+        session()->flash('message', 'Envío de la factura #'.$invoice->number.' por WhatsApp encolado.');
+    }
+
+    /**
+     * Genera un enlace de restablecimiento de contraseña y abre WhatsApp Web
+     * para que el administrador lo envíe. Nunca se comparten contraseñas.
+     */
+    public function sendPasswordResetWhatsApp()
+    {
+        $customer = $this->customer;
+        $user = $customer->user_id ? User::find($customer->user_id) : null;
+
+        if (! $user) {
+            session()->flash('error', 'El cliente no tiene un usuario asociado.');
+
+            return;
+        }
+
+        if (! $customer->phone) {
             session()->flash('error', 'El cliente no tiene un teléfono registrado.');
 
             return;
         }
 
-        SendInvoiceWhatsApp::dispatch($invoice);
-        session()->flash('message', 'Envío de la factura #'.$invoice->number.' por WhatsApp encolado.');
+        $link = app(PasswordResetLink::class)->build($user, $customer->phone);
+
+        if (! $link['whatsapp']) {
+            session()->flash('error', 'No se pudo construir el enlace de WhatsApp.');
+
+            return;
+        }
+
+        session()->flash('message', 'Abriendo WhatsApp Web con el enlace de restablecimiento.');
+
+        return redirect()->away($link['whatsapp']);
     }
 
     public function openPasswordModal()

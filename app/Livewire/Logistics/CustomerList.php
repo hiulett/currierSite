@@ -8,6 +8,7 @@ use App\Models\LoyaltyLevel;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Notifications\TemporaryPasswordNotification;
+use App\Services\WhatsApp\PasswordResetLink;
 use App\Traits\WithSorting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -103,6 +104,40 @@ class CustomerList extends Component
     public function generateRandomPassword()
     {
         $this->new_password = Str::random(8);
+    }
+
+    /**
+     * Genera un enlace de restablecimiento y abre WhatsApp Web para enviarlo.
+     * No se comparten contraseñas en texto plano.
+     */
+    public function sendPasswordResetWhatsApp($customerId)
+    {
+        $customer = Customer::find($customerId);
+        $user = $customer?->user_id ? User::find($customer->user_id) : null;
+
+        if (! $customer || ! $user) {
+            session()->flash('error', 'El cliente no tiene un usuario asociado.');
+
+            return;
+        }
+
+        if (! $customer->phone) {
+            session()->flash('error', 'El cliente no tiene un teléfono registrado.');
+
+            return;
+        }
+
+        $link = app(PasswordResetLink::class)->build($user, $customer->phone);
+
+        if (! $link['whatsapp']) {
+            session()->flash('error', 'No se pudo construir el enlace de WhatsApp.');
+
+            return;
+        }
+
+        session()->flash('message', 'Abriendo WhatsApp Web con el enlace de restablecimiento.');
+
+        return redirect()->away($link['whatsapp']);
     }
 
     public function resetPassword()

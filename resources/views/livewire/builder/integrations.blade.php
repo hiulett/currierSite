@@ -103,6 +103,30 @@
                 <div class="card-body p-4 p-md-5">
                     <form wire:submit.prevent="saveWhatsapp">
                         <div class="mb-4">
+                            <label class="form-label xsmall font-black uppercase text-muted">Canal de envío</label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-check border rounded p-3 h-100">
+                                        <input class="form-check-input" type="radio" id="whatsappChannelApi" value="api" wire:model="whatsapp_channel">
+                                        <label class="form-check-label ms-1" for="whatsappChannelApi">
+                                            <strong>WhatsApp Cloud API</strong><br>
+                                            <span class="text-muted xsmall">Envío automático con PDF adjunto. Requiere Phone Number ID y token.</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check border rounded p-3 h-100">
+                                        <input class="form-check-input" type="radio" id="whatsappChannelWeb" value="web" wire:model="whatsapp_channel">
+                                        <label class="form-check-label ms-1" for="whatsappChannelWeb">
+                                            <strong>WhatsApp Web</strong><br>
+                                            <span class="text-muted xsmall">Abre WhatsApp Web con el mensaje y el link al portal; tú confirmas el envío. No requiere credenciales.</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
                             <div class="d-flex align-items-center mb-3">
                                 <div class="stat bg-success-light text-success me-3"><i data-feather="send"></i></div>
                                 <div>

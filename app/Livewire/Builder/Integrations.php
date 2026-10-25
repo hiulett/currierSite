@@ -36,6 +36,8 @@ class Integrations extends Component
 
     public $whatsapp_business_number;
 
+    public $whatsapp_channel = 'api';
+
     public $whatsapp_template_invoice;
 
     public $whatsapp_template_quotation;
@@ -63,6 +65,7 @@ class Integrations extends Component
         $this->paypal_live_client_secret = $settings['paypal_live_client_secret'] ?? '';
 
         $this->whatsapp_enabled = (bool) ($settings['whatsapp_enabled'] ?? false);
+        $this->whatsapp_channel = $settings['whatsapp_channel'] ?? 'api';
         $this->whatsapp_phone_number_id = $settings['whatsapp_phone_number_id'] ?? '';
         $this->whatsapp_token = $settings['whatsapp_token'] ?? '';
         $this->whatsapp_business_number = $settings['whatsapp_business_number'] ?? '';
@@ -93,10 +96,15 @@ class Integrations extends Component
 
     public function saveWhatsapp()
     {
+        $this->validate([
+            'whatsapp_channel' => 'required|in:api,web',
+        ]);
+
         $tenant = Tenant::find($this->tenant_id);
         $settings = $tenant->settings_json ?? [];
 
         $settings['whatsapp_enabled'] = $this->whatsapp_enabled;
+        $settings['whatsapp_channel'] = $this->whatsapp_channel;
         $settings['whatsapp_phone_number_id'] = $this->whatsapp_phone_number_id;
         $settings['whatsapp_token'] = $this->whatsapp_token;
         $settings['whatsapp_business_number'] = $this->whatsapp_business_number;
@@ -118,6 +126,7 @@ class Integrations extends Component
         // Persistir lo que hay en el formulario para que la prueba use las credenciales actuales
         $settings = $tenant->settings_json ?? [];
         $settings['whatsapp_enabled'] = $this->whatsapp_enabled;
+        $settings['whatsapp_channel'] = $this->whatsapp_channel;
         $settings['whatsapp_phone_number_id'] = $this->whatsapp_phone_number_id;
         $settings['whatsapp_token'] = $this->whatsapp_token;
         $settings['whatsapp_business_number'] = $this->whatsapp_business_number;
@@ -137,6 +146,12 @@ class Integrations extends Component
         }
 
         $result = app(WhatsAppService::class)->sendTestMessage($tenant, $number);
+
+        if (($result['ok'] ?? false) && ! empty($result['url'])) {
+            session()->flash('message', 'Canal WhatsApp Web: se abrirá WhatsApp Web con el mensaje de prueba. Pulsa Enviar para completarlo.');
+
+            return redirect()->away($result['url']);
+        }
 
         if ($result['ok']) {
             session()->flash('message', '✅ Conexión exitosa. Revisa el WhatsApp de '.$number.' (ID: '.($result['message_id'] ?? 'n/a').')');

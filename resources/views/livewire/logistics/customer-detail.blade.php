@@ -47,6 +47,7 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end shadow-lg border-0">
                             <button wire:click="openPasswordModal" class="dropdown-item py-2"><i data-feather="refresh-cw" class="me-2 text-primary" style="width: 14px;"></i> Nueva contraseña</button>
+                            <button wire:click="sendPasswordResetWhatsApp" class="dropdown-item py-2"><i data-feather="link" class="me-2 text-success" style="width: 14px;"></i> Enviar enlace de restablecimiento (WhatsApp)</button>
                             <button wire:click="confirmSendPassword" class="dropdown-item py-2"><i data-feather="mail" class="me-2 text-warning" style="width: 14px;"></i> Enviar credenciales</button>
                         </div>
                     </div>

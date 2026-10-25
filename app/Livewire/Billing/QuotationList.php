@@ -3,11 +3,10 @@
 namespace App\Livewire\Billing;
 
 use App\Helpers\DatabaseHelper;
-use App\Jobs\SendQuotationWhatsApp;
 use App\Mail\QuotationSent;
 use App\Models\Quotation;
 use App\Models\Tenant;
-use App\Services\WhatsAppService;
+use App\Services\WhatsApp\DocumentSender;
 use App\Traits\WithSorting;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -89,20 +88,24 @@ class QuotationList extends Component
         }
 
         $tenant = $quotation->tenant;
-        if (! $tenant || ! app(WhatsAppService::class)->isConfigured($tenant)) {
-            session()->flash('error', 'WhatsApp no está configurado. Configúralo en Configuración → Pagos e Integraciones.');
+        if (! $tenant) {
+            session()->flash('error', 'Tenant no encontrado.');
 
             return;
         }
 
-        $phone = $quotation->customer?->phone ?? $quotation->client_phone;
-        if (! $phone) {
-            session()->flash('error', 'El cliente no tiene un teléfono registrado.');
+        $result = app(DocumentSender::class)->quotation($quotation);
+
+        if ($result['error']) {
+            session()->flash('error', $result['error']);
 
             return;
         }
 
-        SendQuotationWhatsApp::dispatch($quotation);
+        if ($result['url']) {
+            return redirect()->away($result['url']);
+        }
+
         session()->flash('message', 'Envío de la cotización #'.$quotation->number.' por WhatsApp encolado.');
     }
 

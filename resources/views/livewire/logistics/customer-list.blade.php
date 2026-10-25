@@ -182,6 +182,9 @@
                                             <button wire:click="confirmSendPassword({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-warning" title="Enviar Clave por Email">
                                                 <i data-feather="mail" style="width:14px;"></i>
                                             </button>
+                                            <button wire:click="sendPasswordResetWhatsApp({{ $c->id }})" class="btn btn-sm btn-light border shadow-none text-success" title="Enviar enlace de restablecimiento por WhatsApp">
+                                                <i data-feather="link" style="width:14px;"></i>
+                                            </button>
                                             <a href="{{ route('billing.statement', ['c' => $c->id]) }}" class="btn btn-sm btn-light border shadow-none text-info" title="Estado Cuenta">
                                                 <i data-feather="bar-chart-2" style="width:14px;"></i>
                                             </a>
