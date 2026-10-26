@@ -116,7 +116,7 @@ class WhatsAppChannelTest extends TestCase
         $this->assertSame('web', app(WhatsAppService::class)->channelName($this->tenant));
     }
 
-    public function test_web_channel_invoice_returns_wa_me_url_with_portal_link(): void
+    public function test_web_channel_invoice_returns_whatsapp_web_url_with_portal_link(): void
     {
         AppSetting::set('whatsapp_pdf_enabled', '0');
         $this->useWebChannel();
@@ -127,7 +127,7 @@ class WhatsAppChannelTest extends TestCase
 
         $this->assertTrue($result['ok']);
         $this->assertSame('web', $result['channel']);
-        $this->assertStringStartsWith('https://wa.me/50760000000?text=', $result['url']);
+        $this->assertStringStartsWith('https://web.whatsapp.com/send?phone=50760000000&text=', $result['url']);
 
         $message = urldecode($result['url']);
         $this->assertStringContainsString('INV-CH-001', $message);
@@ -157,7 +157,7 @@ class WhatsAppChannelTest extends TestCase
         $result = app(WhatsAppService::class)->sendQuotation($quotation);
 
         $this->assertTrue($result['ok']);
-        $this->assertStringStartsWith('https://wa.me/50760000000?text=', $result['url']);
+        $this->assertStringStartsWith('https://web.whatsapp.com/send?phone=50760000000&text=', $result['url']);
         $this->assertStringContainsString('/portal/cotizaciones', urldecode($result['url']));
         Http::assertNothingSent();
     }
@@ -211,7 +211,7 @@ class WhatsAppChannelTest extends TestCase
 
         $this->assertStringContainsString('/reset-password/', $link['url']);
         $this->assertStringContainsString(rawurlencode($user->email), $link['url']);
-        $this->assertStringStartsWith('https://wa.me/50760000000?text=', $link['whatsapp']);
+        $this->assertStringStartsWith('https://web.whatsapp.com/send?phone=50760000000&text=', $link['whatsapp']);
         $this->assertDatabaseHas('password_reset_tokens', ['email' => $user->email]);
         $this->assertSame($originalHash, $user->fresh()->password);
         $this->assertStringContainsString($link['url'], $link['message']);
@@ -234,7 +234,7 @@ class WhatsAppChannelTest extends TestCase
     {
         $url = WebChannel::url('60000000', "Hola\nmundo & más");
 
-        $this->assertStringStartsWith('https://wa.me/50760000000?text=', $url);
+        $this->assertStringStartsWith('https://web.whatsapp.com/send?phone=50760000000&text=', $url);
         $this->assertStringNotContainsString(' ', $url);
         $this->assertStringNotContainsString("\n", $url);
     }

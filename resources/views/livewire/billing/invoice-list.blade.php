@@ -188,9 +188,14 @@
                                     <button wire:click="sendEmail({{ $invoice->id }})" class="btn btn-sm btn-light border" title="Enviar Email">
                                         <i class="align-middle text-info" data-feather="mail" style="width: 14px;"></i>
                                     </button>
-                                    <button wire:click="sendWhatsApp({{ $invoice->id }})" class="btn btn-sm btn-light border" title="Enviar por WhatsApp" aria-label="Enviar factura {{ $invoice->number }} por WhatsApp">
-                                        <i class="align-middle text-success" data-feather="message-circle" style="width: 14px;"></i>
-                                    </button>
+                                    <x-whatsapp-action
+                                        :web="$this->whatsappChannelIsWeb()"
+                                        :href="route('whatsapp.web.invoice', $invoice)"
+                                        :title="'Enviar factura '.$invoice->number.' por WhatsApp'"
+                                        :aria-label="'Enviar factura '.$invoice->number.' por WhatsApp'"
+                                        icon-class="align-middle text-success"
+                                        class="btn btn-sm btn-light border"
+                                        wire:click="sendWhatsApp({{ $invoice->id }})" />
                                     @if($invoice->status !== 'cancelled')
                                         <a href="{{ route('billing.edit', $invoice) }}" class="btn btn-sm btn-light border" title="Editar Factura">
                                             <i class="align-middle text-warning" data-feather="edit" style="width: 14px;"></i>

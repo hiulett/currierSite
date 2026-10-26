@@ -3,6 +3,7 @@
 namespace App\Livewire\Billing;
 
 use App\Helpers\DatabaseHelper;
+use App\Livewire\Concerns\ResolvesWhatsAppChannel;
 use App\Mail\QuotationSent;
 use App\Models\Quotation;
 use App\Models\Tenant;
@@ -15,7 +16,7 @@ use Livewire\WithPagination;
 
 class QuotationList extends Component
 {
-    use WithPagination, WithSorting;
+    use ResolvesWhatsAppChannel, WithPagination, WithSorting;
 
     public $search = '';
 

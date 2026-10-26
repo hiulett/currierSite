@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Billing;
 
+use App\Livewire\Concerns\ResolvesWhatsAppChannel;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
@@ -16,7 +17,7 @@ use Livewire\WithPagination;
 
 class InvoiceList extends Component
 {
-    use WithPagination, WithSorting;
+    use ResolvesWhatsAppChannel, WithPagination, WithSorting;
 
     public $search = '';
 

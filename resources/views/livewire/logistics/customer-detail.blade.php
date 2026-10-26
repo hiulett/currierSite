@@ -47,7 +47,13 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end shadow-lg border-0">
                             <button wire:click="openPasswordModal" class="dropdown-item py-2"><i data-feather="refresh-cw" class="me-2 text-primary" style="width: 14px;"></i> Nueva contraseña</button>
-                            <button wire:click="sendPasswordResetWhatsApp" class="dropdown-item py-2"><i data-feather="link" class="me-2 text-success" style="width: 14px;"></i> Enviar enlace de restablecimiento (WhatsApp)</button>
+                            <x-whatsapp-action
+                                :web="$this->whatsappChannelIsWeb()"
+                                :href="route('whatsapp.web.reset', $customer)"
+                                icon="link"
+                                icon-class="text-success"
+                                class="dropdown-item py-2"
+                                wire:click="sendPasswordResetWhatsApp">Enviar enlace de restablecimiento (WhatsApp)</x-whatsapp-action>
                             <button wire:click="confirmSendPassword" class="dropdown-item py-2"><i data-feather="mail" class="me-2 text-warning" style="width: 14px;"></i> Enviar credenciales</button>
                         </div>
                     </div>
@@ -233,9 +239,14 @@
                                     <a href="{{ route('billing.download', $invoice) }}" target="_blank" class="btn btn-sm btn-light border shadow-none" title="Descargar PDF" aria-label="Descargar PDF de {{ $invoice->number }}">
                                         <i data-feather="printer" style="width: 14px;"></i>
                                     </a>
-                                    <button wire:click="sendWhatsApp({{ $invoice->id }})" class="btn btn-sm btn-light border shadow-none" title="Enviar por WhatsApp" aria-label="Enviar factura {{ $invoice->number }} por WhatsApp">
-                                        <i class="text-success" data-feather="message-circle" style="width: 14px;"></i>
-                                    </button>
+                                    <x-whatsapp-action
+                                        :web="$this->whatsappChannelIsWeb()"
+                                        :href="route('whatsapp.web.invoice', $invoice)"
+                                        :title="'Enviar factura '.$invoice->number.' por WhatsApp'"
+                                        :aria-label="'Enviar factura '.$invoice->number.' por WhatsApp'"
+                                        icon-class="text-success"
+                                        class="btn btn-sm btn-light border shadow-none"
+                                        wire:click="sendWhatsApp({{ $invoice->id }})" />
                                 </td>
                             </tr>
                         @empty

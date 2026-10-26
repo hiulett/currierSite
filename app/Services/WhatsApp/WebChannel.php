@@ -64,7 +64,10 @@ class WebChannel implements WhatsAppChannel
     }
 
     /**
-     * Construye el enlace wa.me con el mensaje precargado.
+     * Construye el enlace de WhatsApp Web con el mensaje precargado.
+     *
+     * Se usa web.whatsapp.com (no wa.me) para reutilizar la sesión ya
+     * autenticada del navegador y evitar el salto a la app de escritorio.
      */
     public static function url(?string $phone, string $body): ?string
     {
@@ -75,6 +78,6 @@ class WebChannel implements WhatsAppChannel
             return null;
         }
 
-        return 'https://wa.me/'.$digits.'?text='.rawurlencode($body);
+        return 'https://web.whatsapp.com/send?phone='.$digits.'&text='.rawurlencode($body);
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\LandingController;
 use App\Http\Controllers\Logistics\LabelController;
 use App\Http\Controllers\Logistics\ReportController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\WhatsAppWebController;
 use App\Livewire\Billing\CreateInvoice;
 use App\Livewire\Billing\DriverTripList;
 use App\Livewire\Billing\EditInvoice;
@@ -138,6 +139,14 @@ Route::get('/debug-inventory', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
+
+    // WhatsApp Web: genera el mensaje y redirige a web.whatsapp.com (se abre en pestaña nueva)
+    Route::prefix('whatsapp/web')->name('whatsapp.web.')->group(function () {
+        Route::get('/factura/{invoice}', [WhatsAppWebController::class, 'invoice'])->name('invoice');
+        Route::get('/cotizacion/{quotation}', [WhatsAppWebController::class, 'quotation'])->name('quotation');
+        Route::get('/reseteo/{customer}', [WhatsAppWebController::class, 'passwordReset'])->name('reset');
+        Route::get('/prueba', [WhatsAppWebController::class, 'test'])->name('test');
+    });
 
     // Admin/Logistics Routes
     Route::middleware(['can:access-admin'])->group(function () {

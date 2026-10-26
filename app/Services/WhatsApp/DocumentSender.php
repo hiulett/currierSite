@@ -40,7 +40,9 @@ class DocumentSender
 
             if (! $customer?->phone) {
                 return $this->error('El cliente no tiene un teléfono registrado.');
-            }            SendInvoiceWhatsApp::dispatch($invoice);
+            }
+
+            SendInvoiceWhatsApp::dispatch($invoice);
 
             return ['mode' => 'api', 'url' => null, 'error' => null];
         }

@@ -152,7 +152,12 @@
                                     <label class="form-label xsmall font-black uppercase text-muted">Número de Prueba</label>
                                     <div class="input-group">
                                         <input type="text" wire:model="whatsapp_test_number" class="form-control font-bold" placeholder="Ej: +5076XXXXXXX">
-                                        <button type="button" wire:click="testConnection" class="btn btn-outline-success fw-bold">Probar</button>
+                                        @if($this->whatsappChannelIsWeb() && ($whatsapp_test_number || $whatsapp_business_number))
+                                            <a href="{{ route('whatsapp.web.test', ['numero' => $whatsapp_test_number ?: $whatsapp_business_number]) }}"
+                                               target="_blank" rel="noopener" class="btn btn-outline-success fw-bold">Probar</a>
+                                        @else
+                                            <button type="button" wire:click="testConnection" class="btn btn-outline-success fw-bold">Probar</button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Logistics;
 
+use App\Livewire\Concerns\ResolvesWhatsAppChannel;
 use App\Models\Customer;
 use App\Models\Locker;
 use App\Models\LoyaltyLevel;
@@ -20,7 +21,7 @@ use Livewire\WithPagination;
 
 class CustomerList extends Component
 {
-    use WithFileUploads, WithPagination, WithSorting;
+    use ResolvesWhatsAppChannel, WithFileUploads, WithPagination, WithSorting;
 
     public $search = '';
 

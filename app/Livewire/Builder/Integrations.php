@@ -2,12 +2,15 @@
 
 namespace App\Livewire\Builder;
 
+use App\Livewire\Concerns\ResolvesWhatsAppChannel;
 use App\Models\Tenant;
 use App\Services\WhatsAppService;
 use Livewire\Component;
 
 class Integrations extends Component
 {
+    use ResolvesWhatsAppChannel;
+
     public $tenant_id;
 
     public $baseUrl;

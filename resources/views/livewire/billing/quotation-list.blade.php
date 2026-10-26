@@ -228,9 +228,14 @@
                                     <button wire:click="sendEmail({{ $quotation->id }})" class="btn btn-sm btn-light border" title="Enviar Email al Cliente">
                                         <i class="align-middle text-info" data-feather="mail" style="width: 14px;"></i>
                                     </button>
-                                    <button wire:click="sendWhatsApp({{ $quotation->id }})" class="btn btn-sm btn-light border" title="Enviar por WhatsApp" aria-label="Enviar cotización {{ $quotation->number }} por WhatsApp">
-                                        <i class="align-middle text-success" data-feather="message-circle" style="width: 14px;"></i>
-                                    </button>
+                                    <x-whatsapp-action
+                                        :web="$this->whatsappChannelIsWeb()"
+                                        :href="route('whatsapp.web.quotation', $quotation)"
+                                        :title="'Enviar cotización '.$quotation->number.' por WhatsApp'"
+                                        :aria-label="'Enviar cotización '.$quotation->number.' por WhatsApp'"
+                                        icon-class="align-middle text-success"
+                                        class="btn btn-sm btn-light border"
+                                        wire:click="sendWhatsApp({{ $quotation->id }})" />
                                     <button onclick="openQuotationModal({{ $quotation->id }})" class="btn btn-sm btn-light border" title="Editar Cotización">
                                         <i class="align-middle text-warning" data-feather="edit-2" style="width: 14px;"></i>
                                     </button>

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Logistics;
 
+use App\Livewire\Concerns\ResolvesWhatsAppChannel;
 use App\Models\Customer;
 use App\Models\Locker;
 use App\Models\LoyaltyLevel;
@@ -18,6 +19,8 @@ use Livewire\Component;
 
 class CustomerDetail extends Component
 {
+    use ResolvesWhatsAppChannel;
+
     public Customer $customer;
 
     public $tab = 'packages';
