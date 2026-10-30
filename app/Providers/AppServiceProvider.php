@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Listeners\MarkInvoiceEmailSent;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Package;
@@ -11,7 +12,9 @@ use App\Models\Tenant;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Foundation\Vite;
+use Illuminate\Notifications\Events\NotificationSent;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -34,6 +37,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(NotificationSent::class, MarkInvoiceEmailSent::class);
+
         if (env('RAILWAY_ENVIRONMENT')) {
             config(['app.env' => 'production']);
             config(['session.secure' => true]); // Crítico para evitar error 419 en Railway

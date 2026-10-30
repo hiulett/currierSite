@@ -35,7 +35,8 @@ Frontend y backend en un solo repo Laravel. Aplicación móvil Flutter en `/mobi
 |---|---|
 | Nuevo módulo de negocio | `routes/web.php`, `app/Livewire/<Area>/*.php`, `resources/views/livewire/<area>/*.blade.php`, migración en `database/migrations/`, modelo en `app/Models/` |
 | Cotizaciones | `app/Livewire/Billing/CreateQuotation.php`, `QuotationList.php`, `app/Http/Controllers/Billing/QuotationController.php`, `app/Models/Quotation*.php`, vistas `livewire/billing/*quotation*` |
-| Facturación | `app/Livewire/Billing/{CreateInvoice,InvoiceList,EditInvoice}.php`, `app/Http/Controllers/Billing/InvoiceController.php` |
+| Facturación | `app/Livewire/Billing/{CreateInvoice,InvoiceList,EditInvoice}.php`, `app/Http/Controllers/Billing/InvoiceController.php`, `app/Services/Billing/InvoiceNumberGenerator.php`, `app/Listeners/MarkInvoiceEmailSent.php` |
+| Envío de facturas/correos | `app/Notifications/InvoiceSent.php`, `app/Notifications/PackagesArrivedNotification.php`, `app/Listeners/MarkInvoiceEmailSent.php`, `app/Providers/AppServiceProvider.php` (registro del listener) |
 | Paquetes/recepción | `app/Livewire/Logistics/*.php`, `app/Models/{Package,PackageStatus}.php` |
 | Multi-tenancy / scopes | `app/Traits/BelongsToTenant.php`, `app/Http/Middleware/IdentifyTenant.php` |
 | Layout / sidebar | `resources/views/components/layouts/app.blade.php`, `resources/views/components/layouts/partials/sidebar.blade.php`, `app/Providers/AppServiceProvider.php` |
@@ -54,14 +55,19 @@ Frontend y backend en un solo repo Laravel. Aplicación móvil Flutter en `/mobi
 - Livewire 4: eventos con `@script` + `Livewire.on(...)` (NO `window.addEventListener`); JS de componente va en `@script`, no en `<script>` inline.
 - **Navegación SPA**: los links internos del menú usan `wire:navigate` (navegación sin recarga). Al agregar un link de navegación interno, añade `wire:navigate`. Los `<script>` de setup global de los layouts llevan `data-navigate-once`.
 - Textos UI en español. `lang/es.json` existe pero no se traduce todo.
+- **Números de negocio únicos** (facturas, cotizaciones, etc.): nunca uses `rand()` ni `date()` sueltos. Usa `App\Services\Billing\InvoiceNumberGenerator` (secuencia diaria por tenant, `INV-{Ymd}-{0001}`) y un índice único compuesto `(tenant_id, number)`.
+- **Envío de correos**: la notificación es `ShouldQueue`; `email_sent_at` se marca en `App\Listeners\MarkInvoiceEmailSent` al evento `NotificationSent`, no al encolar. No pongas `Log::error(...$e...)` fuera del `catch`.
+- **Feedback de acciones Livewire**: botones que guardan/envían llevan `wire:loading.attr="disabled"` + `wire:target` y un `spinner-border` (patrón en `create-invoice.blade.php` e `invoice-list.blade.php`).
 
 ## Estado conocido
 
-- **Tests**: suite PHPUnit verde (60 tests: Billing, QuotationRepro, DriverTrip, Expense, TenantFeatureToggle, Loyalty*, etc.).
+- **Tests**: suite PHPUnit verde (92 tests: Billing, BillingFlow, InvoiceDelivery, QuotationRepro, DriverTrip, Expense, TenantFeatureToggle, Loyalty*, WhatsApp*, etc.).
 - Datos de dev en SQLite; `quotations`/`invoices` casi vacías (solo registros de prueba).
 - Quirk: `email_verified_at` NO está en `$fillable` de `App\Models\User` (usar `forceFill`).
 - Quirk: `Tenant::current()` cae a `Tenant::first()` si no hay sesión (solo dev).
+- Quirk: la cola de correo en Railway corre dentro del contenedor web con reinicio automático (`railway-deploy.sh`); revisar `jobs`/`failed_jobs` si los correos no llegan. Lo recomendado es un servicio de worker aparte.
 - Deuda: varias vistas duplican lógica; PHPStan con baseline (`phpstan-baseline.neon`, 259 errores heredados) en `phpstan.neon`. El móvil (`/mobile`) está desacoplado.
+- Documentación de la épica de facturación: `HISTORIAS_USUARIO_FACTURACION.md`.
 
 ## Seguridad (qué NO commitear)
 

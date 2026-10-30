@@ -3,12 +3,12 @@
 namespace App\Livewire\Logistics;
 
 use App\Models\Customer;
-use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Package;
 use App\Models\Tenant;
 use App\Models\Warehouse;
 use App\Notifications\PackagesArrivedNotification;
+use App\Services\Billing\InvoiceNumberGenerator;
 use App\Services\Loyalty\LoyaltyService;
 use App\Traits\WithSorting;
 use Illuminate\Support\Facades\DB;
@@ -268,10 +268,9 @@ class InventoryList extends Component
             $total = $subtotal + $tax;
 
             // 1. Create Consolidated Invoice
-            $invoice = Invoice::create([
+            $invoice = app(InvoiceNumberGenerator::class)->create([
                 'tenant_id' => session('tenant_id'),
                 'customer_id' => $this->target_customer_id,
-                'number' => 'INV-'.date('Ymd').strtoupper(Str::random(4)),
                 'subtotal' => $subtotal,
                 'tax' => $tax,
                 'total' => $total,

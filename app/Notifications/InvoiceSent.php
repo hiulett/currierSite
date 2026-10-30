@@ -26,6 +26,14 @@ class InvoiceSent extends Notification implements ShouldQueue
     }
 
     /**
+     * Factura asociada a la notificación (usada por listeners de envío).
+     */
+    public function invoice(): Invoice
+    {
+        return $this->invoice;
+    }
+
+    /**
      * Get the notification's delivery channels.
      *
      * @return array<int, string>
@@ -55,8 +63,8 @@ class InvoiceSent extends Notification implements ShouldQueue
                 }
             }
         } catch (\Exception $e) {
+            Log::warning('No se pudo incrustar el logo en la factura: '.$e->getMessage());
         }
-        Log::error('Exception in '.__CLASS__.'::'.__FUNCTION__.' - '.$e->getMessage()."\n".$e->getTraceAsString());
 
         $pdf = Pdf::loadView('billing.invoice-pdf', [
             'invoice' => $this->invoice,

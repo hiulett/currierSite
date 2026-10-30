@@ -3,16 +3,15 @@
 namespace App\Livewire\Logistics;
 
 use App\Models\Customer;
-use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Package;
 use App\Models\Tenant;
 use App\Models\Warehouse;
 use App\Notifications\PackageReceived;
+use App\Services\Billing\InvoiceNumberGenerator;
 use App\Services\Loyalty\LoyaltyService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Livewire\Component;
 
 class ReceivePackage extends Component
@@ -151,14 +150,14 @@ class ReceivePackage extends Component
                 $tax = $subtotal * ($tax_percent / 100);
                 $total = $subtotal + $tax;
 
-                $invoice = Invoice::create([
+                $invoice = app(InvoiceNumberGenerator::class)->create([
                     'tenant_id' => session('tenant_id'),
                     'customer_id' => $this->found_customer->id,
-                    'number' => 'INV-'.date('Ym').strtoupper(Str::random(4)),
                     'subtotal' => $subtotal,
                     'tax' => $tax,
                     'total' => $total,
                     'status' => 'unpaid',
+                    'service_type' => $this->service_type,
                     'due_date' => now()->addDays(7),
                     'notes' => 'Factura automática por recepción de paquete '.$this->tracking_number,
                 ]);
@@ -192,7 +191,7 @@ class ReceivePackage extends Component
 
         // Add to recent receivers
         $recent = session('recent_receivers', []);
-        array_unshift($recent, $customer->id);
+        array_unshift($recent, $this->found_customer->id);
         $recent = array_unique($recent);
         $recent = array_slice($recent, 0, 4); // Keep last 4
         session(['recent_receivers' => $recent]);

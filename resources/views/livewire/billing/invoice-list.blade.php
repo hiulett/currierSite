@@ -185,8 +185,14 @@
                                     <a href="{{ route('billing.download', $invoice) }}" target="_blank" class="btn btn-sm btn-light border" title="Imprimir PDF">
                                         <i class="align-middle text-primary" data-feather="printer" style="width: 14px;"></i>
                                     </a>
-                                    <button wire:click="sendEmail({{ $invoice->id }})" class="btn btn-sm btn-light border" title="Enviar Email">
-                                        <i class="align-middle text-info" data-feather="mail" style="width: 14px;"></i>
+                                    <button wire:click="sendEmail({{ $invoice->id }})"
+                                            wire:loading.attr="disabled"
+                                            wire:target="sendEmail({{ $invoice->id }})"
+                                            class="btn btn-sm btn-light border" title="Enviar Email">
+                                        <i wire:loading.remove wire:target="sendEmail({{ $invoice->id }})"
+                                           class="align-middle text-info" data-feather="mail" style="width: 14px;"></i>
+                                        <span wire:loading wire:target="sendEmail({{ $invoice->id }})"
+                                              class="spinner-border spinner-border-sm text-info" role="status" aria-hidden="true"></span>
                                     </button>
                                     <x-whatsapp-action
                                         :web="$this->whatsappChannelIsWeb()"

@@ -24,6 +24,10 @@ Este documento detalla el estado actual del desarrollo de la plataforma.
 - [x] Creador de Facturas dinámico y Dashboard de Cuentas por Cobrar.
 - [x] **Pasarelas de Pago:** Integración completa con **Stripe** y **PayPal**.
 - [x] **Reportes:** Exportación de facturas a **PDF**.
+- [x] **Folio secuencial por tenant:** `InvoiceNumberGenerator` (`INV-{Ymd}-{0001}`) + índice único `(tenant_id, number)`.
+- [x] **Creación a prueba de filas vacías:** facturar solo paquetes ya no bloquea el guardado; errores de validación visibles en el formulario.
+- [x] **Envío por correo confiable:** `email_sent_at` se marca al confirmar el envío (`NotificationSent`), con spinner y botón deshabilitado durante la acción.
+- [x] **Cola de correo resiliente:** el worker se reinicia automáticamente en `railway-deploy.sh`.
 
 ### 4. Website Builder & Integrations
 - [x] Motor de Temas: Identidad visual (Colores y Fuentes) por Tenant.

@@ -3,10 +3,10 @@
 namespace App\Livewire\Billing;
 
 use App\Models\Customer;
-use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Package;
 use App\Models\Tenant;
+use App\Services\Billing\InvoiceNumberGenerator;
 use App\Services\Loyalty\LoyaltyService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
@@ -109,6 +109,13 @@ class CreateInvoice extends Component
             // Add to selected and items
             $this->selectedPackages[] = $packageId;
 
+            // Quita la fila vacía que agrega mount(): si solo se facturan
+            // paquetes, esa fila bloqueaba el guardado por validación.
+            $this->items = array_values(array_filter(
+                $this->items,
+                fn ($item) => ! empty($item['package_id']) || trim((string) ($item['description'] ?? '')) !== ''
+            ));
+
             $tenant = Tenant::find(session('tenant_id'));
             $settings = $tenant->settings_json;
             $rate = $package->service_type === 'maritime'
@@ -161,6 +168,27 @@ class CreateInvoice extends Component
 
     public function save()
     {
+        // Descarta filas completamente vacías (la fila inicial del formulario)
+        // antes de validar, para que seleccionar solo paquetes no bloquee el guardado.
+        $this->items = array_values(array_filter(
+            $this->items,
+            fn ($item) => ! empty($item['package_id']) || trim((string) ($item['description'] ?? '')) !== ''
+        ));
+
+        if (empty($this->items)) {
+            $this->addError('items', 'Agregue al menos un concepto o seleccione un paquete para facturar.');
+
+            return;
+        }
+
+        // Recalcula subtotales en servidor (no confía en el total del navegador).
+        foreach ($this->items as $index => $item) {
+            $this->items[$index]['total'] = round(
+                ((float) ($item['quantity'] ?? 0)) * ((float) ($item['unit_price'] ?? 0)),
+                2
+            );
+        }
+
         $this->validate([
             'box_number' => 'required|exists:customers,box_number',
             'items.*.description' => 'required|string',
@@ -186,9 +214,9 @@ class CreateInvoice extends Component
             $types = array_unique($types);
             $serviceType = count($types) === 1 ? $types[0] : (count($types) > 1 ? 'mixed' : 'air');
 
-            $invoice = Invoice::create([
+            $invoice = app(InvoiceNumberGenerator::class)->create([
+                'tenant_id' => session('tenant_id'),
                 'customer_id' => $this->found_customer->id,
-                'number' => 'INV-'.date('Ymd').'-'.rand(100, 999),
                 'subtotal' => $subtotal,
                 'tax' => $tax,
                 'total' => $total,

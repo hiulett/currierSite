@@ -1,4 +1,17 @@
 <div>
+    @if ($errors->any())
+        <div class="alert alert-danger shadow-sm border-0 mb-3" role="alert">
+            <h6 class="fw-black text-uppercase mb-2">
+                <i class="align-middle me-1" data-feather="alert-triangle"></i> No se pudo generar la factura
+            </h6>
+            <ul class="mb-0 small">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form wire:submit.prevent="save">
         <div class="row">
             <!-- Customer Info -->
@@ -204,8 +217,17 @@
                 </div>
 
                 <div class="d-grid gap-2 mt-4">
-                    <button type="submit" class="btn btn-lg btn-success py-3 fw-black text-uppercase tracking-widest shadow-lg">
-                        <i class="align-middle me-2" data-feather="check-circle"></i> GENERAR FACTURA AHORA
+                    <button type="submit"
+                            wire:loading.attr="disabled"
+                            wire:target="save"
+                            class="btn btn-lg btn-success py-3 fw-black text-uppercase tracking-widest shadow-lg">
+                        <span wire:loading.remove wire:target="save">
+                            <i class="align-middle me-2" data-feather="check-circle"></i> GENERAR FACTURA AHORA
+                        </span>
+                        <span wire:loading wire:target="save" class="d-inline-flex align-items-center justify-content-center gap-2">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            GENERANDO FACTURA...
+                        </span>
                     </button>
                 </div>
             </div>

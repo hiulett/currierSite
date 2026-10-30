@@ -122,15 +122,28 @@ class InvoiceList extends Component
     public function sendEmail($invoiceId)
     {
         $invoice = Invoice::with('customer.user', 'tenant')->find($invoiceId);
-        if ($invoice && $invoice->customer && $invoice->customer->user) {
-            try {
-                $invoice->customer->user->notify(new InvoiceSent($invoice));
-                $invoice->update(['email_sent_at' => now()]);
-                session()->flash('message', '✉️ Correo de factura encolado para '.$invoice->customer->user->email.'. El mensaje se enviará en breve.');
-            } catch (\Exception $e) {
-                Log::error('Error dispatching invoice email: '.$e->getMessage());
-                session()->flash('error', 'Error al encolar el correo. Configure el SMTP en Ajustes de Correo. Detalle: '.$e->getMessage());
-            }
+
+        if (! $invoice) {
+            session()->flash('error', 'Factura no encontrada.');
+
+            return;
+        }
+
+        $email = $invoice->customer?->user?->email;
+        if (! $email) {
+            session()->flash('error', 'El cliente de esta factura no tiene un correo registrado.');
+
+            return;
+        }
+
+        try {
+            $invoice->customer->user->notify(new InvoiceSent($invoice));
+            // email_sent_at lo marca el listener MarkInvoiceEmailSent cuando el
+            // canal de correo confirma el envío (no al encolar).
+            session()->flash('message', '✉️ Correo de factura encolado para '.$email.'. Se enviará en breve.');
+        } catch (\Exception $e) {
+            Log::error('Error dispatching invoice email: '.$e->getMessage());
+            session()->flash('error', 'Error al encolar el correo. Configure el SMTP en Ajustes de Correo. Detalle: '.$e->getMessage());
         }
     }
 

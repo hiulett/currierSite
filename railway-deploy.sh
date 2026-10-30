@@ -19,9 +19,15 @@ php artisan migrate --force
 echo "🔗 Creando enlaces simbólicos de storage..."
 php artisan storage:link --force
 
-# Start the queue worker in background
+# Start the queue worker in background (se reinicia si se detiene)
 echo "📬 Iniciando worker de colas de correo..."
-php artisan queue:work --sleep=3 --tries=3 --max-time=3600 &
+(
+  while true; do
+    php artisan queue:work --sleep=3 --tries=3 --max-time=3500
+    echo "⚠️ Worker de colas detenido, reiniciando en 2s..."
+    sleep 2
+  done
+) &
 
 # Start the application
 echo "⚡ Iniciando servidor..."
