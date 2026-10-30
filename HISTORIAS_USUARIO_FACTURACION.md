@@ -133,6 +133,24 @@
 
 ---
 
+## HU-FAC-08 — Iconos de la interfaz sin errores en consola
+
+**Como** usuario del panel
+**Quiero** que los iconos se rendericen siempre
+**Para** no ver pantallas incompletas ni errores de JavaScript al navegar.
+
+### Criterios de aceptación
+- [x] Ningún icono `<i data-feather>` lleva directivas Livewire/Alpine en el mismo elemento.
+- [x] El layout renderiza los iconos uno por uno con `<template>` (parser HTML tolerante) en vez de `feather.replace()`.
+- [x] Los iconos inválidos se omiten con un `console.warn` que indica el nombre, sin romper el resto de la página.
+- [x] Verificado en navegador: `/dashboard`, `/facturacion`, `/facturacion/nueva`, `/logistica/inventario` y `/logistica/recepcion` sin errores de consola.
+
+### Implementación
+- `resources/views/components/layouts/app.blade.php` → `renderFeatherIcon()`, `initFeather()`.
+- `resources/views/livewire/billing/invoice-list.blade.php` → directivas de carga movidas a un `<span>` contenedor.
+
+---
+
 ## Definición de terminado (global)
 
 - [x] Suite PHPUnit verde (`92 tests`).

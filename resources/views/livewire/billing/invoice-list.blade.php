@@ -189,8 +189,10 @@
                                             wire:loading.attr="disabled"
                                             wire:target="sendEmail({{ $invoice->id }})"
                                             class="btn btn-sm btn-light border" title="Enviar Email">
-                                        <i wire:loading.remove wire:target="sendEmail({{ $invoice->id }})"
-                                           class="align-middle text-info" data-feather="mail" style="width: 14px;"></i>
+                                        <span wire:loading.remove wire:target="sendEmail({{ $invoice->id }})"
+                                              class="d-inline-flex align-items-center">
+                                            <i class="align-middle text-info" data-feather="mail" style="width: 14px;"></i>
+                                        </span>
                                         <span wire:loading wire:target="sendEmail({{ $invoice->id }})"
                                               class="spinner-border spinner-border-sm text-info" role="status" aria-hidden="true"></span>
                                     </button>

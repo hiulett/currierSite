@@ -312,42 +312,76 @@
 
 	<script src="{{ asset('adminkit/js/app.js') }}" data-navigate-once></script>
     <script data-navigate-once>
-        // Definitive fix for Feather Icons crash with Livewire
-        function initFeather() {
-            if (typeof feather !== 'undefined') {
-                try {
-                    // Pre-filter icons to prevent "toSvg" of undefined error
-                    const icons = document.querySelectorAll('[data-feather]');
-                    icons.forEach(el => {
-                        const name = el.getAttribute('data-feather');
+        // Render seguro de Feather: no usa feather.replace() (revienta cuando un
+        // icono lleva atributos con ":" como wire:target, porque el parser SVG
+        // estricto devuelve null y replaceChild lanza un TypeError).
+        function featherIconAttributes(el) {
+            const attrs = {};
 
-                        // If it's already an SVG, we check if it needs update (rarely needed for static icons)
-                        if (el.tagName.toLowerCase() === 'svg') return;
-
-                        // Check if icon exists in the library
-                        if (!name || !feather.icons || !feather.icons[name]) {
-                            if (name) console.warn(`Feather icon "${name}" not found in current library.`);
-                            el.removeAttribute('data-feather');
-                            return;
-                        }
-                    });
-
-                    // Call replace only for elements that still have the attribute
-                    feather.replace();
-                } catch (e) {
-                    console.error('Error initializing Feather icons:', e);
+            Array.from(el.attributes).forEach(attr => {
+                if (attr.name !== 'data-feather') {
+                    attrs[attr.name] = attr.value;
                 }
+            });
+
+            return attrs;
+        }
+
+        function renderFeatherIcon(el) {
+            if (!el || el.tagName.toLowerCase() === 'svg') return;
+
+            const name = (el.getAttribute('data-feather') || '').trim();
+
+            if (!name) {
+                el.removeAttribute('data-feather');
+                return;
+            }
+
+            if (!feather.icons || !feather.icons[name]) {
+                console.warn(`Feather icon "${name}" not found in current library; se omite.`);
+                el.removeAttribute('data-feather');
+                return;
+            }
+
+            try {
+                const markup = feather.icons[name].toSvg(featherIconAttributes(el)).trim();
+
+                // <template> usa el parser HTML (tolerante), a diferencia de
+                // DOMParser('image/svg+xml') que falla con atributos inválidos.
+                const template = document.createElement('template');
+                template.innerHTML = markup;
+
+                const node = template.content.firstElementChild;
+
+                if (node && el.parentNode) {
+                    el.parentNode.replaceChild(node, el);
+                } else {
+                    el.removeAttribute('data-feather');
+                }
+            } catch (e) {
+                console.warn(`No se pudo renderizar el icono Feather "${name}":`, e);
+                el.removeAttribute('data-feather');
             }
         }
 
-        document.addEventListener('livewire:navigated', initFeather);
-        document.addEventListener('DOMContentLoaded', initFeather);
+        function initFeather(root) {
+            if (typeof feather === 'undefined' || !feather.icons) return;
+
+            (root || document).querySelectorAll('[data-feather]').forEach(renderFeatherIcon);
+        }
+
+        // Se ejecuta antes de que AdminKit llame a feather.replace() en
+        // DOMContentLoaded, evitando su error de "typo en el icono".
+        initFeather(document);
+
+        document.addEventListener('livewire:navigated', () => initFeather());
+        document.addEventListener('DOMContentLoaded', () => initFeather());
 
         document.addEventListener('livewire:initialized', () => {
-            Livewire.hook('morph.updated', ({ el, component }) => {
+            Livewire.hook('morph.updated', ({ el }) => {
                 // Settle DOM before replacing icons
                 requestAnimationFrame(() => {
-                    initFeather();
+                    initFeather(el || document);
                 });
             });
         });

@@ -58,6 +58,7 @@ Frontend y backend en un solo repo Laravel. Aplicación móvil Flutter en `/mobi
 - **Números de negocio únicos** (facturas, cotizaciones, etc.): nunca uses `rand()` ni `date()` sueltos. Usa `App\Services\Billing\InvoiceNumberGenerator` (secuencia diaria por tenant, `INV-{Ymd}-{0001}`) y un índice único compuesto `(tenant_id, number)`.
 - **Envío de correos**: la notificación es `ShouldQueue`; `email_sent_at` se marca en `App\Listeners\MarkInvoiceEmailSent` al evento `NotificationSent`, no al encolar. No pongas `Log::error(...$e...)` fuera del `catch`.
 - **Feedback de acciones Livewire**: botones que guardan/envían llevan `wire:loading.attr="disabled"` + `wire:target` y un `spinner-border` (patrón en `create-invoice.blade.php` e `invoice-list.blade.php`).
+- **Iconos Feather**: nunca pongas directivas (`wire:*`, `x-on:*`, `@click`) en el mismo elemento que `data-feather`. `feather.replace()` arma el SVG como string y los atributos con `:` rompen el parser XML (`replaceChild` con `null`). El layout (`app.blade.php`) ya trae `initFeather()` propio, que renderiza icono por icono con `<template>` y tolera esos atributos.
 
 ## Estado conocido
 
