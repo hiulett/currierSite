@@ -3,12 +3,11 @@
 namespace App\Http\Middleware;
 
 use App\Models\Tenant;
+use App\Services\TenantMailConfigurator;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Symfony\Component\HttpFoundation\Response;
 
 class IdentifyTenant
@@ -94,39 +93,6 @@ class IdentifyTenant
      */
     protected function applyTenantConfig(Tenant $tenant): void
     {
-        $settings = $tenant->settings_json ?? [];
-
-        // SMTP Override
-        if (! empty($settings['mail_host'])) {
-            $driver = $settings['mail_driver'] ?? 'smtp';
-
-            if ($driver === 'sendgrid_api' || $driver === 'sendgrid') {
-                config(["mail.mailers.$driver" => [
-                    'transport' => $driver,
-                    'key' => $settings['mail_password'] ?? $settings['mail_username'],
-                ]]);
-            }
-
-            config([
-                'mail.default' => $driver,
-                'mail.mailers.smtp.host' => trim($settings['mail_host']),
-                'mail.mailers.smtp.port' => trim($settings['mail_port'] ?? '587'),
-                'mail.mailers.smtp.username' => trim($settings['mail_username']),
-                'mail.mailers.smtp.password' => trim($settings['mail_password']),
-                'mail.mailers.smtp.encryption' => trim($settings['mail_encryption'] ?? 'tls'),
-                'mail.mailers.smtp.timeout' => 15,
-                'mail.from.address' => trim($settings['mail_from_address'] ?? 'no-reply@logisaas.com'),
-                'mail.from.name' => trim($settings['mail_from_name'] ?? $tenant->name),
-            ]);
-
-            // Force Laravel to drop cached instances and use new config
-            try {
-                Mail::purge('smtp');
-                Mail::purge($driver);
-            } catch (\Exception $e) {
-                Log::error('Exception in '.__CLASS__.'::'.__FUNCTION__.' - '.$e->getMessage()."\n".$e->getTraceAsString());
-                // Ignore if Mail facade is not fully loaded yet
-            }
-        }
+        app(TenantMailConfigurator::class)->apply($tenant);
     }
 }

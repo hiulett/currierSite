@@ -84,6 +84,7 @@
 
 ### Implementación
 - `app/Notifications/InvoiceSent.php`, `app/Notifications/PackagesArrivedNotification.php`.
+- `app/Services/TenantMailConfigurator.php` (config SMTP única: middleware + worker).
 - `app/Listeners/MarkInvoiceEmailSent.php` y `app/Listeners/MarkInvoiceEmailFailed.php` + registro en `app/Providers/AppServiceProvider.php`.
 - `app/Livewire/Billing/InvoiceList.php` → `sendEmail()`.
 - Migración `2026_10_31_000001_add_email_status_to_invoices_table.php` (`email_queued_at`, `email_error`).

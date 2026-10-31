@@ -116,6 +116,30 @@ class InvoiceDeliveryTest extends TestCase
         $this->assertNull($fresh->email_error);
     }
 
+    public function test_tenant_mail_config_sets_smtp_default_for_queued_notifications()
+    {
+        $this->tenant->update(['settings_json' => [
+            'mail_driver' => 'smtp',
+            'mail_host' => 'smtp.ejemplo.com',
+            'mail_port' => '587',
+            'mail_username' => 'usuario@ejemplo.com',
+            'mail_password' => 'secreto',
+            'mail_encryption' => 'tls',
+            'mail_from_address' => 'facturas@ejemplo.com',
+            'mail_from_name' => 'Ejemplo',
+        ]]);
+
+        // Simula el worker de colas: sin IdentifyTenant y con el mailer global.
+        config(['mail.default' => 'log']);
+
+        $this->tenant->fresh()->setMailConfig();
+
+        $this->assertSame('smtp', config('mail.default'));
+        $this->assertSame('smtp.ejemplo.com', config('mail.mailers.smtp.host'));
+        $this->assertSame('facturas@ejemplo.com', config('mail.from.address'));
+        $this->assertSame(15, config('mail.mailers.smtp.timeout'));
+    }
+
     public function test_failed_invoice_email_is_recorded_on_the_invoice()
     {
         $customer = $this->makeCustomer($this->tenant, 'BOX-FAIL');

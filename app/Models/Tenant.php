@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\TenantMailConfigurator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -97,27 +98,7 @@ class Tenant extends Model
 
     public function setMailConfig()
     {
-        $settings = $this->settings_json ?? [];
-
-        // Set dynamic app name for email templates
-        config(['app.name' => $this->name]);
-
-        if (isset($settings['mail_host']) && $settings['mail_host']) {
-            config([
-                'mail.mailers.smtp.host' => $settings['mail_host'],
-                'mail.mailers.smtp.port' => $settings['mail_port'],
-                'mail.mailers.smtp.username' => $settings['mail_username'],
-                'mail.mailers.smtp.password' => $settings['mail_password'],
-                'mail.mailers.smtp.encryption' => $settings['mail_encryption'],
-                'mail.mailers.smtp.timeout' => 15,
-                'mail.from.address' => $settings['mail_from_address'],
-                'mail.from.name' => $settings['mail_from_name'],
-            ]);
-
-            if (app()->bound('mail.manager')) {
-                app('mail.manager')->forgetMailers();
-            }
-        }
+        app(TenantMailConfigurator::class)->apply($this);
     }
 
     public function generateBoxNumber($userName, $type = 'air')
