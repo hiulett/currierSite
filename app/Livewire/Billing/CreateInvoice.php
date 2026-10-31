@@ -9,6 +9,7 @@ use App\Models\Tenant;
 use App\Services\Billing\InvoiceNumberGenerator;
 use App\Services\Loyalty\LoyaltyService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class CreateInvoice extends Component
@@ -196,66 +197,97 @@ class CreateInvoice extends Component
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
-        DB::transaction(function () {
-            $subtotal = collect($this->items)->sum('total');
-            $tax = $subtotal * ($this->tax_percent / 100);
-            $total = $subtotal + $tax;
+        // Si el operador escribe el casillero y guarda antes de que termine el
+        // round-trip de wire:model.live, found_customer puede seguir null.
+        if (! $this->found_customer) {
+            $this->found_customer = Customer::where('box_number', $this->box_number)->first();
+        }
 
-            // Determine invoice service_type from items
-            $types = [];
-            foreach ($this->items as $item) {
-                if (isset($item['package_id'])) {
-                    $pkg = Package::find($item['package_id']);
-                    if ($pkg && $pkg->service_type) {
-                        $types[] = $pkg->service_type;
+        if (! $this->found_customer) {
+            $this->addError('box_number', 'No se encontró el cliente con ese casillero.');
+
+            return;
+        }
+
+        try {
+            $invoice = DB::transaction(function () {
+                $subtotal = collect($this->items)->sum('total');
+                $tax = $subtotal * ($this->tax_percent / 100);
+                $total = $subtotal + $tax;
+
+                // Determine invoice service_type from items
+                $types = [];
+                foreach ($this->items as $item) {
+                    if (isset($item['package_id'])) {
+                        $pkg = Package::find($item['package_id']);
+                        if ($pkg && $pkg->service_type) {
+                            $types[] = $pkg->service_type;
+                        }
                     }
                 }
-            }
-            $types = array_unique($types);
-            $serviceType = count($types) === 1 ? $types[0] : (count($types) > 1 ? 'mixed' : 'air');
+                $types = array_unique($types);
+                $serviceType = count($types) === 1 ? $types[0] : (count($types) > 1 ? 'mixed' : 'air');
 
-            $invoice = app(InvoiceNumberGenerator::class)->create([
-                'tenant_id' => session('tenant_id'),
-                'customer_id' => $this->found_customer->id,
-                'subtotal' => $subtotal,
-                'tax' => $tax,
-                'total' => $total,
-                'status' => 'unpaid',
-                'service_type' => $serviceType,
-                'due_date' => now()->addDays(7),
-                'notes' => $this->notes,
-            ]);
-
-            foreach ($this->items as $item) {
-                InvoiceItem::create([
+                $invoice = app(InvoiceNumberGenerator::class)->create([
                     'tenant_id' => session('tenant_id'),
-                    'invoice_id' => $invoice->id,
-                    'package_id' => $item['package_id'] ?? null,
-                    'description' => $item['description'],
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'total' => $item['total'],
+                    'customer_id' => $this->found_customer->id,
+                    'subtotal' => $subtotal,
+                    'tax' => $tax,
+                    'total' => $total,
+                    'status' => 'unpaid',
+                    'service_type' => $serviceType,
+                    'due_date' => now()->addDays(7),
+                    'notes' => $this->notes,
                 ]);
 
-                if (isset($item['package_id'])) {
-                    Package::where('id', $item['package_id'])->update([
-                        'client_total_billed' => $item['total'],
+                foreach ($this->items as $item) {
+                    InvoiceItem::create([
+                        'tenant_id' => session('tenant_id'),
+                        'invoice_id' => $invoice->id,
+                        'package_id' => $item['package_id'] ?? null,
+                        'description' => $item['description'],
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $item['unit_price'],
+                        'total' => $item['total'],
                     ]);
+
+                    if (isset($item['package_id'])) {
+                        Package::where('id', $item['package_id'])->update([
+                            'client_total_billed' => $item['total'],
+                        ]);
+                    }
                 }
-            }
 
-            // Increment customer balance
-            if ($this->found_customer) {
+                // Increment customer balance
                 $this->found_customer->increment('balance', $total);
-            }
 
-            // LOGYPUNTOS: acumulación automática de puntos por libras facturadas
+                return $invoice;
+            });
+        } catch (\Throwable $e) {
+            Log::error('No se pudo generar la factura', [
+                'tenant_id' => session('tenant_id'),
+                'user_id' => auth()->id(),
+                'box_number' => $this->box_number,
+                'items' => $this->items,
+                'error' => $e->getMessage(),
+            ]);
+
+            $this->addError('items', 'No se pudo generar la factura. Intente nuevamente o contacte a soporte.');
+
+            return;
+        }
+
+        // LOGYPUNTOS fuera de la transacción: un fallo de fidelización no debe
+        // revertir una factura que ya fue creada.
+        try {
             app(LoyaltyService::class)->awardPointsForInvoice($invoice);
-        });
+        } catch (\Throwable $e) {
+            Log::error('No se pudieron acumular los LOGYPUNTOS de la factura '.$invoice->id.': '.$e->getMessage());
+        }
 
         $this->dispatch('invoice-saved');
 
-        session()->flash('message', 'Factura generada exitosamente.');
+        session()->flash('message', 'Factura '.$invoice->number.' generada exitosamente.');
         // return redirect()->route('billing.index'); // We don't want to redirect anymore
         $this->reset(['box_number', 'found_customer', 'items', 'notes', 'customer_search', 'customer_results']);
         $this->addItem();

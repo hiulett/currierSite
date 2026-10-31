@@ -1,4 +1,11 @@
 <div>
+    @if (session()->has('message'))
+        <div class="alert alert-success shadow-sm border-0 mb-3 d-flex align-items-center" role="status">
+            <i class="align-middle me-2" data-feather="check-circle"></i>
+            <span class="fw-bold">{{ session('message') }}</span>
+        </div>
+    @endif
+
     @if ($errors->any())
         <div class="alert alert-danger shadow-sm border-0 mb-3" role="alert">
             <h6 class="fw-black text-uppercase mb-2">
@@ -224,9 +231,11 @@
                         <span wire:loading.remove wire:target="save">
                             <i class="align-middle me-2" data-feather="check-circle"></i> GENERAR FACTURA AHORA
                         </span>
-                        <span wire:loading wire:target="save" class="d-inline-flex align-items-center justify-content-center gap-2">
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            GENERANDO FACTURA...
+                        <span wire:loading wire:target="save">
+                            <span class="d-inline-flex align-items-center justify-content-center gap-2">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                GENERANDO FACTURA...
+                            </span>
                         </span>
                     </button>
                 </div>

@@ -17,7 +17,11 @@
 - [x] Al guardar se descartan filas totalmente vacías antes de validar.
 - [x] Si tras el filtro no queda ningún concepto, se muestra el error "Agregue al menos un concepto o seleccione un paquete para facturar".
 - [x] El subtotal de cada línea se recalcula en el servidor (`cantidad × precio`), sin confiar en el total del navegador.
-- [x] La factura, sus ítems, el balance del cliente y los puntos LOGYPUNTOS se guardan en una sola transacción.
+- [x] La factura, sus ítems y el balance del cliente se guardan en una sola transacción.
+- [x] LOGYPUNTOS se acumula después del commit: un fallo de fidelización ya no revierte la factura.
+- [x] Si `found_customer` aún es null (carrera con `wire:model.live`), se resuelve por `box_number` antes de guardar.
+- [x] Un fallo inesperado se registra con contexto y se muestra un mensaje claro, sin pantalla de error genérica.
+- [x] Al terminar, el formulario muestra "Factura INV-… generada exitosamente."
 
 ### Implementación
 - `app/Livewire/Billing/CreateInvoice.php` → `togglePackage()`, `save()`.
@@ -91,6 +95,7 @@
 
 ### Criterios de aceptación
 - [x] "GENERAR FACTURA AHORA" muestra `spinner-border` + texto "GENERANDO FACTURA..." y queda deshabilitado (`wire:loading` + `wire:target="save"`).
+- [x] El spinner solo es visible durante la petición: el elemento con `wire:loading` no lleva utilidades de display (`d-flex`, `d-inline-flex`, etc.) porque su `!important` anula el `display:none` que aplica Livewire.
 - [x] El botón de correo de cada fila muestra spinner propio y se deshabilita solo para esa factura (`wire:target="sendEmail({id})"`).
 - [x] Al terminar, el estado vuelve a la normalidad sin recargar la página.
 

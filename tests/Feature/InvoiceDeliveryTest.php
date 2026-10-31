@@ -143,6 +143,28 @@ class InvoiceDeliveryTest extends TestCase
         $this->assertSame(1, Invoice::first()->items()->count());
     }
 
+    public function test_create_invoice_resolves_customer_when_live_model_has_not_arrived()
+    {
+        $this->actingAs($this->admin);
+
+        $customer = $this->makeCustomer($this->tenant, 'BOX-RACE');
+
+        Livewire::test(CreateInvoice::class)
+            ->set('box_number', $customer->box_number)
+            ->set('found_customer', null)
+            ->set('items', [[
+                'description' => 'Flete Aéreo - TEST',
+                'quantity' => 2,
+                'unit_price' => 5,
+                'total' => 10,
+            ]])
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertSame(1, Invoice::count());
+        $this->assertSame($customer->id, Invoice::first()->customer_id);
+    }
+
     public function test_invoice_numbers_are_sequential_per_tenant_and_day()
     {
         $generator = app(InvoiceNumberGenerator::class);
