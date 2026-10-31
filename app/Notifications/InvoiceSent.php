@@ -71,14 +71,15 @@ class InvoiceSent extends Notification implements ShouldQueue
             'logoBase64' => $logoBase64,
         ]);
 
-        $template = $tenant->settings_json['invoice_email_template'] ?? "Hola {nombre_cliente},\n\nSe ha generado una nueva factura por tus servicios de logística.\n\nNúmero de Factura: #{numero_documento}\nMonto Total: {monto_total}\nFecha de Vencimiento: {fecha_vencimiento}\n\nGracias por confiar en nosotros.\n\nSaludos,\n{nombre_empresa}";
+        $settings = $tenant?->settings_json ?? [];
+        $template = $settings['invoice_email_template'] ?? "Hola {nombre_cliente},\n\nSe ha generado una nueva factura por tus servicios de logística.\n\nNúmero de Factura: #{numero_documento}\nMonto Total: {monto_total}\nFecha de Vencimiento: {fecha_vencimiento}\n\nGracias por confiar en nosotros.\n\nSaludos,\n{nombre_empresa}";
 
         $replacements = [
             '{nombre_cliente}' => $notifiable->name ?? 'Cliente',
             '{numero_documento}' => $this->invoice->number,
             '{monto_total}' => $this->invoice->currency.' '.number_format($this->invoice->total, 2),
             '{fecha_vencimiento}' => $this->invoice->due_date ? $this->invoice->due_date->format('d/m/Y') : 'N/A',
-            '{nombre_empresa}' => $tenant->name ?? config('app.name'),
+            '{nombre_empresa}' => $tenant?->name ?? config('app.name'),
         ];
 
         $body = str_replace(array_keys($replacements), array_values($replacements), $template);

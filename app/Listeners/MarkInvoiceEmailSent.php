@@ -21,7 +21,10 @@ class MarkInvoiceEmailSent
 
         try {
             $invoice = $event->notification->invoice();
-            $invoice->forceFill(['email_sent_at' => now()])->save();
+            $invoice->forceFill([
+                'email_sent_at' => now(),
+                'email_error' => null,
+            ])->save();
         } catch (\Throwable $e) {
             Log::error('No se pudo marcar la factura como enviada: '.$e->getMessage());
         }

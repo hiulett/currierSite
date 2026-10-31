@@ -75,15 +75,19 @@
 ### Criterios de aceptación
 - [x] El correo adjunta el PDF de la factura y usa la plantilla del tenant.
 - [x] `email_sent_at` se marca **solo** cuando el canal de correo confirma el envío (evento `NotificationSent`), no al encolar.
+- [x] Al encolar se registra `email_queued_at` y el listado muestra "✉ En cola" mientras no haya resultado (si permanece así, el worker no está procesando).
+- [x] Si el envío falla, `email_error` guarda el motivo (`NotificationFailed`) y el listado muestra "✉ Error" con el detalle en el tooltip; el fallo también queda en el log.
 - [x] Si el cliente no tiene correo, se muestra un error explícito.
 - [x] Un fallo de envío ya no rompe la notificación por un `Log::error` mal ubicado (`$e` fuera del `catch`).
+- [x] El envío no bloquea la petición: SMTP con `timeout` de 15s.
 - [x] La notificación de llegada de paquetes (`PackagesArrivedNotification`) sigue el mismo comportamiento.
 
 ### Implementación
 - `app/Notifications/InvoiceSent.php`, `app/Notifications/PackagesArrivedNotification.php`.
-- `app/Listeners/MarkInvoiceEmailSent.php` (nuevo) + registro en `app/Providers/AppServiceProvider.php`.
+- `app/Listeners/MarkInvoiceEmailSent.php` y `app/Listeners/MarkInvoiceEmailFailed.php` + registro en `app/Providers/AppServiceProvider.php`.
 - `app/Livewire/Billing/InvoiceList.php` → `sendEmail()`.
-- Pruebas: `tests/Feature/InvoiceDeliveryTest::test_invoice_notification_renders_and_marks_invoice_as_sent`, `test_send_email_action_marks_invoice_only_after_delivery`.
+- Migración `2026_10_31_000001_add_email_status_to_invoices_table.php` (`email_queued_at`, `email_error`).
+- Pruebas: `tests/Feature/InvoiceDeliveryTest` (envío correcto y registro de fallo).
 
 ---
 

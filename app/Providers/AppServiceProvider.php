@@ -38,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Event::listen(NotificationSent::class, MarkInvoiceEmailSent::class);
+        Event::listen(NotificationFailed::class, MarkInvoiceEmailFailed::class);
 
         if (env('RAILWAY_ENVIRONMENT')) {
             config(['app.env' => 'production']);

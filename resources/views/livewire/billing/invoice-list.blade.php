@@ -174,6 +174,10 @@
                                     </span>
                                     @if($invoice->email_sent_at)
                                         <span title="Correo enviado el {{ $invoice->email_sent_at->format('d/m/Y H:i') }}" class="badge" style="font-size: 0.65rem; background-color: #0d9488;">✉ Enviado</span>
+                                    @elseif($invoice->email_error)
+                                        <span title="Error al enviar: {{ $invoice->email_error }}" class="badge bg-danger" style="font-size: 0.65rem;">✉ Error</span>
+                                    @elseif($invoice->email_queued_at)
+                                        <span title="En cola desde {{ $invoice->email_queued_at->format('d/m/Y H:i') }}. Si permanece así, el worker de colas no está procesando." class="badge bg-secondary" style="font-size: 0.65rem;">✉ En cola</span>
                                     @endif
                                     @if($invoice->whatsapp_sent_at)
                                         <span title="WhatsApp enviado el {{ $invoice->whatsapp_sent_at->format('d/m/Y H:i') }}" class="badge" style="font-size: 0.65rem; background-color: #25D366;">✆ Enviado</span>

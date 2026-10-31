@@ -109,6 +109,7 @@ class Tenant extends Model
                 'mail.mailers.smtp.username' => $settings['mail_username'],
                 'mail.mailers.smtp.password' => $settings['mail_password'],
                 'mail.mailers.smtp.encryption' => $settings['mail_encryption'],
+                'mail.mailers.smtp.timeout' => 15,
                 'mail.from.address' => $settings['mail_from_address'],
                 'mail.from.name' => $settings['mail_from_name'],
             ]);

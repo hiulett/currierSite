@@ -12,6 +12,7 @@ use App\Services\WhatsApp\DocumentSender;
 use App\Traits\WithSorting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -136,14 +137,30 @@ class InvoiceList extends Component
             return;
         }
 
+        $invoice->forceFill([
+            'email_error' => null,
+            'email_queued_at' => now(),
+        ])->save();
+
         try {
+            // Encolado (no bloquea la petición). El resultado se refleja en la
+            // factura: email_sent_at al confirmar o email_error si el job falla.
             $invoice->customer->user->notify(new InvoiceSent($invoice));
-            // email_sent_at lo marca el listener MarkInvoiceEmailSent cuando el
-            // canal de correo confirma el envío (no al encolar).
-            session()->flash('message', '✉️ Correo de factura encolado para '.$email.'. Se enviará en breve.');
-        } catch (\Exception $e) {
-            Log::error('Error dispatching invoice email: '.$e->getMessage());
-            session()->flash('error', 'Error al encolar el correo. Configure el SMTP en Ajustes de Correo. Detalle: '.$e->getMessage());
+
+            session()->flash('message', '✉️ Factura '.$invoice->number.' en cola para '.$email.'.');
+        } catch (\Throwable $e) {
+            $invoice->forceFill([
+                'email_error' => Str::limit($e->getMessage(), 500),
+            ])->save();
+
+            Log::error('No se pudo encolar la factura '.$invoice->number, [
+                'tenant_id' => $invoice->tenant_id,
+                'invoice_id' => $invoice->id,
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
+
+            session()->flash('error', 'No se pudo encolar la factura a '.$email.'. Revise la configuración SMTP en Ajustes de Correo. Detalle: '.$e->getMessage());
         }
     }
 

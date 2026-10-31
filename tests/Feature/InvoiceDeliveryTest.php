@@ -13,6 +13,7 @@ use App\Models\Warehouse;
 use App\Notifications\InvoiceSent;
 use App\Services\Billing\InvoiceNumberGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
@@ -109,7 +110,25 @@ class InvoiceDeliveryTest extends TestCase
             ->call('sendEmail', $invoice->id)
             ->assertHasNoErrors();
 
-        $this->assertNotNull($invoice->fresh()->email_sent_at);
+        $fresh = $invoice->fresh();
+        $this->assertNotNull($fresh->email_queued_at);
+        $this->assertNotNull($fresh->email_sent_at);
+        $this->assertNull($fresh->email_error);
+    }
+
+    public function test_failed_invoice_email_is_recorded_on_the_invoice()
+    {
+        $customer = $this->makeCustomer($this->tenant, 'BOX-FAIL');
+        $invoice = $this->makeInvoice($this->tenant, $customer, 'INV-FAIL-0001');
+
+        event(new NotificationFailed(
+            $customer->user,
+            new InvoiceSent($invoice),
+            'mail',
+            ['exception' => new \RuntimeException('SMTP caído')]
+        ));
+
+        $this->assertSame('SMTP caído', $invoice->fresh()->email_error);
     }
 
     public function test_create_invoice_with_only_selected_packages_does_not_require_manual_row()

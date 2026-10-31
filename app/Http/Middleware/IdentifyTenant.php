@@ -114,6 +114,7 @@ class IdentifyTenant
                 'mail.mailers.smtp.username' => trim($settings['mail_username']),
                 'mail.mailers.smtp.password' => trim($settings['mail_password']),
                 'mail.mailers.smtp.encryption' => trim($settings['mail_encryption'] ?? 'tls'),
+                'mail.mailers.smtp.timeout' => 15,
                 'mail.from.address' => trim($settings['mail_from_address'] ?? 'no-reply@logisaas.com'),
                 'mail.from.name' => trim($settings['mail_from_name'] ?? $tenant->name),
             ]);
