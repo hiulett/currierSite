@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Helpers\DocumentPdf;
 use App\Livewire\Billing\CreateInvoice;
 use App\Livewire\Billing\InvoiceList;
 use App\Models\Customer;
@@ -114,6 +115,30 @@ class InvoiceDeliveryTest extends TestCase
         $this->assertNotNull($fresh->email_queued_at);
         $this->assertNotNull($fresh->email_sent_at);
         $this->assertNull($fresh->email_error);
+    }
+
+    public function test_invoice_documents_use_the_tenant_logo()
+    {
+        $this->tenant->update(['theme_config_json' => ['logo_url' => '/logos/logyexpress.png']]);
+
+        $customer = $this->makeCustomer($this->tenant, 'BOX-LOGO');
+        $invoice = $this->makeInvoice($this->tenant, $customer, 'INV-LOGO-0001');
+        $invoice->load('tenant', 'customer.user', 'items');
+
+        $logo = DocumentPdf::logoBase64($invoice->tenant);
+        $this->assertNotNull($logo);
+        $this->assertStringStartsWith('data:image/png;base64,', $logo);
+
+        $html = view('billing.invoice-pdf', [
+            'invoice' => $invoice,
+            'logoBase64' => $logo,
+        ])->render();
+
+        $this->assertStringContainsString('data:image/png;base64,', $html);
+
+        // El encabezado de los correos usa la misma URL de logo del tenant.
+        $this->tenant->fresh()->setMailConfig();
+        $this->assertStringEndsWith('logos/logyexpress.png', (string) config('app.tenant_logo_url'));
     }
 
     public function test_tenant_mail_config_sets_smtp_default_for_queued_notifications()

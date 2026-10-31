@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Billing;
 
+use App\Helpers\DocumentPdf;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Package;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Log;
 
 class InvoiceController extends Controller
 {
@@ -23,20 +23,7 @@ class InvoiceController extends Controller
 
         $invoice->load(['customer.user', 'items', 'tenant']);
 
-        // Base64 logo for PDF rendering reliability
-        $logoBase64 = null;
-        try {
-            $logoUrl = $invoice->tenant->theme_config_json['logo_url'] ?? null;
-            if ($logoUrl) {
-                $logoData = file_get_contents($logoUrl);
-                if ($logoData) {
-                    $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
-                    $logoBase64 = 'data:image/'.($type ?: 'png').';base64,'.base64_encode($logoData);
-                }
-            }
-        } catch (\Exception $e) {
-            Log::warning('Could not convert logo to base64: '.$e->getMessage());
-        }
+        $logoBase64 = DocumentPdf::logoBase64($invoice->tenant);
 
         $pdf = Pdf::loadView('billing.invoice-pdf', compact('invoice', 'logoBase64'));
 
@@ -53,20 +40,7 @@ class InvoiceController extends Controller
 
         $customer->load(['user', 'tenant']);
 
-        // Base64 logo for PDF rendering reliability
-        $logoBase64 = null;
-        try {
-            $logoUrl = $customer->tenant->theme_config_json['logo_url'] ?? null;
-            if ($logoUrl) {
-                $logoData = file_get_contents($logoUrl);
-                if ($logoData) {
-                    $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
-                    $logoBase64 = 'data:image/'.($type ?: 'png').';base64,'.base64_encode($logoData);
-                }
-            }
-        } catch (\Exception $e) {
-            Log::warning('Could not convert logo to base64: '.$e->getMessage());
-        }
+        $logoBase64 = DocumentPdf::logoBase64($customer->tenant);
 
         $invoices = Invoice::where('customer_id', $customer->id)
             ->latest()

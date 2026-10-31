@@ -1,4 +1,17 @@
 <div x-data="{ isPaying: @entangle('is_paying') }">
+    @php
+        $tenantLogo = \App\Models\Tenant::current()?->getLogoUrl();
+    @endphp
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        @if($tenantLogo)
+            <img src="{{ $tenantLogo }}" alt="{{ config('app.name') }}"
+                 style="height: 38px; width: auto; max-width: 170px;">
+        @else
+            <span class="h5 mb-0 fw-black text-dark">{{ config('app.name') }}</span>
+        @endif
+        <span class="text-muted xsmall font-black text-uppercase">Módulo de Facturación</span>
+    </div>
+
     <!-- Billing Stats -->
     <div class="row mb-4">
         <div class="col-12 col-sm-6 col-xxl-3 d-flex">

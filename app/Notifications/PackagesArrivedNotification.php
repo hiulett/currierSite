@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Helpers\DocumentPdf;
 use App\Models\Invoice;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Bus\Queueable;
@@ -10,7 +11,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 
 class PackagesArrivedNotification extends Notification implements ShouldQueue
 {
@@ -52,19 +52,7 @@ class PackagesArrivedNotification extends Notification implements ShouldQueue
         $tenantName = $this->invoice->tenant?->name ?? config('app.name');
 
         // Prepare logo for PDF
-        $logoBase64 = null;
-        try {
-            $logoUrl = $this->invoice->tenant->theme_config_json['logo_url'] ?? null;
-            if ($logoUrl) {
-                $logoData = file_get_contents($logoUrl);
-                if ($logoData) {
-                    $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
-                    $logoBase64 = 'data:image/'.($type ?: 'png').';base64,'.base64_encode($logoData);
-                }
-            }
-        } catch (\Exception $e) {
-            Log::warning('No se pudo incrustar el logo en la factura: '.$e->getMessage());
-        }
+        $logoBase64 = DocumentPdf::logoBase64($this->invoice->tenant);
 
         $pdf = Pdf::loadView('billing.invoice-pdf', [
             'invoice' => $this->invoice,

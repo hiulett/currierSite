@@ -43,7 +43,7 @@
         @endphp
 
         @if(isset($logoBase64) && $logoBase64)
-            <img src="{{ $logoBase64 }}" style="max-height: 70px; max-width: 280px; margin-bottom: 10px;">
+            <img src="{{ $logoBase64 }}" alt="{{ $tenant->name ?? config('app.name') }}" style="width: 260px; max-height: 85px; margin-bottom: 10px;">
         @else
             <div class="company-name">{{ $tenant->name ?? config('app.name') }}</div>
         @endif

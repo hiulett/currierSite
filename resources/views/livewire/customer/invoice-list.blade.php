@@ -1,4 +1,17 @@
 <div class="container-fluid p-0">
+    @php
+        $tenantLogo = auth()->user()->tenant?->getLogoUrl();
+    @endphp
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        @if($tenantLogo)
+            <img src="{{ $tenantLogo }}" alt="{{ config('app.name') }}"
+                 style="height: 38px; width: auto; max-width: 170px;">
+        @else
+            <span class="h5 mb-0 fw-black text-dark">{{ config('app.name') }}</span>
+        @endif
+        <span class="text-muted xsmall font-black text-uppercase">Portal del Cliente</span>
+    </div>
+
     <div class="row mb-2">
         <div class="col-12 col-md-6">
             <h1 class="h4 mb-0 uppercase font-black tracking-tight text-dark">Mis Facturas</h1>

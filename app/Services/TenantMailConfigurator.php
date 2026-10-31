@@ -18,7 +18,11 @@ class TenantMailConfigurator
     {
         $settings = $tenant->settings_json ?? [];
 
-        config(['app.name' => $tenant->name]);
+        config([
+            'app.name' => $tenant->name,
+            // Logo del tenant para el encabezado de los correos (vendor/mail/html/header).
+            'app.tenant_logo_url' => $tenant->getLogoUrl(),
+        ]);
 
         $host = trim((string) ($settings['mail_host'] ?? ''));
 

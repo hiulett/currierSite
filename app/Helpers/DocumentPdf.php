@@ -12,6 +12,10 @@ class DocumentPdf
 {
     /**
      * Convierte el logo del tenant a base64 para renderizar en PDF de forma fiable.
+     *
+     * Prioriza el archivo local del tenant (public/logos/{subdominio}.*) sobre
+     * la URL de theme_config_json, para que el logo del documento sea el mismo
+     * que el del resto de la aplicación.
      */
     public static function logoBase64(?Tenant $tenant): ?string
     {
@@ -19,31 +23,39 @@ class DocumentPdf
             return null;
         }
 
-        $logoUrl = $tenant->theme_config_json['logo_url'] ?? null;
+        $logoUrl = $tenant->getLogoUrl();
         if (! $logoUrl) {
             return null;
         }
 
         try {
-            $logoData = null;
+            $path = parse_url($logoUrl, PHP_URL_PATH);
+            $localPath = $path ? public_path(ltrim($path, '/')) : null;
 
-            if (str_contains($logoUrl, 'localhost') || str_contains($logoUrl, '127.0.0.1')) {
-                $parsed = parse_url($logoUrl, PHP_URL_PATH);
-                $localPath = public_path($parsed);
-                if ($parsed && file_exists($localPath)) {
-                    $logoData = file_get_contents($localPath);
-                }
+            $logoData = null;
+            if ($localPath && is_file($localPath)) {
+                $logoData = file_get_contents($localPath);
             }
 
             if (! $logoData) {
                 $logoData = @file_get_contents($logoUrl);
             }
 
-            if ($logoData) {
-                $type = pathinfo($logoUrl, PATHINFO_EXTENSION);
-
-                return 'data:image/'.($type ?: 'png').';base64,'.base64_encode($logoData);
+            if (! $logoData) {
+                return null;
             }
+
+            $extension = strtolower(pathinfo($localPath ?: (string) $path, PATHINFO_EXTENSION));
+
+            $mime = match ($extension) {
+                'jpg', 'jpeg' => 'jpeg',
+                'svg' => 'svg+xml',
+                'webp' => 'webp',
+                'gif' => 'gif',
+                default => 'png',
+            };
+
+            return 'data:image/'.$mime.';base64,'.base64_encode($logoData);
         } catch (\Throwable $e) {
             Log::warning('Could not convert logo to base64: '.$e->getMessage());
         }

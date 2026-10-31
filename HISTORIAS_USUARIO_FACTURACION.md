@@ -161,6 +161,29 @@
 
 ---
 
+## HU-FAC-09 — Logo de la empresa en todas las facturas
+
+**Como** administrador del courier
+**Quiero** que todas las facturas muestren el logo de Logy Express
+**Para** mantener una imagen de marca consistente en PDF, web y correo.
+
+### Criterios de aceptación
+- [x] El PDF de la factura muestra el logo en el encabezado a 260 px de ancho (y el estado de cuenta a 220 px).
+- [x] La factura abierta online (misma vista PDF) y el listado de facturación muestran el logo.
+- [x] El correo de la factura muestra el logo (220 px) en el encabezado y mantiene el PDF adjunto.
+- [x] El logo se resuelve con `Tenant::getLogoUrl()` (prioriza `public/logos/{subdominio}.png`) y `DocumentPdf::logoBase64()` para PDFs.
+- [x] Funciona aunque el logo del tenant esté en local o en una URL remota, y si falta cae al nombre de la empresa.
+
+### Implementación
+- `public/logos/logyexpress.png` (nuevo logo 1000×321).
+- `app/Helpers/DocumentPdf.php`, `app/Http/Controllers/Billing/InvoiceController.php`.
+- `app/Notifications/InvoiceSent.php`, `app/Notifications/PackagesArrivedNotification.php`.
+- `app/Services/TenantMailConfigurator.php` + `resources/views/vendor/mail/html/header.blade.php`.
+- Vistas: `billing/invoice-pdf.blade.php`, `billing/statement-pdf.blade.php`, `livewire/billing/invoice-list.blade.php`, `livewire/customer/invoice-list.blade.php`.
+- Prueba: `tests/Feature/InvoiceDeliveryTest::test_invoice_documents_use_the_tenant_logo`.
+
+---
+
 ## Definición de terminado (global)
 
 - [x] Suite PHPUnit verde (`92 tests`).

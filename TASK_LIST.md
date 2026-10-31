@@ -28,6 +28,7 @@ Este documento detalla el estado actual del desarrollo de la plataforma.
 - [x] **Creación a prueba de filas vacías:** facturar solo paquetes ya no bloquea el guardado; errores de validación visibles en el formulario.
 - [x] **Envío por correo confiable:** `email_sent_at` se marca al confirmar el envío (`NotificationSent`), con spinner y botón deshabilitado durante la acción.
 - [x] **Cola de correo resiliente:** el worker se reinicia automáticamente en `railway-deploy.sh`.
+- [x] **Logo de la empresa** en PDF, vista online y correo de las facturas (nuevo asset `public/logos/logyexpress.png`).
 
 ### 4. Website Builder & Integrations
 - [x] Motor de Temas: Identidad visual (Colores y Fuentes) por Tenant.
